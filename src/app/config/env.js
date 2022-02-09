@@ -21,6 +21,7 @@ const envSchema = joi
       )
       .default("notice"),
     LOGGER_FILENAME: joi.string().optional(),
+    DATABASE_URI: joi.string().required().uri(),
   })
   .unknown();
 
@@ -36,5 +37,8 @@ export default {
   logger: {
     level: env.LOGGER_LEVEL,
     filename: env.LOGGER_FILENAME,
+  },
+  database: {
+    uri: env.DATABASE_URI,
   },
 };
