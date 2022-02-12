@@ -22,6 +22,7 @@ const envSchema = joi
       .default("notice"),
     LOGGER_FILENAME: joi.string().optional(),
     DATABASE_URI: joi.string().required().uri(),
+    CACHE_URI: joi.string().required().uri(),
   })
   .unknown();
 
@@ -40,5 +41,8 @@ export default {
   },
   database: {
     uri: env.DATABASE_URI,
+  },
+  cache: {
+    uri: env.CACHE_URI,
   },
 };

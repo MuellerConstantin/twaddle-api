@@ -8,6 +8,7 @@ import helmet from "helmet";
 import env from "./config/env";
 import logger from "./config/logger";
 import mongoose from "./config/mongoose";
+import redis from "./config/redis";
 import morgan from "./config/morgan";
 import * as error from "./middlewares/error";
 
@@ -18,6 +19,7 @@ import * as error from "./middlewares/error";
  */
 export const beforeStarting = async () => {
   logger.notice("Application is starting");
+  await redis.connect();
   await mongoose.openUri(env.database.uri);
 };
 
@@ -48,6 +50,7 @@ export const beforeStopping = async () => {
 export const afterStopping = async () => {
   logger.notice("Application stopped");
   await mongoose.close();
+  await redis.disconnect();
 };
 
 const app = express();

@@ -333,3 +333,11 @@ dist
 
 ### Uploads ###
 uploads
+
+### Certificates ###
+*.pem
+*.key
+*.crt
+*.cer
+*.der
+*.priv
