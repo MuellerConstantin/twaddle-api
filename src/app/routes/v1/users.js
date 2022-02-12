@@ -1,0 +1,80 @@
+import express from "express";
+import joi from "joi";
+import { asyncHandler } from "../../middlewares/error";
+import {
+  paramsValidationHandler,
+  queryValidationHandler,
+} from "../../middlewares/validation";
+import * as UserService from "../../services/users";
+
+const router = express.Router();
+
+router.get(
+  "/users/:username",
+  paramsValidationHandler(
+    joi.object().keys({ username: joi.string().required() })
+  ),
+  asyncHandler(async (req, res) => {
+    const { username } = req.params;
+    const user = await UserService.findByUsername(username, "account");
+    return res.status(200).json(user);
+  })
+);
+
+router.get(
+  "/users",
+  queryValidationHandler(
+    joi.object({
+      perPage: joi.number().positive().greater(0).default(25).optional(),
+      page: joi.number().positive().allow(0).default(0).optional(),
+    })
+  ),
+  asyncHandler(async (req, res) => {
+    const { perPage, page } = req.query;
+    const [content, info] = await UserService.findAll({ perPage, page });
+
+    return res.status(200).json({ content, info });
+  })
+);
+
+router.post(
+  "/users",
+  asyncHandler(async (req, res) => {
+    const user = await UserService.create(req.body);
+
+    return (
+      res
+        .status(201)
+        // eslint-disable-next-line no-underscore-dangle
+        .location(`${req.originalUrl}/${encodeURIComponent(user.id)}`)
+        .json(user)
+    );
+  })
+);
+
+router.patch(
+  "/users/:username",
+  paramsValidationHandler(
+    joi.object().keys({ username: joi.string().required() })
+  ),
+  asyncHandler(async (req, res) => {
+    const { username } = req.params;
+    const user = await UserService.updateByUsername(username, req.body);
+
+    return res.status(200).json(user);
+  })
+);
+
+router.delete(
+  "/users/:username",
+  paramsValidationHandler(
+    joi.object().keys({ username: joi.string().required() })
+  ),
+  asyncHandler(async (req, res) => {
+    const { username } = req.params;
+    await UserService.deleteByUsername(username);
+    return res.status(204).send();
+  })
+);
+
+export default router;

@@ -11,6 +11,7 @@ import mongoose from "./config/mongoose";
 import redis from "./config/redis";
 import morgan from "./config/morgan";
 import * as error from "./middlewares/error";
+import v1Routes from "./routes/v1";
 
 /**
  * Lifecycle callback that should be called before the application server ist starting.
@@ -60,6 +61,8 @@ app.use(express.urlencoded({ extended: true }));
 app.use(cors());
 app.use(helmet());
 app.use(morgan());
+
+app.use("/api", v1Routes);
 
 app.use(error.notFoundHandler());
 app.use(error.errorHandler());
