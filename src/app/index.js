@@ -10,6 +10,7 @@ import logger from "./config/logger";
 import mongoose from "./config/mongoose";
 import redis from "./config/redis";
 import morgan from "./config/morgan";
+import passport from "./config/passport";
 import * as error from "./middlewares/error";
 import v1Routes from "./routes/v1";
 
@@ -61,6 +62,7 @@ app.use(express.urlencoded({ extended: true }));
 app.use(cors());
 app.use(helmet());
 app.use(morgan());
+app.use(passport.initialize());
 
 app.use("/api", v1Routes);
 

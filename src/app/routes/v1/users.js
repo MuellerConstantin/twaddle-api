@@ -1,6 +1,8 @@
 import express from "express";
 import joi from "joi";
 import { asyncHandler } from "../../middlewares/error";
+import { authenticateToken } from "../../middlewares/authentication";
+import { authorize } from "../../middlewares/authorization";
 import {
   paramsValidationHandler,
   queryValidationHandler,
@@ -11,6 +13,12 @@ const router = express.Router();
 
 router.get(
   "/users/:username",
+  authenticateToken(),
+  authorize(
+    (req) =>
+      req.user?.role === "ADMINISTRATOR" ||
+      req.user?.username === req.params.username
+  ),
   paramsValidationHandler(
     joi.object().keys({ username: joi.string().required() })
   ),
@@ -23,6 +31,8 @@ router.get(
 
 router.get(
   "/users",
+  authenticateToken(),
+  authorize((req) => req.user?.role === "ADMINISTRATOR"),
   queryValidationHandler(
     joi.object({
       perPage: joi.number().positive().greater(0).default(25).optional(),
@@ -54,6 +64,13 @@ router.post(
 
 router.patch(
   "/users/:username",
+  authenticateToken(),
+  authorize((req) =>
+    req.body.role
+      ? req.user?.role === "ADMINISTRATOR"
+      : req.user?.role === "ADMINISTRATOR" ||
+        req.user?.username === req.params.username
+  ),
   paramsValidationHandler(
     joi.object().keys({ username: joi.string().required() })
   ),
@@ -67,6 +84,12 @@ router.patch(
 
 router.delete(
   "/users/:username",
+  authenticateToken(),
+  authorize(
+    (req) =>
+      req.user?.role === "ADMINISTRATOR" ||
+      req.user?.username === req.params.username
+  ),
   paramsValidationHandler(
     joi.object().keys({ username: joi.string().required() })
   ),

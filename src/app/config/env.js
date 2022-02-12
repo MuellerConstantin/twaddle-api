@@ -3,6 +3,7 @@
  */
 
 import joi from "joi";
+import fs from "fs";
 
 const envSchema = joi
   .object()
@@ -23,6 +24,10 @@ const envSchema = joi
     LOGGER_FILENAME: joi.string().optional(),
     DATABASE_URI: joi.string().required().uri(),
     CACHE_URI: joi.string().required().uri(),
+    SECURITY_JWT_PUBLIC_KEY: joi.string().required(),
+    SECURITY_JWT_PRIVATE_KEY: joi.string().required(),
+    SECURITY_JWT_ISSUER: joi.string().required(),
+    SECURITY_JWT_EXPIRES: joi.number().min(1).default(2700),
   })
   .unknown();
 
@@ -44,5 +49,13 @@ export default {
   },
   cache: {
     uri: env.CACHE_URI,
+  },
+  security: {
+    jwt: {
+      publicKey: fs.readFileSync(env.SECURITY_JWT_PUBLIC_KEY),
+      privateKey: fs.readFileSync(env.SECURITY_JWT_PRIVATE_KEY),
+      issuer: env.SECURITY_JWT_ISSUER,
+      expires: env.SECURITY_JWT_EXPIRES,
+    },
   },
 };

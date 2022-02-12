@@ -1,5 +1,6 @@
 import express from "express";
 import joi from "joi";
+import { authenticateToken } from "../../middlewares/authentication";
 import { asyncHandler } from "../../middlewares/error";
 import {
   paramsValidationHandler,
@@ -11,6 +12,7 @@ const router = express.Router();
 
 router.get(
   "/profiles/:username",
+  authenticateToken(),
   paramsValidationHandler(
     joi.object().keys({ username: joi.string().required() })
   ),
@@ -23,6 +25,7 @@ router.get(
 
 router.get(
   "/profiles",
+  authenticateToken(),
   queryValidationHandler(
     joi.object({
       perPage: joi.number().positive().greater(0).default(25).optional(),
