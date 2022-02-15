@@ -1,4 +1,4 @@
-# Twaddle
+# Twaddle API
 
 > Real time messenger and communication platform.
 
