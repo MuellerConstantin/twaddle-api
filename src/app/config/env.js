@@ -28,6 +28,7 @@ const envSchema = joi
     SECURITY_JWT_PRIVATE_KEY: joi.string().required(),
     SECURITY_JWT_ISSUER: joi.string().required(),
     SECURITY_JWT_EXPIRES: joi.number().min(1).default(2700),
+    SECURITY_TICKET_EXPIRES: joi.number().min(1).default(120),
   })
   .unknown();
 
@@ -56,6 +57,9 @@ export default {
       privateKey: fs.readFileSync(env.SECURITY_JWT_PRIVATE_KEY),
       issuer: env.SECURITY_JWT_ISSUER,
       expires: env.SECURITY_JWT_EXPIRES,
+    },
+    ticket: {
+      expires: env.SECURITY_TICKET_EXPIRES,
     },
   },
 };
