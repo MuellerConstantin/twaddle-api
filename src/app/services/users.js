@@ -69,7 +69,7 @@ export const findAll = async (
     totalElements: totalUsers,
   };
 
-  const content = users.map((item) => item.toDTO(view));
+  const content = users.map((user) => user.toDTO(view));
 
   return [content, info];
 };
@@ -128,7 +128,7 @@ export const create = async (doc, view) => {
 /**
  * Finds an user and updates it.
  *
- * @param {string} id Username to search for
+ * @param {string} username Username to search for
  * @param {object} doc Fields of user to update
  * @param {"profile"=} view User view to load
  * @returns {Promise<ProfileDTO|UserDTO>} Returns the updated user
@@ -194,7 +194,7 @@ export const updateByUsername = async (username, doc, view) => {
 /**
  * Finds an user and deletes it.
  *
- * @param {string} id Username to search for
+ * @param {string} username Username to search for
  * @returns {Promise<void>} Returns nothing on success
  */
 export const deleteByUsername = async (username) => {
