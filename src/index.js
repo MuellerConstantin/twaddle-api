@@ -77,4 +77,4 @@ process.on("SIGTERM", onStopping);
 const port = normalizePort(process.env.PORT || 3000);
 
 app.set("port", port);
-beforeStarting().then(() => server.listen(port));
+beforeStarting(server).then(() => server.listen(port));

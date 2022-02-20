@@ -1,7 +1,10 @@
+import { URL } from "url";
 import passport from "passport";
 import { Strategy as LocalStrategy } from "passport-local";
 import { Strategy as JwtStrategy, ExtractJwt } from "passport-jwt";
+import { Strategy as CustomStrategy } from "passport-custom";
 import env from "./env";
+import redis from "./redis";
 import User from "../models/user";
 
 passport.use(
@@ -51,6 +54,40 @@ passport.use(
         .catch((err) => done(err));
     }
   )
+);
+
+passport.use(
+  "ticket",
+  new CustomStrategy((req, done) => {
+    try {
+      const ticket = new URL(
+        req.url,
+        `http://${req.headers.host}`
+      ).searchParams.get("ticket");
+
+      redis
+        // eslint-disable-next-line no-underscore-dangle
+        .get(`ticket:${ticket}`)
+        .then(async (subject) => {
+          if (!subject) {
+            return done(null, false);
+          }
+
+          return User.findOne({ username: subject })
+            .then((user) => {
+              if (!user) {
+                return done(null, false);
+              }
+
+              return done(null, user);
+            })
+            .catch((err) => done(err));
+        })
+        .catch((err) => done(err));
+    } catch (err) {
+      done(err);
+    }
+  })
 );
 
 export default passport;

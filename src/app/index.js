@@ -2,7 +2,12 @@
  * @file Entry point of the application which initializes the system and database.
  */
 
+// eslint-disable-next-line no-unused-vars
+import http from "http";
+
 import express from "express";
+import { Server as SocketServer } from "socket.io";
+import { createAdapter } from "@socket.io/redis-adapter";
 import cors from "cors";
 import helmet from "helmet";
 import env from "./config/env";
@@ -12,17 +17,34 @@ import redis from "./config/redis";
 import morgan from "./config/morgan";
 import passport from "./config/passport";
 import * as error from "./middlewares/error";
+import { authenticateTicket } from "./middlewares/authentication";
 import v1Routes from "./routes/v1";
+import v1Handlers from "./handlers/v1";
 
 /**
  * Lifecycle callback that should be called before the application server ist starting.
  * Ideal for establishing database connections and other resources that should be
  * available at runtime.
+ *
+ * @param {http.Server} server HTTP server instance used for serving the application
  */
-export const beforeStarting = async () => {
+export const beforeStarting = async (server) => {
   logger.notice("Application is starting");
   await redis.connect();
   await mongoose.openUri(env.database.uri);
+
+  const ioSubRedis = redis.duplicate();
+  const ioPubRedis = redis.duplicate();
+
+  await ioSubRedis.connect();
+  await ioPubRedis.connect();
+
+  const io = new SocketServer(server, { cors: true });
+  io.adapter(createAdapter(ioSubRedis, ioPubRedis));
+
+  const v1Nsp = io.of("/ws/v1");
+  v1Nsp.use(authenticateTicket());
+  v1Nsp.on("connection", v1Handlers);
 };
 
 /**
