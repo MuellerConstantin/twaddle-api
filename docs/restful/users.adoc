@@ -1,0 +1,406 @@
+==== Users
+Represents the user accounts with the details.
+
+===== Create user
+Creates a new user.
+
+[horizontal]
+Method:: POST
+Path:: /api/v1/users
+
+====== Request
+
+.Request Fields
+[cols="1,1,1] 
+|===
+|Field |Type |Description |Optional
+
+|username
+|String
+|Unique name of user
+|false
+
+|email
+|String
+|Unique email of user.
+|false
+
+|password
+|String
+|Password of the new account
+|false
+|===
+
+.Request Example
+[%collapsible]
+====
+[source,http,options="nowrap"]
+----
+POST /api/v1/users HTTP/1.1
+Content-Type: application/json
+Accept: application/json
+Content-Length: 74
+
+{
+  "username": "timi",
+  "email": "timi@gmail.com",
+  "password": "Abc123"
+}
+----
+====
+
+====== Response
+
+.Response Fields
+[cols="1,1,1,1] 
+|===
+|Field |Type |Description |Optional
+
+|id
+|String
+|Unique hexadecimal identifier of the user.
+|false
+
+|username
+|String
+|Unique name of user
+|false
+
+|email
+|String
+|Unique email of user.
+|false
+
+|role
+|String
+|Security role of user.
+|false
+|===
+
+.Response Example
+[%collapsible]
+====
+[source,http,options="nowrap"]
+----
+HTTP/1.1 201 Created
+Content-Type: application/json; charset=utf-8
+Content-Length: 92
+
+{
+	"id": "6207aedb47835c305054423c",
+	"username": "maxi",
+	"email": "maxi@gmail.com",
+	"role": "MEMBER"
+}
+----
+====
+
+===== Get users
+Get all available users paged. See <<_pagination, Pagination>> for details.
+
+[horizontal]
+Method:: GET
+Path:: /api/v1/users
+
+====== Request
+
+.Request Example
+[%collapsible]
+====
+[source,http,options="nowrap"]
+----
+GET /api/v1/users HTTP/1.1
+Authorization: Bearer eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJyb2xlIjoiQURNSU5JU1RSQVRPUiIsImlhdCI6MTY0NTExMzQ4NiwiZXhwIjoxNjQ1MTEzNzg2LCJpc3MiOiJUd2FkZGxlIEFQSSIsInN1YiI6Im1heGkifQ.YuwEfMI8h9VHj3kou5pfVDe6tvQHKpNdNUoe0mFpCLxRTufpWxtOg0gd_chXq8ffXVov0qxyZ1ig_HwdbwGUFHZWtdL2PNUkqNkPbAfHB_N_gLmBGXBACgn1DPaFItaNKi0gE3loCgHmGemL4ONEk-si02GrsfqJQL96bwGAaB8
+Accept: application/json
+----
+====
+
+NOTE: Pagination is supported. Please see <<_pagination, Pagination>> for details.
+
+CAUTION: Authentication is required. Please see <<_authentication, Authentication>> for details.
+
+====== Response
+
+.Response Fields
+[cols="1,1,1,1] 
+|===
+|Field |Type |Description |Optional
+
+|content
+|Array
+|Array of found resources.
+|false
+
+|content[].id
+|String
+|Unique hexadecimal identifier of the user.
+|false
+
+|content[].username
+|String
+|Unique username of account.
+|false
+
+|content[].email
+|String
+|Unique email of account.
+|false
+
+|content[].role
+|String
+|Security role of user.
+|false
+|===
+
+.Response Example
+[%collapsible]
+====
+[source,http,options="nowrap"]
+----
+HTTP/1.1 200 OK
+Content-Type: application/json; charset=utf-8
+Content-Length: 215
+
+{
+	"content": [
+		{
+	    "id": "6207aedb47835c305054423c",
+	    "username": "maxi",
+	    "email": "maxi@gmail.com",
+	    "role": "MEMBER"
+    }
+	],
+	"info": {
+		"page": 0,
+		"perPage": 25,
+		"totalPages": 1,
+		"totalElements": 1
+	}
+}
+----
+====
+
+===== Get user
+Get a user by its identifier.
+
+[horizontal]
+Method:: GET
+Path:: /api/v1/users/:id
+
+====== Request
+
+.Path Variables
+[cols="1,1,1] 
+|===
+|Variable |Type |Description |Optional
+
+|id
+|String
+|Unique identifier of user to search for.
+|false
+|===
+
+.Request Example
+[%collapsible]
+====
+[source,http,options="nowrap"]
+----
+GET /api/v1/users/6207aedb47835c305054423c HTTP/1.1
+Authorization: Bearer eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJyb2xlIjoiQURNSU5JU1RSQVRPUiIsImlhdCI6MTY0NTExMzQ4NiwiZXhwIjoxNjQ1MTEzNzg2LCJpc3MiOiJUd2FkZGxlIEFQSSIsInN1YiI6Im1heGkifQ.YuwEfMI8h9VHj3kou5pfVDe6tvQHKpNdNUoe0mFpCLxRTufpWxtOg0gd_chXq8ffXVov0qxyZ1ig_HwdbwGUFHZWtdL2PNUkqNkPbAfHB_N_gLmBGXBACgn1DPaFItaNKi0gE3loCgHmGemL4ONEk-si02GrsfqJQL96bwGAaB8
+Accept: application/json
+----
+====
+
+CAUTION: Authentication is required. Please see <<_authentication, Authentication>> for details.
+
+====== Response
+
+.Response Fields
+[cols="1,1,1,1] 
+|===
+|Field |Type |Description |Optional
+
+|id
+|String
+|Unique hexadecimal identifier of the user.
+|false
+
+|username
+|String
+|Unique name of user
+|false
+
+|email
+|String
+|Unique email of user.
+|false
+
+|role
+|String
+|Security role of user.
+|false
+|===
+
+.Response Example
+[%collapsible]
+====
+[source,http,options="nowrap"]
+----
+HTTP/1.1 200 OK
+Content-Type: application/json; charset=utf-8
+Content-Length: 92
+
+{
+	"id": "6207aedb47835c305054423c",
+	"username": "maxi",
+	"email": "maxi@gmail.com",
+	"role": "MEMBER"
+}
+----
+====
+
+===== Delete user
+Delete a user by its identifier.
+
+[horizontal]
+Method:: DELETE
+Path:: /api/v1/users/:id
+
+====== Request
+
+.Path Variables
+[cols="1,1,1] 
+|===
+|Variable |Type |Description |Optional
+
+|id
+|String
+|Unique identifier of user to search for.
+|false
+|===
+
+.Request Example
+[%collapsible]
+====
+[source,http,options="nowrap"]
+----
+DELETE /api/v1/users/6207aedb47835c305054423c HTTP/1.1
+Authorization: Bearer eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJyb2xlIjoiQURNSU5JU1RSQVRPUiIsImlhdCI6MTY0NTExMzQ4NiwiZXhwIjoxNjQ1MTEzNzg2LCJpc3MiOiJUd2FkZGxlIEFQSSIsInN1YiI6Im1heGkifQ.YuwEfMI8h9VHj3kou5pfVDe6tvQHKpNdNUoe0mFpCLxRTufpWxtOg0gd_chXq8ffXVov0qxyZ1ig_HwdbwGUFHZWtdL2PNUkqNkPbAfHB_N_gLmBGXBACgn1DPaFItaNKi0gE3loCgHmGemL4ONEk-si02GrsfqJQL96bwGAaB8
+Accept: application/json
+----
+====
+
+CAUTION: Authentication is required. Please see <<_authentication, Authentication>> for details.
+
+====== Response
+
+.Response Example
+[%collapsible]
+====
+[source,http,options="nowrap"]
+----
+HTTP/1.1 204 No Content
+Content-Type: application/json; charset=utf-8
+----
+====
+
+===== Update user
+Update a user by its identifier.
+
+[horizontal]
+Method:: PATCH
+Path:: /api/v1/users/:id
+
+====== Request
+
+.Path Variables
+[cols="1,1,1] 
+|===
+|Variable |Type |Description |Optional
+
+|id
+|String
+|Unique identifier of user to search for.
+|false
+|===
+
+.Request Fields
+[cols="1,1,1] 
+|===
+|Variable |Type |Description |Optional
+
+|email
+|String
+|New email of user.
+|true
+
+|password
+|String
+|New password of user.
+|true
+|===
+
+.Request Example
+[%collapsible]
+====
+[source,http,options="nowrap"]
+----
+PATCH /api/v1/users/6207aedb47835c305054423c HTTP/1.1
+Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJyb2xlIjoiQURNSU5JU1RSQVRPUiIsImlhdCI6MTY0NTExMzQ4NiwiZXhwIjoxNjQ1MTEzNzg2LCJpc3MiOiJUd2FkZGxlIEFQSSIsInN1YiI6Im1heGkifQ.YuwEfMI8h9VHj3kou5pfVDe6tvQHKpNdNUoe0mFpCLxRTufpWxtOg0gd_chXq8ffXVov0qxyZ1ig_HwdbwGUFHZWtdL2PNUkqNkPbAfHB_N_gLmBGXBACgn1DPaFItaNKi0gE3loCgHmGemL4ONEk-si02GrsfqJQL96bwGAaB8
+Accept: application/json
+Content-Length: 29
+
+{
+  "email": "maxi@web.de"
+}
+----
+====
+
+CAUTION: Authentication is required. Please see <<_authentication, Authentication>> for details.
+
+====== Response
+
+.Response Fields
+[cols="1,1,1,1] 
+|===
+|Field |Type |Description |Optional
+
+|id
+|String
+|Unique hexadecimal identifier of the user.
+|false
+
+|username
+|String
+|Unique name of user
+|false
+
+|email
+|String
+|Unique email of user.
+|false
+
+|role
+|String
+|Security role of user.
+|false
+|===
+
+.Response Example
+[%collapsible]
+====
+[source,http,options="nowrap"]
+----
+HTTP/1.1 200 OK
+Content-Type: application/json; charset=utf-8
+Content-Length: 90
+
+{
+	"id": "6207aedb47835c305054423c",
+	"username": "maxi",
+	"email": "maxi@web.com",
+	"role": "MEMBER"
+}
+----
+====

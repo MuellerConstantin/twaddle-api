@@ -1,0 +1,70 @@
+==== Tickets
+Tickets are used to authenticate websocket connections.
+
+===== Generate ticket
+Generates a new ticket in exchange for the access token.
+
+[horizontal]
+Method:: POST
+Path:: /api/v1/tickets
+
+====== Request
+
+.Request Example
+[%collapsible]
+====
+[source,http,options="nowrap"]
+----
+POST /api/v1/tickets HTTP/1.1
+Accept: application/json
+Authorization: Bearer eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJyb2xlIjoiQURNSU5JU1RSQVRPUiIsImlhdCI6MTY0NTQ1MTgyNiwiZXhwIjoxNjQ1NDUyMTI2LCJpc3MiOiJUd2FkZGxlIEFQSSIsInN1YiI6Im1heGkifQ.QA7fQXvf0f21JUtdxgLrJO6BdqxyrY66kRrWiHqYwrjEjvA46NT74IYhGf3uSS1_dMT131mZe_chc8qhXnjUXS1xbEntI7jwlPxPl9x0kiF6FSrkCtyazqwvHUnwpokNUH3xmfVvUYjCM2GH0wEkXndovebykK_1hFLpXrUQSPU
+----
+====
+
+CAUTION: Authentication is required. Please see <<_authentication, Authentication>> for details.
+
+====== Response
+
+.Response Fields
+[cols="1,1,1,1] 
+|===
+|Field |Type |Description |Optional
+
+|type
+|String
+|Type of token, by default `Ticket`.
+|false
+
+|ticket
+|String
+|The actual ticket.
+|false
+
+|subject
+|String
+|Username the ticket was generated for.
+|false
+
+|expires
+|Number
+|Duration of validity in seconds.
+|false
+|===
+
+.Response Example
+[%collapsible]
+====
+[source,http,options="nowrap"]
+----
+HTTP/1.1 201 Created
+Content-Type: application/json; charset=utf-8
+Content-Length: 84
+
+{
+	"type": "Ticket",
+	"ticket": "eb12a561895153c3f0b70325",
+	"subject": "maxi",
+	"expires": 120
+}
+----
+====

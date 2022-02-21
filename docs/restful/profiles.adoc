@@ -1,0 +1,142 @@
+==== Profiles
+Public representation of a user profile. In contrast to the account information, it can be viewed by anyone.
+
+===== Get profiles
+Get all available user profiles paged. See <<_pagination, Pagination>> for details.
+
+[horizontal]
+Method:: GET
+Path:: /api/v1/profiles
+
+====== Request
+
+.Request Example
+[%collapsible]
+====
+[source,http,options="nowrap"]
+----
+GET /api/v1/profiles HTTP/1.1
+Authorization: Bearer eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJyb2xlIjoiQURNSU5JU1RSQVRPUiIsImlhdCI6MTY0NTExMzQ4NiwiZXhwIjoxNjQ1MTEzNzg2LCJpc3MiOiJUd2FkZGxlIEFQSSIsInN1YiI6Im1heGkifQ.YuwEfMI8h9VHj3kou5pfVDe6tvQHKpNdNUoe0mFpCLxRTufpWxtOg0gd_chXq8ffXVov0qxyZ1ig_HwdbwGUFHZWtdL2PNUkqNkPbAfHB_N_gLmBGXBACgn1DPaFItaNKi0gE3loCgHmGemL4ONEk-si02GrsfqJQL96bwGAaB8
+Accept: application/json
+----
+====
+
+NOTE: Pagination is supported. Please see <<_pagination, Pagination>> for details.
+
+CAUTION: Authentication is required. Please see <<_authentication, Authentication>> for details.
+
+====== Response
+
+.Response Fields
+[cols="1,1,1,1] 
+|===
+|Field |Type |Description |Optional
+
+|content
+|Array
+|Array of found resources.
+|false
+
+|content[].id
+|String
+|Unique hexadecimal identifier of the user.
+|false
+
+|content[].username
+|String
+|Unique username of account.
+|false
+|===
+
+.Response Example
+[%collapsible]
+====
+[source,http,options="nowrap"]
+----
+HTTP/1.1 200 OK
+Content-Type: application/json; charset=utf-8
+Content-Length: 215
+
+{
+	"content": [
+		{
+	    "id": "6207aedb47835c305054423c",
+	    "username": "maxi"
+    }
+	],
+	"info": {
+		"page": 0,
+		"perPage": 25,
+		"totalPages": 1,
+		"totalElements": 1
+	}
+}
+----
+====
+
+===== Get profile
+Get a profile by its identifier.
+
+[horizontal]
+Method:: GET
+Path:: /api/v1/profiles/:id
+
+====== Request
+
+.Path Variables
+[cols="1,1,1] 
+|===
+|Variable |Type |Description |Optional
+
+|id
+|String
+|Unique identifier of user to search for.
+|false
+|===
+
+.Request Example
+[%collapsible]
+====
+[source,http,options="nowrap"]
+----
+GET /api/v1/profiles/6207aedb47835c305054423c HTTP/1.1
+Authorization: Bearer eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJyb2xlIjoiQURNSU5JU1RSQVRPUiIsImlhdCI6MTY0NTExMzQ4NiwiZXhwIjoxNjQ1MTEzNzg2LCJpc3MiOiJUd2FkZGxlIEFQSSIsInN1YiI6Im1heGkifQ.YuwEfMI8h9VHj3kou5pfVDe6tvQHKpNdNUoe0mFpCLxRTufpWxtOg0gd_chXq8ffXVov0qxyZ1ig_HwdbwGUFHZWtdL2PNUkqNkPbAfHB_N_gLmBGXBACgn1DPaFItaNKi0gE3loCgHmGemL4ONEk-si02GrsfqJQL96bwGAaB8
+Accept: application/json
+----
+====
+
+CAUTION: Authentication is required. Please see <<_authentication, Authentication>> for details.
+
+====== Response
+
+.Response Fields
+[cols="1,1,1,1] 
+|===
+|Field |Type |Description |Optional
+
+|id
+|String
+|Unique hexadecimal identifier of the user.
+|false
+
+|username
+|String
+|Unique name of user
+|false
+|===
+
+.Response Example
+[%collapsible]
+====
+[source,http,options="nowrap"]
+----
+HTTP/1.1 200 OK
+Content-Type: application/json; charset=utf-8
+Content-Length: 92
+
+{
+	"id": "6207aedb47835c305054423c",
+	"username": "maxi"
+}
+----
+====
