@@ -1,3 +1,4 @@
+// eslint-disable-next-line max-classes-per-file
 import logger from "../config/logger";
 
 /**
@@ -41,6 +42,33 @@ export class ApiError extends Error {
   toJSON() {
     return {
       status: this.status,
+      code: this.code,
+      message: this.message,
+      details: this.details,
+    };
+  }
+}
+
+/**
+ * Standardized socket error Format for implementing uniform error messages.
+ * This class should be used instead of the base class {@link Error}.
+ */
+export class SocketError extends Error {
+  /**
+   * Constructs an API error.
+   *
+   * @param {string=} message Human-readable error message
+   * @param {string=} code Internal error code, usually the error name
+   * @param {any=} details Optional details depending on the error
+   */
+  constructor(message, code, details) {
+    super(message || "Internal server error occurred");
+    this.code = code || "InternalServerError";
+    this.details = details;
+  }
+
+  toJSON() {
+    return {
       code: this.code,
       message: this.message,
       details: this.details,

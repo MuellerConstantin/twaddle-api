@@ -1,5 +1,5 @@
 import passport from "passport";
-import { ApiError } from "./error";
+import { ApiError, SocketError } from "./error";
 import logger from "../config/logger";
 
 /**
@@ -65,7 +65,7 @@ export const authenticateTicket = () => async (socket, next) => {
   passport.authenticate("ticket", { session: false }, (err, user) => {
     if (err) {
       const internalErr = new Error("Internal server error occurred");
-      internalErr.data = new ApiError().toJSON();
+      internalErr.data = new SocketError().toJSON();
 
       logger.error("Internal error occurred -", err);
       return next(internalErr);
@@ -73,9 +73,8 @@ export const authenticateTicket = () => async (socket, next) => {
 
     if (!user) {
       const authErr = new Error("Invalid ticket provided");
-      authErr.data = new ApiError(
+      authErr.data = new SocketError(
         "Invalid ticket provided",
-        401,
         "InvalidTicketError"
       ).toJSON();
 
@@ -83,7 +82,7 @@ export const authenticateTicket = () => async (socket, next) => {
     }
 
     // eslint-disable-next-line no-param-reassign
-    socket.request.user = user;
+    socket.user = user;
     return next();
   })(socket.request, {}, next);
 };

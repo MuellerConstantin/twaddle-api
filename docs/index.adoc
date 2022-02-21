@@ -166,9 +166,6 @@ The following error codes are used by the API and are intended to allow the clie
 |InvalidTokenError
 |Used when the access token is invalid.
 
-|InvalidTicketError
-|Used when the authentication ticket is invalid.
-
 |AccessDeniedError
 |Used when permission is denied.
 
@@ -217,6 +214,8 @@ This interface enables operations in the core domain, which essentially include 
 Technically, the interface is based on the https://datatracker.ietf.org/doc/html/rfc6455[WebSocket] protocol and
 follows a custom message specification. The interface is event-based.
 
+NOTE: Only one web socket connection per user is allowed. Attempting to create more than one will result in an error.
+
 === Fundamentals
 
 ==== Versioning
@@ -249,3 +248,49 @@ as `ticket` query parameter.
 ----
 ws://<DOMAIN>/ws/v1?ticket=eb12a561895153c3f0b70325
 ----
+
+==== Error handling
+Just like the RESTful interface, there is a consistent error format.
+
+In case of an error, the event `error` is used all the time. Sometimes errors occur even before a technical web socket
+connection has been established, for example in the case of insufficient authentication. In this case, the connection
+is not established at all and the event `connect_error` is used.
+
+.Error Response Fields
+[cols="1,1,1,1] 
+|===
+|Field |Type |Description |Optional
+
+|code
+|String
+|API internal error code. See <<_error_codes_2, Error codes>> for details.
+|false
+
+|message
+|String
+|Humans Legible message describing the error. The message is not i18n compliant.
+|false
+
+|details
+|Array
+|Additional information for describing the error more detailed.
+|true
+|===
+
+===== Error codes
+The following error codes are used by the Web Socket API and are intended to allow the client to respond more specifically to errors.
+
+.Error Codes
+[cols="1,1] 
+|===
+|Code |Description
+
+|InternalServerError
+|Basic code which indicates an unexpected error. This can only be fixed on the server side.
+
+|InvalidTicketError
+|Used when the authentication ticket is invalid.
+
+|AlreadyConnectedError
+|Used when a user tries to establish a second web socket connection. Only one connection is allowed per user.
+|===
