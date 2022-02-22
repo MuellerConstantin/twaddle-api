@@ -212,9 +212,12 @@ include::restful/rooms.adoc[]
 This interface enables operations in the core domain, which essentially include real-time message exchange.
 
 Technically, the interface is based on the https://datatracker.ietf.org/doc/html/rfc6455[WebSocket] protocol and
-follows a custom message specification. The interface is event-based.
+follows a custom message specification. The interface is event-based. This API uses the
+https://github.com/socketio/socket.io-protocol[Socket.IO] protocol as communication layer.
 
 NOTE: Only one web socket connection per user is allowed. Attempting to create more than one will result in an error.
+
+CAUTION: Authentication is always required to open a web socket connection. See <<_authentication_2, Authentication>> for details.
 
 === Fundamentals
 
@@ -249,12 +252,26 @@ as `ticket` query parameter.
 ws://<DOMAIN>/ws/v1?ticket=eb12a561895153c3f0b70325
 ----
 
+==== Content negotiation
+This API doesn't support content negotiation. The https://github.com/socketio/socket.io-protocol[Socket.IO] protocol is
+used as the message format, which in turn is based on JSON. The payload used by the API and sent on the basis of
+https://github.com/socketio/socket.io-protocol[Socket.IO] is also JSON formatted data.
+
+==== Events
+If the terminology "event" is used in the following, it is always an event in the sense of the
+https://github.com/socketio/socket.io-protocol[Socket.IO] specification and not in the sense of the technical
+https://datatracker.ietf.org/doc/html/rfc6455[WebSocket] specification.
+
+Basically, a distinction must be made between low-level events, i.e. events of the underlying web socket implementation,
+and business events, i.e. events of the Twaddle Platform. Business events always begin with the prefix `twaddle/`.
+Alternatively, a namespace can follow, e.g. `twaddle/room:join`, or the event applies to the global namespace,
+e.g. `twaddle/error`.
+
 ==== Error handling
 Just like the RESTful interface, there is a consistent error format.
 
-In case of an error, the event `error` is used all the time. Sometimes errors occur even before a technical web socket
-connection has been established, for example in the case of insufficient authentication. In this case, the connection
-is not established at all and the event `connect_error` is used.
+In case of an error, the event `twaddle/error` is used all the time. Sometimes errors occur even before a technical web socket connection has been established, for example in the case of insufficient authentication. In this case, the connection
+is not established at all and the low-level event `connect_error` is used.
 
 .Error Response Fields
 [cols="1,1,1,1] 
@@ -288,9 +305,16 @@ The following error codes are used by the Web Socket API and are intended to all
 |InternalServerError
 |Basic code which indicates an unexpected error. This can only be fixed on the server side.
 
+|NotFoundError
+|Used when a resource can't be found.
+
 |InvalidTicketError
 |Used when the authentication ticket is invalid.
 
 |AlreadyConnectedError
 |Used when a user tries to establish a second web socket connection. Only one connection is allowed per user.
 |===
+
+=== Resources
+
+include::socket/rooms.adoc[]

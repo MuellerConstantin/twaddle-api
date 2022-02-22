@@ -1,0 +1,111 @@
+==== Rooms
+Logical event group of the chat room domain. All reactive operations from the bounded context of the chat
+rooms are listed below.
+
+===== Event: join
+Event can be emitted by the client to join a chat room. All available rooms that can be accessed via the
+RESTful interface are eligible. See <<_rooms, Rooms>> for details.
+
+[horizontal]
+Name:: `twaddle/room:join`
+Sender:: Client
+Receiver:: Server
+Payload:: Yes
+
+.Payload Fields
+[cols="1,1,1,1] 
+|===
+|Field |Type |Description |Optional
+
+|id
+|String
+|Identifier of room to join.
+|false
+|===
+
+===== Event: joined
+Event is sent from the server to the client as a result of a successful room join. It confirms successful entry.
+
+[horizontal]
+Name:: `twaddle/room:joined`
+Sender:: Server
+Receiver:: Client
+Payload:: No
+
+===== Event: leave
+Allows a client to leave a chat room by sending this event.
+
+[horizontal]
+Name:: `twaddle/room:leave`
+Sender:: Client
+Receiver:: Server
+Payload:: No
+
+===== Event: left
+Event is used to confirm a client leaving the chat room.
+
+[horizontal]
+Name:: `twaddle/room:left`
+Sender:: Server
+Receiver:: Client
+Payload:: No
+
+===== Event: user-list
+This event is sent by the server to inform the clients about the current list of joined users.
+
+[horizontal]
+Name:: `twaddle/room:user-list`
+Sender:: Server
+Receiver:: Client
+Payload:: Yes
+
+.Payload Fields
+[cols="1,1,1,1] 
+|===
+|Field |Type |Description |Optional
+
+|users
+|Array
+|Array of usernames of current room's users.
+|false
+|===
+
+===== Event: user-joined
+Notifies the remaining users of a chat room that a new user has joined.
+
+[horizontal]
+Name:: `twaddle/room:user-joined`
+Sender:: Server
+Receiver:: Client
+Payload:: Yes
+
+.Payload Fields
+[cols="1,1,1,1] 
+|===
+|Field |Type |Description |Optional
+
+|user
+|String
+|Username of user that joined.
+|false
+|===
+
+===== Event: user-left
+Informs the remaining users of a chat room about leaving another user's room.
+
+[horizontal]
+Name:: `twaddle/room:user-left`
+Sender:: Server
+Receiver:: Client
+Payload:: Yes
+
+.Payload Fields
+[cols="1,1,1,1] 
+|===
+|Field |Type |Description |Optional
+
+|user
+|String
+|Username of user that left.
+|false
+|===

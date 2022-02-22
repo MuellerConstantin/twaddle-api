@@ -507,9 +507,26 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 <ul class="sectlevel3">
 <li><a href="#_versioning_2">Versioning</a></li>
 <li><a href="#_authentication_2">Authentication</a></li>
+<li><a href="#_content_negotiation_2">Content negotiation</a></li>
+<li><a href="#_events">Events</a></li>
 <li><a href="#_error_handling_2">Error handling</a>
 <ul class="sectlevel4">
 <li><a href="#_error_codes_2">Error codes</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li><a href="#_resources_2">Resources</a>
+<ul class="sectlevel3">
+<li><a href="#_rooms_2">Rooms</a>
+<ul class="sectlevel4">
+<li><a href="#_event_join">Event: join</a></li>
+<li><a href="#_event_joined">Event: joined</a></li>
+<li><a href="#_event_leave">Event: leave</a></li>
+<li><a href="#_event_left">Event: left</a></li>
+<li><a href="#_event_user_list">Event: user-list</a></li>
+<li><a href="#_event_user_joined">Event: user-joined</a></li>
+<li><a href="#_event_user_left">Event: user-left</a></li>
 </ul>
 </li>
 </ul>
@@ -2819,7 +2836,8 @@ Content-Length: 136
 </div>
 <div class="paragraph">
 <p>Technically, the interface is based on the <a href="https://datatracker.ietf.org/doc/html/rfc6455">WebSocket</a> protocol and
-follows a custom message specification. The interface is event-based.</p>
+follows a custom message specification. The interface is event-based. This API uses the
+<a href="https://github.com/socketio/socket.io-protocol">Socket.IO</a> protocol as communication layer.</p>
 </div>
 <div class="admonitionblock note">
 <table>
@@ -2829,6 +2847,18 @@ follows a custom message specification. The interface is event-based.</p>
 </td>
 <td class="content">
 Only one web socket connection per user is allowed. Attempting to create more than one will result in an error.
+</td>
+</tr>
+</table>
+</div>
+<div class="admonitionblock caution">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-caution" title="Caution"></i>
+</td>
+<td class="content">
+Authentication is always required to open a web socket connection. See <a href="#_authentication_2">Authentication</a> for details.
 </td>
 </tr>
 </table>
@@ -2890,14 +2920,35 @@ as <code>ticket</code> query parameter.</p>
 </div>
 </div>
 <div class="sect3">
+<h4 id="_content_negotiation_2"><a class="link" href="#_content_negotiation_2">Content negotiation</a></h4>
+<div class="paragraph">
+<p>This API doesn&#8217;t support content negotiation. The <a href="https://github.com/socketio/socket.io-protocol">Socket.IO</a> protocol is
+used as the message format, which in turn is based on JSON. The payload used by the API and sent on the basis of
+<a href="https://github.com/socketio/socket.io-protocol">Socket.IO</a> is also JSON formatted data.</p>
+</div>
+</div>
+<div class="sect3">
+<h4 id="_events"><a class="link" href="#_events">Events</a></h4>
+<div class="paragraph">
+<p>If the terminology "event" is used in the following, it is always an event in the sense of the
+<a href="https://github.com/socketio/socket.io-protocol">Socket.IO</a> specification and not in the sense of the technical
+<a href="https://datatracker.ietf.org/doc/html/rfc6455">WebSocket</a> specification.</p>
+</div>
+<div class="paragraph">
+<p>Basically, a distinction must be made between low-level events, i.e. events of the underlying web socket implementation,
+and business events, i.e. events of the Twaddle Platform. Business events always begin with the prefix <code>twaddle/</code>.
+Alternatively, a namespace can follow, e.g. <code>twaddle/room:join</code>, or the event applies to the global namespace,
+e.g. <code>twaddle/error</code>.</p>
+</div>
+</div>
+<div class="sect3">
 <h4 id="_error_handling_2"><a class="link" href="#_error_handling_2">Error handling</a></h4>
 <div class="paragraph">
 <p>Just like the RESTful interface, there is a consistent error format.</p>
 </div>
 <div class="paragraph">
-<p>In case of an error, the event <code>error</code> is used all the time. Sometimes errors occur even before a technical web socket
-connection has been established, for example in the case of insufficient authentication. In this case, the connection
-is not established at all and the event <code>connect_error</code> is used.</p>
+<p>In case of an error, the event <code>twaddle/error</code> is used all the time. Sometimes errors occur even before a technical web socket connection has been established, for example in the case of insufficient authentication. In this case, the connection
+is not established at all and the low-level event <code>connect_error</code> is used.</p>
 </div>
 <table class="tableblock frame-all grid-all stretch">
 <caption class="title">Table 29. Error Response Fields</caption>
@@ -2959,6 +3010,10 @@ is not established at all and the event <code>connect_error</code> is used.</p>
 <td class="tableblock halign-left valign-top"><p class="tableblock">Basic code which indicates an unexpected error. This can only be fixed on the server side.</p></td>
 </tr>
 <tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">NotFoundError</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Used when a resource can&#8217;t be found.</p></td>
+</tr>
+<tr>
 <td class="tableblock halign-left valign-top"><p class="tableblock">InvalidTicketError</p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">Used when the authentication ticket is invalid.</p></td>
 </tr>
@@ -2971,12 +3026,417 @@ is not established at all and the event <code>connect_error</code> is used.</p>
 </div>
 </div>
 </div>
+<div class="sect2">
+<h3 id="_resources_2"><a class="link" href="#_resources_2">Resources</a></h3>
+<div class="sect3">
+<h4 id="_rooms_2"><a class="link" href="#_rooms_2">Rooms</a></h4>
+<div class="paragraph">
+<p>Logical event group of the chat room domain. All reactive operations from the bounded context of the chat
+rooms are listed below.</p>
+</div>
+<div class="sect4">
+<h5 id="_event_join"><a class="link" href="#_event_join">Event: join</a></h5>
+<div class="paragraph">
+<p>Event can be emitted by the client to join a chat room. All available rooms that can be accessed via the
+RESTful interface are eligible. See <a href="#_rooms">Rooms</a> for details.</p>
+</div>
+<div class="hdlist">
+<table>
+<tr>
+<td class="hdlist1">
+Name
+</td>
+<td class="hdlist2">
+<p><code>twaddle/room:join</code></p>
+</td>
+</tr>
+<tr>
+<td class="hdlist1">
+Sender
+</td>
+<td class="hdlist2">
+<p>Client</p>
+</td>
+</tr>
+<tr>
+<td class="hdlist1">
+Receiver
+</td>
+<td class="hdlist2">
+<p>Server</p>
+</td>
+</tr>
+<tr>
+<td class="hdlist1">
+Payload
+</td>
+<td class="hdlist2">
+<p>Yes</p>
+</td>
+</tr>
+</table>
+</div>
+<table class="tableblock frame-all grid-all stretch">
+<caption class="title">Table 31. Payload Fields</caption>
+<colgroup>
+<col style="width: 25%;">
+<col style="width: 25%;">
+<col style="width: 25%;">
+<col style="width: 25%;">
+</colgroup>
+<thead>
+<tr>
+<th class="tableblock halign-left valign-top">Field</th>
+<th class="tableblock halign-left valign-top">Type</th>
+<th class="tableblock halign-left valign-top">Description</th>
+<th class="tableblock halign-left valign-top">Optional</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">id</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">String</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Identifier of room to join.</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">false</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="sect4">
+<h5 id="_event_joined"><a class="link" href="#_event_joined">Event: joined</a></h5>
+<div class="paragraph">
+<p>Event is sent from the server to the client as a result of a successful room join. It confirms successful entry.</p>
+</div>
+<div class="hdlist">
+<table>
+<tr>
+<td class="hdlist1">
+Name
+</td>
+<td class="hdlist2">
+<p><code>twaddle/room:joined</code></p>
+</td>
+</tr>
+<tr>
+<td class="hdlist1">
+Sender
+</td>
+<td class="hdlist2">
+<p>Server</p>
+</td>
+</tr>
+<tr>
+<td class="hdlist1">
+Receiver
+</td>
+<td class="hdlist2">
+<p>Client</p>
+</td>
+</tr>
+<tr>
+<td class="hdlist1">
+Payload
+</td>
+<td class="hdlist2">
+<p>No</p>
+</td>
+</tr>
+</table>
+</div>
+</div>
+<div class="sect4">
+<h5 id="_event_leave"><a class="link" href="#_event_leave">Event: leave</a></h5>
+<div class="paragraph">
+<p>Allows a client to leave a chat room by sending this event.</p>
+</div>
+<div class="hdlist">
+<table>
+<tr>
+<td class="hdlist1">
+Name
+</td>
+<td class="hdlist2">
+<p><code>twaddle/room:leave</code></p>
+</td>
+</tr>
+<tr>
+<td class="hdlist1">
+Sender
+</td>
+<td class="hdlist2">
+<p>Client</p>
+</td>
+</tr>
+<tr>
+<td class="hdlist1">
+Receiver
+</td>
+<td class="hdlist2">
+<p>Server</p>
+</td>
+</tr>
+<tr>
+<td class="hdlist1">
+Payload
+</td>
+<td class="hdlist2">
+<p>No</p>
+</td>
+</tr>
+</table>
+</div>
+</div>
+<div class="sect4">
+<h5 id="_event_left"><a class="link" href="#_event_left">Event: left</a></h5>
+<div class="paragraph">
+<p>Event is used to confirm a client leaving the chat room.</p>
+</div>
+<div class="hdlist">
+<table>
+<tr>
+<td class="hdlist1">
+Name
+</td>
+<td class="hdlist2">
+<p><code>twaddle/room:left</code></p>
+</td>
+</tr>
+<tr>
+<td class="hdlist1">
+Sender
+</td>
+<td class="hdlist2">
+<p>Server</p>
+</td>
+</tr>
+<tr>
+<td class="hdlist1">
+Receiver
+</td>
+<td class="hdlist2">
+<p>Client</p>
+</td>
+</tr>
+<tr>
+<td class="hdlist1">
+Payload
+</td>
+<td class="hdlist2">
+<p>No</p>
+</td>
+</tr>
+</table>
+</div>
+</div>
+<div class="sect4">
+<h5 id="_event_user_list"><a class="link" href="#_event_user_list">Event: user-list</a></h5>
+<div class="paragraph">
+<p>This event is sent by the server to inform the clients about the current list of joined users.</p>
+</div>
+<div class="hdlist">
+<table>
+<tr>
+<td class="hdlist1">
+Name
+</td>
+<td class="hdlist2">
+<p><code>twaddle/room:user-list</code></p>
+</td>
+</tr>
+<tr>
+<td class="hdlist1">
+Sender
+</td>
+<td class="hdlist2">
+<p>Server</p>
+</td>
+</tr>
+<tr>
+<td class="hdlist1">
+Receiver
+</td>
+<td class="hdlist2">
+<p>Client</p>
+</td>
+</tr>
+<tr>
+<td class="hdlist1">
+Payload
+</td>
+<td class="hdlist2">
+<p>Yes</p>
+</td>
+</tr>
+</table>
+</div>
+<table class="tableblock frame-all grid-all stretch">
+<caption class="title">Table 32. Payload Fields</caption>
+<colgroup>
+<col style="width: 25%;">
+<col style="width: 25%;">
+<col style="width: 25%;">
+<col style="width: 25%;">
+</colgroup>
+<thead>
+<tr>
+<th class="tableblock halign-left valign-top">Field</th>
+<th class="tableblock halign-left valign-top">Type</th>
+<th class="tableblock halign-left valign-top">Description</th>
+<th class="tableblock halign-left valign-top">Optional</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">users</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Array</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Array of usernames of current room&#8217;s users.</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">false</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="sect4">
+<h5 id="_event_user_joined"><a class="link" href="#_event_user_joined">Event: user-joined</a></h5>
+<div class="paragraph">
+<p>Notifies the remaining users of a chat room that a new user has joined.</p>
+</div>
+<div class="hdlist">
+<table>
+<tr>
+<td class="hdlist1">
+Name
+</td>
+<td class="hdlist2">
+<p><code>twaddle/room:user-joined</code></p>
+</td>
+</tr>
+<tr>
+<td class="hdlist1">
+Sender
+</td>
+<td class="hdlist2">
+<p>Server</p>
+</td>
+</tr>
+<tr>
+<td class="hdlist1">
+Receiver
+</td>
+<td class="hdlist2">
+<p>Client</p>
+</td>
+</tr>
+<tr>
+<td class="hdlist1">
+Payload
+</td>
+<td class="hdlist2">
+<p>Yes</p>
+</td>
+</tr>
+</table>
+</div>
+<table class="tableblock frame-all grid-all stretch">
+<caption class="title">Table 33. Payload Fields</caption>
+<colgroup>
+<col style="width: 25%;">
+<col style="width: 25%;">
+<col style="width: 25%;">
+<col style="width: 25%;">
+</colgroup>
+<thead>
+<tr>
+<th class="tableblock halign-left valign-top">Field</th>
+<th class="tableblock halign-left valign-top">Type</th>
+<th class="tableblock halign-left valign-top">Description</th>
+<th class="tableblock halign-left valign-top">Optional</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">user</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">String</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Username of user that joined.</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">false</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="sect4">
+<h5 id="_event_user_left"><a class="link" href="#_event_user_left">Event: user-left</a></h5>
+<div class="paragraph">
+<p>Informs the remaining users of a chat room about leaving another user&#8217;s room.</p>
+</div>
+<div class="hdlist">
+<table>
+<tr>
+<td class="hdlist1">
+Name
+</td>
+<td class="hdlist2">
+<p><code>twaddle/room:user-left</code></p>
+</td>
+</tr>
+<tr>
+<td class="hdlist1">
+Sender
+</td>
+<td class="hdlist2">
+<p>Server</p>
+</td>
+</tr>
+<tr>
+<td class="hdlist1">
+Receiver
+</td>
+<td class="hdlist2">
+<p>Client</p>
+</td>
+</tr>
+<tr>
+<td class="hdlist1">
+Payload
+</td>
+<td class="hdlist2">
+<p>Yes</p>
+</td>
+</tr>
+</table>
+</div>
+<table class="tableblock frame-all grid-all stretch">
+<caption class="title">Table 34. Payload Fields</caption>
+<colgroup>
+<col style="width: 25%;">
+<col style="width: 25%;">
+<col style="width: 25%;">
+<col style="width: 25%;">
+</colgroup>
+<thead>
+<tr>
+<th class="tableblock halign-left valign-top">Field</th>
+<th class="tableblock halign-left valign-top">Type</th>
+<th class="tableblock halign-left valign-top">Description</th>
+<th class="tableblock halign-left valign-top">Optional</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">user</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">String</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Username of user that left.</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">false</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+</div>
 </div>
 </div>
 </div>
 <div id="footer">
 <div id="footer-text">
-Last updated 2022-02-21 22:05:26 +0100
+Last updated 2022-02-22 13:25:36 +0100
 </div>
 </div>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.18.3/highlight.min.js"></script>

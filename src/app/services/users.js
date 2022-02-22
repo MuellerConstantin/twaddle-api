@@ -2,6 +2,7 @@ import joi from "joi";
 import { ApiError } from "../middlewares/error";
 import { validate } from "../middlewares/validation";
 import User from "../models/user";
+import redis from "../config/redis";
 
 /**
  * @typedef {object} UserDTO
@@ -213,4 +214,44 @@ export const deleteByUsername = async (username) => {
   if (!user) {
     throw new ApiError("Resource not found", 404, "NotFoundError");
   }
+};
+
+/**
+ * Check if a user is online, therefore has an active connection open.
+ *
+ * @param {string} username Name of user to check for
+ * @returns {Promise<boolean>} Returns true if online, otherwise false
+ */
+export const isOnline = async (username) => {
+  return !!(await redis.get(`user:${username}`));
+};
+
+/**
+ * Lock user as online.
+ *
+ * @param {string} username Name of user to lock as online
+ * @returns {Promise<string|null>} Confirms success by sending anything other than null
+ */
+export const lockOnline = async (username) => {
+  return redis.set(`user:${username}`, "online", { NX: true, EX: 30 });
+};
+
+/**
+ * Refresh the locked online status. Please note refresh is only possible if lock exists.
+ *
+ * @param {string} username Name of user to refresh locked online status
+ * @returns {Promise<string|null>} Confirms success by sending anything other than null
+ */
+export const refreshOnlineLock = async (username) => {
+  return redis.set(`user:${username}`, "online", { XX: true, EX: 30 });
+};
+
+/**
+ * Unlock user as online. This is basically the logout operation.
+ *
+ * @param {string} username Name of user to unlock as online
+ * @returns {Promise<void>} Returns nothing on success
+ */
+export const unlockOnline = async (username) => {
+  await redis.del(`user:${username}`);
 };

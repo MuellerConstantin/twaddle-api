@@ -2,6 +2,7 @@ import joi from "joi";
 import { ApiError } from "../middlewares/error";
 import { validate } from "../middlewares/validation";
 import Room from "../models/room";
+import redis from "../config/redis";
 
 /**
  * @typedef {object} RoomDTO
@@ -147,4 +148,48 @@ export const deleteById = async (id) => {
   if (!room) {
     throw new ApiError("Resource not found", 404, "NotFoundError");
   }
+};
+
+/**
+ * Add user to chat room.
+ *
+ * @param {string} id Identifier of room to look for
+ * @param {string} username Name of user to add
+ * @returns {Promise<void>} Returns nothing on success
+ */
+export const addRoomUser = async (id, username) => {
+  await redis.sAdd(`room:${id}`, username);
+  await redis.set(`user:${username}:room`, id);
+};
+
+/**
+ * Remove user from chat room.
+ *
+ * @param {string} id Identifier of room to look for
+ * @param {string} username Name of user to remove
+ * @returns {Promise<void>} Returns nothing on success
+ */
+export const removeRoomUser = async (id, username) => {
+  await redis.sRem(`room:${id}`, username);
+  await redis.del(`user:${username}:room`);
+};
+
+/**
+ * Get all users in room.
+ *
+ * @param {string} id Identifier of room to look for
+ * @returns {Promise<string[]>} Returns names of all users in room
+ */
+export const getRoomUsers = async (id) => {
+  return redis.sMembers(`room:${id}`);
+};
+
+/**
+ * Get room by user
+ *
+ * @param {string} username Name of user to look for
+ * @returns {Promise<string>} Returns names of the user's current room
+ */
+export const getRoomByUsername = async (username) => {
+  return redis.get(`user:${username}:room`);
 };
