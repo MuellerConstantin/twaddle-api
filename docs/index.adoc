@@ -313,6 +313,9 @@ The following error codes are used by the Web Socket API and are intended to all
 
 |AlreadyConnectedError
 |Used when a user tries to establish a second web socket connection. Only one connection is allowed per user.
+
+|NoRoomAssociatedError
+|Used when a client tries to send a message before it joined a room. Sending messages outside of a room is not possible.
 |===
 
 === Resources

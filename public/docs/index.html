@@ -527,6 +527,8 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 <li><a href="#_event_user_list">Event: user-list</a></li>
 <li><a href="#_event_user_joined">Event: user-joined</a></li>
 <li><a href="#_event_user_left">Event: user-left</a></li>
+<li><a href="#_event_send">Event: send</a></li>
+<li><a href="#_event_message">Event: message</a></li>
 </ul>
 </li>
 </ul>
@@ -3021,6 +3023,10 @@ is not established at all and the low-level event <code>connect_error</code> is 
 <td class="tableblock halign-left valign-top"><p class="tableblock">AlreadyConnectedError</p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">Used when a user tries to establish a second web socket connection. Only one connection is allowed per user.</p></td>
 </tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">NoRoomAssociatedError</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Used when a client tries to send a message before it joined a room. Sending messages outside of a room is not possible.</p></td>
+</tr>
 </tbody>
 </table>
 </div>
@@ -3429,6 +3435,152 @@ Payload
 </tbody>
 </table>
 </div>
+<div class="sect4">
+<h5 id="_event_send"><a class="link" href="#_event_send">Event: send</a></h5>
+<div class="paragraph">
+<p>Sent by the client to send a new message to the chat. This event stops the server from redistributing the message.</p>
+</div>
+<div class="hdlist">
+<table>
+<tr>
+<td class="hdlist1">
+Name
+</td>
+<td class="hdlist2">
+<p><code>twaddle/room:send</code></p>
+</td>
+</tr>
+<tr>
+<td class="hdlist1">
+Sender
+</td>
+<td class="hdlist2">
+<p>Client</p>
+</td>
+</tr>
+<tr>
+<td class="hdlist1">
+Receiver
+</td>
+<td class="hdlist2">
+<p>Server</p>
+</td>
+</tr>
+<tr>
+<td class="hdlist1">
+Payload
+</td>
+<td class="hdlist2">
+<p>Yes</p>
+</td>
+</tr>
+</table>
+</div>
+<table class="tableblock frame-all grid-all stretch">
+<caption class="title">Table 35. Payload Fields</caption>
+<colgroup>
+<col style="width: 25%;">
+<col style="width: 25%;">
+<col style="width: 25%;">
+<col style="width: 25%;">
+</colgroup>
+<thead>
+<tr>
+<th class="tableblock halign-left valign-top">Field</th>
+<th class="tableblock halign-left valign-top">Type</th>
+<th class="tableblock halign-left valign-top">Description</th>
+<th class="tableblock halign-left valign-top">Optional</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">message</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">String</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Message to send.</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">false</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="sect4">
+<h5 id="_event_message"><a class="link" href="#_event_message">Event: message</a></h5>
+<div class="paragraph">
+<p>Used by the server to broadcast received messages.</p>
+</div>
+<div class="hdlist">
+<table>
+<tr>
+<td class="hdlist1">
+Name
+</td>
+<td class="hdlist2">
+<p><code>twaddle/room:message</code></p>
+</td>
+</tr>
+<tr>
+<td class="hdlist1">
+Sender
+</td>
+<td class="hdlist2">
+<p>Server</p>
+</td>
+</tr>
+<tr>
+<td class="hdlist1">
+Receiver
+</td>
+<td class="hdlist2">
+<p>Client</p>
+</td>
+</tr>
+<tr>
+<td class="hdlist1">
+Payload
+</td>
+<td class="hdlist2">
+<p>Yes</p>
+</td>
+</tr>
+</table>
+</div>
+<table class="tableblock frame-all grid-all stretch">
+<caption class="title">Table 36. Payload Fields</caption>
+<colgroup>
+<col style="width: 25%;">
+<col style="width: 25%;">
+<col style="width: 25%;">
+<col style="width: 25%;">
+</colgroup>
+<thead>
+<tr>
+<th class="tableblock halign-left valign-top">Field</th>
+<th class="tableblock halign-left valign-top">Type</th>
+<th class="tableblock halign-left valign-top">Description</th>
+<th class="tableblock halign-left valign-top">Optional</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">message</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">String</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Message that the user sent.</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">false</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">user</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">String</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Username of user that sent the message.</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">false</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">timstamp</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">String</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Time when the message was sent.</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">false</p></td>
+</tr>
+</tbody>
+</table>
+</div>
 </div>
 </div>
 </div>
@@ -3436,7 +3588,7 @@ Payload
 </div>
 <div id="footer">
 <div id="footer-text">
-Last updated 2022-02-22 13:25:36 +0100
+Last updated 2022-02-22 21:06:47 +0100
 </div>
 </div>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.18.3/highlight.min.js"></script>

@@ -55,7 +55,7 @@ const roomHandler = (socket) => {
         `WS ${socket.nsp.name} - ${socket.user.username} left room ${id}`
       );
 
-      const roomUsers = await RoomService.getRoomUsers();
+      const roomUsers = await RoomService.getRoomUsers(id);
 
       socket.emit("twaddle/room:left");
 
@@ -68,8 +68,43 @@ const roomHandler = (socket) => {
     }
   };
 
+  const broadcastMessage = async ({ message }) => {
+    const id = await RoomService.getRoomByUsername(socket.user.username);
+
+    if (id) {
+      socket.emit("twaddle/room:message", {
+        message,
+        user: socket.user.username,
+        timestamp: new Date().toISOString(),
+      });
+
+      socket.broadcast.to(id).emit("twaddle/room:message", {
+        message,
+        user: socket.user.username,
+        timestamp: new Date().toISOString(),
+      });
+
+      logger.debug(
+        `WS ${socket.nsp.name} - ${socket.user.username} send message to room ${id}`
+      );
+    } else {
+      socket.emit(
+        "twaddle/error",
+        new SocketError(
+          "There is no connection to a chat room",
+          "NoRoomAssociatedError"
+        )
+      );
+
+      logger.debug(
+        `WS ${socket.nsp.name} - ${socket.user.username} tried to send message outside of chat room`
+      );
+    }
+  };
+
   socket.on("twaddle/room:join", joinRoom);
   socket.on("twaddle/room:leave", leaveRoom);
+  socket.on("twaddle/room:send", broadcastMessage);
   socket.on("disconnect", leaveRoom);
 };
 

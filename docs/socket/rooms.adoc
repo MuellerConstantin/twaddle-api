@@ -109,3 +109,53 @@ Payload:: Yes
 |Username of user that left.
 |false
 |===
+
+===== Event: send
+Sent by the client to send a new message to the chat. This event stops the server from redistributing the message.
+
+[horizontal]
+Name:: `twaddle/room:send`
+Sender:: Client
+Receiver:: Server
+Payload:: Yes
+
+.Payload Fields
+[cols="1,1,1,1] 
+|===
+|Field |Type |Description |Optional
+
+|message
+|String
+|Message to send.
+|false
+|===
+
+===== Event: message
+Used by the server to broadcast received messages.
+
+[horizontal]
+Name:: `twaddle/room:message`
+Sender:: Server
+Receiver:: Client
+Payload:: Yes
+
+.Payload Fields
+[cols="1,1,1,1] 
+|===
+|Field |Type |Description |Optional
+
+|message
+|String
+|Message that the user sent.
+|false
+
+|user
+|String
+|Username of user that sent the message.
+|false
+
+|timstamp
+|String
+|Time when the message was sent.
+|false
+|===

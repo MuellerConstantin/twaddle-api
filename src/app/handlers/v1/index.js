@@ -18,7 +18,7 @@ const handler = async (socket) => {
   // Ensure user can establish only one connection at the same time
   if (!canConnect) {
     socket.emit(
-      "error",
+      "twaddle/error",
       new SocketError(
         "A connection already exists, only one connection per user allowed",
         "AlreadyConnectedError"
