@@ -58,12 +58,15 @@ service instance for details.
 In principle, the service can be fully configured via environment variables. These can be given to
 the service via the system environment when called or via an environment file. With regard to the
 configuration, it should be mentioned that the service works with three different configuration
-profiles: `development`, `test` and `production`. According to these profiles, the appropriate
-environment file is also loaded.
+profiles, `development`, `test` and `production`, and an additional default profile.
+According to these profiles, the appropriate environment file is also loaded.
 
 ### Environment Variables
 
 The following variables are service parameters and affect the way it works.
+
+**NOTE**: Unless otherwise specified, relative paths are always relative to the current working directory,
+hence the directory in which the process is started.
 
 | Variable                 | Description                                            | Required |
 | ------------------------ | ------------------------------------------------------ | -------- |
@@ -89,10 +92,28 @@ following variables that affect the system infrastructure.
 
 ### Environment Files
 
-It is possible to load the environment variables from a file. Depending on the profile, this file must
-be named as follows: `.env.<PROFILE>`. The file is expected to be found in the current working directory
-of the process. The above variables are to be listed as key-value pairs per line, separated by an equals
-sign.
+It is possible to load the environment variables from a file. Environment files with the following
+signature are always loaded: `.env` and `.env.<PROFILE>`. Possible configuration profiles are
+`development`, `test` and `production`. The standard file `.env` should not contain any sensitive
+information since it is included in the VCS, while the profile-specific file `.env.<PROFILE>` is
+generally not included in the VCS and is therefore suitable for setting sensitive and profile
+specific environment variables. The above variables are to be listed inside of the environment
+file as key-value pairs per line, separated by an equals sign.
+
+Environment files can be loaded from two locations, from the current working directory or from
+the `resources` directory of the application. The default and the profile-specific file are
+searched for in each of the two locations. If files are found in one or both locations, conflicts
+can arise if the same environment variable is set in multiple files. In this case, the environment
+variables are preferably set in the following order:
+
+- `<CURRENT WORKDIR>/.env.<PROFILE>`
+- `<APPLICATION ROOT>/resources/.env.<PROFILE>`
+- `<CURRENT WORKDIR>/.env`
+- `<APPLICATION ROOT>/resources/.env`
+
+Values of higher-ordered paths have higher priority and "override" values of lower-ordered paths. This
+means that profile-specific files always take precedence over default files, and files from the current
+working directory always take precedence over files from the `resources` directory.
 
 ## License
 

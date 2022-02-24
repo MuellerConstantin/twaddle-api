@@ -5,6 +5,7 @@
 // eslint-disable-next-line no-unused-vars
 import http from "http";
 
+import path from "path";
 import express from "express";
 import { Server as SocketServer } from "socket.io";
 import { createAdapter } from "@socket.io/redis-adapter";
@@ -81,7 +82,7 @@ const app = express();
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
-app.use(express.static("public"));
+app.use(express.static(path.resolve(__dirname, "../../public")));
 app.use(cors());
 app.use(helmet());
 app.use(morgan());
