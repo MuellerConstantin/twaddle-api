@@ -2,7 +2,7 @@
 
 > Real time messenger and communication platform.
 
-## Table of Contents
+## Table of contents
 
 - [Introduction](#introduction)
 - [Architecture](#architecture)
@@ -11,6 +11,9 @@
 - [Configuration](#configuration)
   - [Envrionment Variables](#environment-variables)
   - [Environment Files](#environment-files)
+- [Deployment](#deployment)
+  - [Standalone operation](#standalone-operation)
+  - [Cloud operation](#cloud-operation)
 - [License](#license)
   - [Forbidden](#forbidden)
 
@@ -61,7 +64,7 @@ configuration, it should be mentioned that the service works with three differen
 profiles, `development`, `test` and `production`, and an additional default profile.
 According to these profiles, the appropriate environment file is also loaded.
 
-### Environment Variables
+### Environment variables
 
 The following variables are service parameters and affect the way it works.
 
@@ -90,7 +93,7 @@ following variables that affect the system infrastructure.
 | NODE_ENV | Sets the environment profile, based on which the environment file is loaded | false    |
 | PORT     | Sets the port of the underlying application server                          | false    |
 
-### Environment Files
+### Environment files
 
 It is possible to load the environment variables from a file. Environment files with the following
 signature are always loaded: `.env` and `.env.<PROFILE>`. Possible configuration profiles are
@@ -114,6 +117,66 @@ variables are preferably set in the following order:
 Values of higher-ordered paths have higher priority and "override" values of lower-ordered paths. This
 means that profile-specific files always take precedence over default files, and files from the current
 working directory always take precedence over files from the `resources` directory.
+
+## Deployment
+
+The service can basically be deployed in two ways: In standalone mode as a direct installation on the
+server or on the cloud as a container.
+
+### Standalone operation
+
+Standalone operation requires a JavaScript runtime environment and thus a [Node.js](https://nodejs.org/en/)
+installation. In version `1.x.x`, the Twaddle Platform requires a minimum Nodejs version of `16.x.x`. A runtime
+version of the application must first be built. In addition to a JavaScript runtime environment, the build
+tool [npm](https://www.npmjs.com/) is also required for this.
+
+First, all dependencies are loaded from the package registry via npm. The dependencies are needed partly for
+transpiling an executable version and partly for runtime operation.
+
+```sh
+$ npm run install
+```
+
+After that, a runtime version will be built.
+
+```sh
+$ npm run build
+```
+
+If an executable version is available, it can easily be started with the following command.
+
+```sh
+$ npm run start
+```
+
+For a successful start, the application, especially the external data sources, must also be configured.
+See the configuration section above.
+
+### Cloud operation
+
+In addition to the standalone version, it is possible to start the application in a container. This has
+the advantage that no Node.js installation is required. To do this, either an existing image must be loaded
+from a registry, or a new Docker image of the application must be created.
+
+A docker image can be created based on the attached dockerfile with the following command.
+
+```sh
+$ docker build -t twaddle/api:latest .
+```
+
+The result is a docker image which was stored in the local registry under the name `twaddle/api:latest`.
+Depending on the orchestration system, the image can now be started in the form of a container. In its
+simplest form, a container is created with the following command.
+
+```sh
+$ docker run -p <PORT>:3000/tcp -v <VOLUME>:/usr/local/bin/twaddle/api/resources:ro --name twaddle-api twaddle/api:latest
+```
+
+In contrast to standalone operation, the application in a container no longer has access to the project files.
+Any assets such as certificates or environment files that were stored in the `resources` folder must therefore be
+mounted in the form of a volume under the container path `/usr/local/bin/twaddle/api/resources`, because they are not
+included into the Docker image. Of course, the placeholder must be replaced with the name of a volume that contains the
+contents of the `resources` folder. In addition, an external port must be set which is bound to the internal port.
 
 ## License
 
