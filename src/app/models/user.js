@@ -22,6 +22,10 @@ const UserSchema = new mongoose.Schema({
     enum: ["ADMINISTRATOR", "MODERATOR", "MEMBER"],
     default: "MEMBER",
   },
+  blocked: {
+    type: Boolean,
+    default: false,
+  },
 });
 
 // eslint-disable-next-line func-names
@@ -59,6 +63,7 @@ UserSchema.methods.toDTO = function (view) {
         username: this.username,
         email: this.email,
         role: this.role,
+        blocked: this.blocked,
       };
     }
   }

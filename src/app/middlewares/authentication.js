@@ -20,6 +20,16 @@ export const authenticateToken = () => (req, res, next) => {
       );
     }
 
+    if (user.blocked) {
+      return next(
+        new ApiError(
+          "The account was blocked for policy violations",
+          423,
+          "AccountBlockedError"
+        )
+      );
+    }
+
     req.user = user;
     return next();
   })(req, res, next);
@@ -43,6 +53,16 @@ export const authenticateCredentials = () => (req, res, next) => {
           "Invalid credentials provided",
           401,
           "InvalidCredentialsError"
+        )
+      );
+    }
+
+    if (user.blocked) {
+      return next(
+        new ApiError(
+          "The account was blocked for policy violations",
+          423,
+          "AccountBlockedError"
         )
       );
     }
@@ -76,6 +96,18 @@ export const authenticateTicket = () => async (socket, next) => {
       authErr.data = new SocketError(
         "Invalid ticket provided",
         "InvalidTicketError"
+      ).toJSON();
+
+      return next(authErr);
+    }
+
+    if (user.blocked) {
+      const authErr = new Error(
+        "The account was blocked for policy violations"
+      );
+      authErr.data = new SocketError(
+        "The account was blocked for policy violations",
+        "AccountBlockedError"
       ).toJSON();
 
       return next(authErr);

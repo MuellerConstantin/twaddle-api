@@ -39,7 +39,7 @@ export const findById = async (id) => {
 /**
  * Find all available rooms paged.
  *
- * @param {{perPage: number, page: number}=} pageable
+ * @param {{perPage: number, page: number}=} pageable Pagination settings
  * @returns {Promise<[[RoomDTO], PageInfo]>} Returns the fetched page
  */
 export const findAll = async (pageable = { perPage: 25, page: 0 }) => {

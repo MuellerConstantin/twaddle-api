@@ -65,11 +65,20 @@ router.post(
 router.patch(
   "/users/:username",
   authenticateToken(),
+  authorize(
+    (req) =>
+      req.user?.role === "ADMINISTRATOR" ||
+      req.user?.username === req.params.username
+  ),
+  // Only moderators and admins can block or unblock users
   authorize((req) =>
-    req.body.role
-      ? req.user?.role === "ADMINISTRATOR"
-      : req.user?.role === "ADMINISTRATOR" ||
-        req.user?.username === req.params.username
+    req.body.blocked
+      ? req.user?.role === "ADMINISTRATOR" || req.user?.role === "MODERATOR"
+      : true
+  ),
+  // Only administrators can change the role of users
+  authorize((req) =>
+    req.body.role ? req.user?.role === "ADMINISTRATOR" : true
   ),
   paramsValidationHandler(
     joi.object().keys({ username: joi.string().required() })

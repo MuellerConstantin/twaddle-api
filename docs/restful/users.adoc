@@ -8,6 +8,8 @@ Creates a new user.
 Method:: POST
 Path:: /api/v1/users
 
+NOTE: The first user who registers on the platform is automatically made an administrator.
+
 ====== Request
 
 .Request Fields
@@ -337,6 +339,11 @@ Path:: /api/v1/users/:id
 |password
 |String
 |New password of user.
+|true
+
+|blocked
+|Boolean
+|Blocks a user account.
 |true
 |===
 

@@ -822,6 +822,10 @@ behavior can be controlled via the following HTTP query parameters:</p>
 <td class="tableblock halign-left valign-top"><p class="tableblock">MustBeAdministrableError</p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">The operation, usually changing a user, is not possible to ensure manageability.</p></td>
 </tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">AccountBlockedError</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">The account was blocked for policy violations.</p></td>
+</tr>
 </tbody>
 </table>
 </div>
@@ -842,6 +846,18 @@ HTTP header.</p>
 <div class="content">
 <pre class="highlightjs highlight nowrap"><code class="language-http hljs" data-lang="http">Authorization: Bearer eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJyb2xlIjoiQURNSU5JU1RSQVRPUiIsImlhdCI6MTY0NTQ1MTgyNiwiZXhwIjoxNjQ1NDUyMTI2LCJpc3MiOiJUd2FkZGxlIEFQSSIsInN1YiI6Im1heGkifQ.QA7fQXvf0f21JUtdxgLrJO6BdqxyrY66kRrWiHqYwrjEjvA46NT74IYhGf3uSS1_dMT131mZe_chc8qhXnjUXS1xbEntI7jwlPxPl9x0kiF6FSrkCtyazqwvHUnwpokNUH3xmfVvUYjCM2GH0wEkXndovebykK_1hFLpXrUQSPU</code></pre>
 </div>
+</div>
+<div class="admonitionblock note">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-note" title="Note"></i>
+</td>
+<td class="content">
+Accounts may be blocked for repeated violations, causing authentication to fail.
+</td>
+</tr>
+</table>
 </div>
 </div>
 </div>
@@ -1146,6 +1162,18 @@ Path
 </td>
 <td class="hdlist2">
 <p>/api/v1/users</p>
+</td>
+</tr>
+</table>
+</div>
+<div class="admonitionblock note">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-note" title="Note"></i>
+</td>
+<td class="content">
+The first user who registers on the platform is automatically made an administrator.
 </td>
 </tr>
 </table>
@@ -1735,6 +1763,12 @@ Path
 <td class="tableblock halign-left valign-top"><p class="tableblock">password</p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">String</p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">New password of user.</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">true</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">blocked</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Boolean</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Blocks a user account.</p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">true</p></td>
 </tr>
 </tbody>
@@ -2920,6 +2954,18 @@ as <code>ticket</code> query parameter.</p>
 <pre class="highlightjs highlight nowrap"><code class="language-http hljs" data-lang="http">ws://&lt;DOMAIN&gt;/ws/v1?ticket=eb12a561895153c3f0b70325</code></pre>
 </div>
 </div>
+<div class="admonitionblock note">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-note" title="Note"></i>
+</td>
+<td class="content">
+Accounts may be blocked for repeated violations, causing authentication to fail.
+</td>
+</tr>
+</table>
+</div>
 </div>
 <div class="sect3">
 <h4 id="_content_negotiation_2"><a class="link" href="#_content_negotiation_2">Content negotiation</a></h4>
@@ -3026,6 +3072,10 @@ is not established at all and the low-level event <code>connect_error</code> is 
 <tr>
 <td class="tableblock halign-left valign-top"><p class="tableblock">NoRoomAssociatedError</p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">Used when a client tries to send a message before it joined a room. Sending messages outside of a room is not possible.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">AccountBlockedError</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">The account was blocked for policy violations.</p></td>
 </tr>
 </tbody>
 </table>
@@ -3588,7 +3638,7 @@ Payload
 </div>
 <div id="footer">
 <div id="footer-text">
-Last updated 2022-02-22 21:06:47 +0100
+Last updated 2022-02-27 12:51:00 +0100
 </div>
 </div>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.18.3/highlight.min.js"></script>

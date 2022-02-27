@@ -180,6 +180,9 @@ The following error codes are used by the API and are intended to allow the clie
 
 |MustBeAdministrableError
 |The operation, usually changing a user, is not possible to ensure manageability.
+
+|AccountBlockedError
+|The account was blocked for policy violations.
 |===
 
 ==== Authentication
@@ -195,6 +198,8 @@ HTTP header.
 ----
 Authorization: Bearer eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJyb2xlIjoiQURNSU5JU1RSQVRPUiIsImlhdCI6MTY0NTQ1MTgyNiwiZXhwIjoxNjQ1NDUyMTI2LCJpc3MiOiJUd2FkZGxlIEFQSSIsInN1YiI6Im1heGkifQ.QA7fQXvf0f21JUtdxgLrJO6BdqxyrY66kRrWiHqYwrjEjvA46NT74IYhGf3uSS1_dMT131mZe_chc8qhXnjUXS1xbEntI7jwlPxPl9x0kiF6FSrkCtyazqwvHUnwpokNUH3xmfVvUYjCM2GH0wEkXndovebykK_1hFLpXrUQSPU
 ----
+
+NOTE: Accounts may be blocked for repeated violations, causing authentication to fail.
 
 === Resources
 
@@ -251,6 +256,8 @@ as `ticket` query parameter.
 ----
 ws://<DOMAIN>/ws/v1?ticket=eb12a561895153c3f0b70325
 ----
+
+NOTE: Accounts may be blocked for repeated violations, causing authentication to fail.
 
 ==== Content negotiation
 This API doesn't support content negotiation. The https://github.com/socketio/socket.io-protocol[Socket.IO] protocol is
@@ -316,6 +323,9 @@ The following error codes are used by the Web Socket API and are intended to all
 
 |NoRoomAssociatedError
 |Used when a client tries to send a message before it joined a room. Sending messages outside of a room is not possible.
+
+|AccountBlockedError
+|The account was blocked for policy violations.
 |===
 
 === Resources

@@ -46,7 +46,7 @@ export const findByUsername = async (username, view) => {
 /**
  * Find all available users paged.
  *
- * @param {{perPage: number, page: number}=} pageable
+ * @param {{perPage: number, page: number}=} pageable Pagination settings
  * @param {"profile"=} view User view to load
  * @returns {Promise<[[ProfileDTO|UserDTO], PageInfo]>} Returns the fetched page
  */
@@ -147,7 +147,8 @@ export const updateByUsername = async (username, doc, view) => {
       role: joi
         .string()
         .valid("ADMINISTRATOR", "MODERATOR", "MEMBER")
-        .required(),
+        .optional(),
+      blocked: joi.boolean().optional(),
     }),
     doc
   );
@@ -227,13 +228,19 @@ export const isOnline = async (username) => {
 };
 
 /**
- * Lock user as online.
+ * Tries to lock the user as online.
+ *
+ * The online status is set according to the mutex principle: The user is
+ * set online for a defined period of time. A second attempt to put the user
+ * online again fails. After the period has expired, the status expires. To
+ * prevent this, the status must be renewed. See {@link confirmOnlineStatusLock}
+ * for details about renewing the status.
  *
  * @param {string} username Name of user to lock as online
  * @returns {Promise<string|null>} Confirms success by sending anything other than null
  */
-export const lockOnline = async (username) => {
-  return redis.set(`user:${username}`, "online", { NX: true, EX: 30 });
+export const lockOnlineStatus = async (username) => {
+  return redis.set(`user:${username}:online`, 1, { NX: true, EX: 30 });
 };
 
 /**
@@ -242,8 +249,8 @@ export const lockOnline = async (username) => {
  * @param {string} username Name of user to refresh locked online status
  * @returns {Promise<string|null>} Confirms success by sending anything other than null
  */
-export const refreshOnlineLock = async (username) => {
-  return redis.set(`user:${username}`, "online", { XX: true, EX: 30 });
+export const confirmOnlineStatusLock = async (username) => {
+  return redis.set(`user:${username}:online`, 1, { XX: true, EX: 30 });
 };
 
 /**
@@ -252,6 +259,6 @@ export const refreshOnlineLock = async (username) => {
  * @param {string} username Name of user to unlock as online
  * @returns {Promise<void>} Returns nothing on success
  */
-export const unlockOnline = async (username) => {
-  await redis.del(`user:${username}`);
+export const unlockOnlineStatus = async (username) => {
+  await redis.del(`user:${username}:online`);
 };
