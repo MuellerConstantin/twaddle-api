@@ -1,0 +1,189 @@
+==== Messages
+All chat histories are stored on the server side. This endpoint is for retrieving the histories.
+
+===== Get messages
+Get all available messages of a room paged. See <<_pagination, Pagination>> for details.
+
+[horizontal]
+Method:: GET
+Path:: /api/v1/rooms/:roomId/messages
+
+====== Request
+
+.Path Variables
+[cols="1,1,1] 
+|===
+|Variable |Type |Description |Optional
+
+|roomId
+|String
+|Unique identifier of room to search for.
+|false
+|===
+
+.Request Example
+[%collapsible]
+====
+[source,http,options="nowrap"]
+----
+GET /api/v1/rooms/620e70984248fc97396eb976/messages HTTP/1.1
+Authorization: Bearer eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJyb2xlIjoiQURNSU5JU1RSQVRPUiIsImlhdCI6MTY0NTExMzQ4NiwiZXhwIjoxNjQ1MTEzNzg2LCJpc3MiOiJUd2FkZGxlIEFQSSIsInN1YiI6Im1heGkifQ.YuwEfMI8h9VHj3kou5pfVDe6tvQHKpNdNUoe0mFpCLxRTufpWxtOg0gd_chXq8ffXVov0qxyZ1ig_HwdbwGUFHZWtdL2PNUkqNkPbAfHB_N_gLmBGXBACgn1DPaFItaNKi0gE3loCgHmGemL4ONEk-si02GrsfqJQL96bwGAaB8
+Accept: application/json
+----
+====
+
+NOTE: Pagination is supported. Please see <<_pagination, Pagination>> for details.
+
+CAUTION: Authentication is required. Please see <<_authentication, Authentication>> for details.
+
+====== Response
+
+.Response Fields
+[cols="1,1,1,1] 
+|===
+|Field |Type |Description |Optional
+
+|content
+|Array
+|Array of found resources.
+|false
+
+|content[].id
+|String
+|Unique identifier of message.
+|false
+
+|content[].content
+|String
+|The actual message sent in chat.
+|false
+
+|content[].room
+|String
+|Identifier of the room in which the message was sent.
+|false
+
+|content[].username
+|String
+|Unique username of user that sent the message.
+|false
+
+|content[].timestamp
+|String
+|Time of sending the message.
+|false
+|===
+
+.Response Example
+[%collapsible]
+====
+[source,http,options="nowrap"]
+----
+HTTP/1.1 200 OK
+Content-Type: application/json; charset=utf-8
+Content-Length: 247
+
+{
+	"content": [
+		{
+			"id": "621ba2de01611c57b244ba8e",
+			"content": "Hello there, anybody around here? :D",
+			"user": "maxi",
+			"room": "620e70984248fc97396eb976",
+			"timestamp": "2022-02-27T16:12:14.496Z"
+		}
+	],
+	"info": {
+		"page": 0,
+		"perPage": 25,
+		"totalPages": 1,
+		"totalElements": 1
+	}
+}
+----
+====
+
+===== Get message
+Get a message by its identifier.
+
+[horizontal]
+Method:: GET
+Path:: /api/v1/messages/:id
+
+====== Request
+
+.Path Variables
+[cols="1,1,1] 
+|===
+|Variable |Type |Description |Optional
+
+|id
+|String
+|Unique identifier of message to search for.
+|false
+|===
+
+.Request Example
+[%collapsible]
+====
+[source,http,options="nowrap"]
+----
+GET /api/v1/messages/621ba2de01611c57b244ba8e HTTP/1.1
+Authorization: Bearer eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJyb2xlIjoiQURNSU5JU1RSQVRPUiIsImlhdCI6MTY0NTExMzQ4NiwiZXhwIjoxNjQ1MTEzNzg2LCJpc3MiOiJUd2FkZGxlIEFQSSIsInN1YiI6Im1heGkifQ.YuwEfMI8h9VHj3kou5pfVDe6tvQHKpNdNUoe0mFpCLxRTufpWxtOg0gd_chXq8ffXVov0qxyZ1ig_HwdbwGUFHZWtdL2PNUkqNkPbAfHB_N_gLmBGXBACgn1DPaFItaNKi0gE3loCgHmGemL4ONEk-si02GrsfqJQL96bwGAaB8
+Accept: application/json
+----
+====
+
+CAUTION: Authentication is required. Please see <<_authentication, Authentication>> for details.
+
+====== Response
+
+.Response Fields
+[cols="1,1,1,1] 
+|===
+|Field |Type |Description |Optional
+
+|id
+|String
+|Unique identifier of message.
+|false
+
+|content
+|String
+|The actual message sent in chat.
+|false
+
+|room
+|String
+|Identifier of the room in which the message was sent.
+|false
+
+|username
+|String
+|Unique username of user that sent the message.
+|false
+
+|timestamp
+|String
+|Time of sending the message.
+|false
+|===
+
+.Response Example
+[%collapsible]
+====
+[source,http,options="nowrap"]
+----
+HTTP/1.1 200 OK
+Content-Type: application/json; charset=utf-8
+Content-Length: 169
+
+{
+	"id": "621ba2de01611c57b244ba8e",
+	"content": "Hello there, anybody around here? :D",
+	"user": "maxi",
+	"room": "620e70984248fc97396eb976",
+	"timestamp": "2022-02-27T16:12:14.496Z"
+}
+----
+====

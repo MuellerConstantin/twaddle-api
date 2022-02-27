@@ -213,6 +213,8 @@ include::restful/profiles.adoc[]
 
 include::restful/rooms.adoc[]
 
+include::restful/messages.adoc[]
+
 == Web Socket API
 This interface enables operations in the core domain, which essentially include real-time message exchange.
 

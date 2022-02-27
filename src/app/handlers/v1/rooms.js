@@ -4,6 +4,7 @@ import { Socket } from "socket.io";
 import logger from "../../config/logger";
 import { SocketError } from "../../middlewares/error";
 import * as RoomService from "../../services/rooms";
+import * as MessageService from "../../services/messages";
 
 /**
  * Room handler for handling all room related operations.
@@ -72,17 +73,15 @@ const roomHandler = (socket) => {
     const id = await RoomService.getRoomByUsername(socket.user.username);
 
     if (id) {
-      socket.emit("twaddle/room:message", {
-        message,
-        user: socket.user.username,
-        timestamp: new Date().toISOString(),
+      const newMessage = await MessageService.create({
+        content: message,
+        room: id,
+        // eslint-disable-next-line no-underscore-dangle
+        user: socket.user._id.toString(),
       });
 
-      socket.broadcast.to(id).emit("twaddle/room:message", {
-        message,
-        user: socket.user.username,
-        timestamp: new Date().toISOString(),
-      });
+      socket.emit("twaddle/room:message", newMessage);
+      socket.broadcast.to(id).emit("twaddle/room:message", newMessage);
 
       logger.debug(
         `WS ${socket.nsp.name} - ${socket.user.username} send message to room ${id}`

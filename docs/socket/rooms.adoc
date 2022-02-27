@@ -144,18 +144,28 @@ Payload:: Yes
 |===
 |Field |Type |Description |Optional
 
-|message
+|id
 |String
-|Message that the user sent.
+|Unique identifier of message.
 |false
 
-|user
+|content
 |String
-|Username of user that sent the message.
+|The actual message sent in chat.
 |false
 
-|timstamp
+|room
 |String
-|Time when the message was sent.
+|Identifier of the room in which the message was sent.
+|false
+
+|username
+|String
+|Unique username of user that sent the message.
+|false
+
+|timestamp
+|String
+|Time of sending the message.
 |false
 |===
