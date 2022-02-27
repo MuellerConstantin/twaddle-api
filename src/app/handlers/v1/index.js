@@ -13,7 +13,7 @@ import roomHandler from "./rooms";
  */
 const handler = async (socket) => {
   // Mark user as online
-  const canConnect = await UserService.lockOnline(socket.user.username);
+  const canConnect = await UserService.lockOnlineStatus(socket.user.username);
 
   // Ensure user can establish only one connection at the same time
   if (!canConnect) {
@@ -38,14 +38,14 @@ const handler = async (socket) => {
 
   socket.conn.on("packet", async (packet) => {
     if (packet.type === "pong") {
-      await UserService.refreshOnlineLock(socket.user.username);
+      await UserService.confirmOnlineStatusLock(socket.user.username);
     }
   });
 
   roomHandler(socket);
 
   socket.on("disconnect", async () => {
-    await UserService.unlockOnline(socket.user.username);
+    await UserService.unlockOnlineStatus(socket.user.username);
     logger.debug(
       `WS ${socket.nsp.name} - ${socket.user.username} closed connection`
     );
