@@ -117,7 +117,7 @@ Accept: application/json
 ----
 ====
 
-NOTE: Pagination is supported. Please see <<_pagination, Pagination>> for details.
+NOTE: Pagination and filtering is supported. Please see <<_pagination, Pagination>> and <<_filtering_, Filtering>> for details.
 
 CAUTION: Authentication is required. Please see <<_authentication, Authentication>> for details.
 
@@ -152,6 +152,11 @@ CAUTION: Authentication is required. Please see <<_authentication, Authenticatio
 |String
 |Security role of user.
 |false
+
+|content[].blocked
+|Boolean
+|Blocks a user account.
+|true
 |===
 
 .Response Example
@@ -170,6 +175,7 @@ Content-Length: 215
 	    "username": "maxi",
 	    "email": "maxi@gmail.com",
 	    "role": "MEMBER"
+      "blocked": false
     }
 	],
 	"info": {
@@ -240,6 +246,11 @@ CAUTION: Authentication is required. Please see <<_authentication, Authenticatio
 |role
 |String
 |Security role of user.
+|false
+
+|blocked
+|Boolean
+|Blocks a user account.
 |false
 |===
 
@@ -391,6 +402,11 @@ CAUTION: Authentication is required. Please see <<_authentication, Authenticatio
 |role
 |String
 |Security role of user.
+|false
+
+|blocked
+|Boolean
+|Blocks a user account.
 |false
 |===
 

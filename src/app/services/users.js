@@ -1,6 +1,7 @@
 import joi from "joi";
 import { ApiError } from "../middlewares/error";
 import { validate } from "../middlewares/validation";
+import { parse as parseRsql } from "../middlewares/rsql";
 import User from "../models/user";
 import redis from "../config/redis";
 
@@ -46,17 +47,21 @@ export const findByUsername = async (username, view) => {
 /**
  * Find all available users paged.
  *
+ * @param {string=} filter RSQL query filter
  * @param {{perPage: number, page: number}=} pageable Pagination settings
  * @param {"profile"=} view User view to load
  * @returns {Promise<[[ProfileDTO|UserDTO], PageInfo]>} Returns the fetched page
  */
 export const findAll = async (
+  filter,
   pageable = { perPage: 25, page: 0 },
   view = undefined
 ) => {
   const { perPage, page } = pageable;
 
-  const users = await User.find()
+  const mongoFilter = filter ? parseRsql(filter) : {};
+
+  const users = await User.find(mongoFilter)
     .limit(perPage)
     .skip(perPage * page)
     .sort({ username: 1 });

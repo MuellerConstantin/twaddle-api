@@ -112,7 +112,7 @@ Accept: application/json
 ----
 ====
 
-NOTE: Pagination is supported. Please see <<_pagination, Pagination>> for details.
+NOTE: Pagination and filtering is supported. Please see <<_pagination, Pagination>> and <<_filtering_, Filtering>> for details.
 
 CAUTION: Authentication is required. Please see <<_authentication, Authentication>> for details.
 

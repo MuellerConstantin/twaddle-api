@@ -453,6 +453,7 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 <li><a href="#_versioning">Versioning</a></li>
 <li><a href="#_content_negotiation">Content negotiation</a></li>
 <li><a href="#_pagination">Pagination</a></li>
+<li><a href="#_filtering">Filtering</a></li>
 <li><a href="#_error_handling">Error handling</a>
 <ul class="sectlevel4">
 <li><a href="#_error_codes">Error codes</a></li>
@@ -715,12 +716,54 @@ behavior can be controlled via the following HTTP query parameters:</p>
 </table>
 </div>
 <div class="sect3">
+<h4 id="_filtering"><a class="link" href="#_filtering">Filtering</a></h4>
+<div class="paragraph">
+<p>Some endpoints allow filtering of the resource. Filtering is done using the
+<a href="https://github.com/jirutka/rsql-parser#grammar-and-semantic">RSQL</a> query language. For this purpose,
+an RSQL query via HTTP query parameter <code>filter</code> is sent with the actual request.</p>
+</div>
+<table class="tableblock frame-all grid-all stretch">
+<caption class="title">Table 3. Filtering Query Parameters</caption>
+<colgroup>
+<col style="width: 33.3333%;">
+<col style="width: 33.3333%;">
+<col style="width: 33.3334%;">
+</colgroup>
+<thead>
+<tr>
+<th class="tableblock halign-left valign-top">Parameter</th>
+<th class="tableblock halign-left valign-top">Description</th>
+<th class="tableblock halign-left valign-top">Optional</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">filter</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Contains the RSQL query used for filtering.</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">true</p></td>
+</tr>
+</tbody>
+</table>
+<div class="admonitionblock caution">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-caution" title="Caution"></i>
+</td>
+<td class="content">
+Only a subset of the possible RSQL operations are supported. This relates in particular to the comparison operators.
+</td>
+</tr>
+</table>
+</div>
+</div>
+<div class="sect3">
 <h4 id="_error_handling"><a class="link" href="#_error_handling">Error handling</a></h4>
 <div class="paragraph">
 <p>The interface uses a uniform error format which, in addition to the HTTP status codes, also uses internal error codes.</p>
 </div>
 <table class="tableblock frame-all grid-all stretch">
-<caption class="title">Table 3. Error Response Fields</caption>
+<caption class="title">Table 4. Error Response Fields</caption>
 <colgroup>
 <col style="width: 25%;">
 <col style="width: 25%;">
@@ -768,7 +811,7 @@ behavior can be controlled via the following HTTP query parameters:</p>
 <p>The following error codes are used by the API and are intended to allow the client to respond more specifically to errors.</p>
 </div>
 <table class="tableblock frame-all grid-all stretch">
-<caption class="title">Table 4. Error Codes</caption>
+<caption class="title">Table 5. Error Codes</caption>
 <colgroup>
 <col style="width: 50%;">
 <col style="width: 50%;">
@@ -902,7 +945,7 @@ Path
 <div class="sect5">
 <h6 id="_request"><a class="link" href="#_request">Request</a></h6>
 <table class="tableblock frame-all grid-all stretch">
-<caption class="title">Table 5. Request Fields</caption>
+<caption class="title">Table 6. Request Fields</caption>
 <colgroup>
 <col style="width: 25%;">
 <col style="width: 25%;">
@@ -954,7 +997,7 @@ Content-Length: 46
 <div class="sect5">
 <h6 id="_response"><a class="link" href="#_response">Response</a></h6>
 <table class="tableblock frame-all grid-all stretch">
-<caption class="title">Table 6. Response Fields</caption>
+<caption class="title">Table 7. Response Fields</caption>
 <colgroup>
 <col style="width: 25%;">
 <col style="width: 25%;">
@@ -1078,7 +1121,7 @@ Authentication is required. Please see <a href="#_authentication">Authentication
 <div class="sect5">
 <h6 id="_response_2"><a class="link" href="#_response_2">Response</a></h6>
 <table class="tableblock frame-all grid-all stretch">
-<caption class="title">Table 7. Response Fields</caption>
+<caption class="title">Table 8. Response Fields</caption>
 <colgroup>
 <col style="width: 25%;">
 <col style="width: 25%;">
@@ -1187,7 +1230,7 @@ The first user who registers on the platform is automatically made an administra
 <div class="sect5">
 <h6 id="_request_3"><a class="link" href="#_request_3">Request</a></h6>
 <table class="tableblock frame-all grid-all stretch">
-<caption class="title">Table 8. Request Fields</caption>
+<caption class="title">Table 9. Request Fields</caption>
 <colgroup>
 <col style="width: 25%;">
 <col style="width: 25%;">
@@ -1246,7 +1289,7 @@ Content-Length: 74
 <div class="sect5">
 <h6 id="_response_3"><a class="link" href="#_response_3">Response</a></h6>
 <table class="tableblock frame-all grid-all stretch">
-<caption class="title">Table 9. Response Fields</caption>
+<caption class="title">Table 10. Response Fields</caption>
 <colgroup>
 <col style="width: 25%;">
 <col style="width: 25%;">
@@ -1355,7 +1398,7 @@ Accept: application/json</code></pre>
 <i class="fa icon-note" title="Note"></i>
 </td>
 <td class="content">
-Pagination is supported. Please see <a href="#_pagination">Pagination</a> for details.
+Pagination and filtering is supported. Please see <a href="#_pagination">Pagination</a> and <a href="#_filtering_">Filtering</a> for details.
 </td>
 </tr>
 </table>
@@ -1376,7 +1419,7 @@ Authentication is required. Please see <a href="#_authentication">Authentication
 <div class="sect5">
 <h6 id="_response_4"><a class="link" href="#_response_4">Response</a></h6>
 <table class="tableblock frame-all grid-all stretch">
-<caption class="title">Table 10. Response Fields</caption>
+<caption class="title">Table 11. Response Fields</caption>
 <colgroup>
 <col style="width: 25%;">
 <col style="width: 25%;">
@@ -1422,6 +1465,12 @@ Authentication is required. Please see <a href="#_authentication">Authentication
 <td class="tableblock halign-left valign-top"><p class="tableblock">Security role of user.</p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">false</p></td>
 </tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">content[].blocked</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Boolean</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Blocks a user account.</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">true</p></td>
+</tr>
 </tbody>
 </table>
 <details>
@@ -1440,6 +1489,7 @@ Content-Length: 215
 	    "username": "maxi",
 	    "email": "maxi@gmail.com",
 	    "role": "MEMBER"
+      "blocked": false
     }
 	],
 	"info": {
@@ -1483,7 +1533,7 @@ Path
 <div class="sect5">
 <h6 id="_request_5"><a class="link" href="#_request_5">Request</a></h6>
 <table class="tableblock frame-all grid-all stretch">
-<caption class="title">Table 11. Path Variables</caption>
+<caption class="title">Table 12. Path Variables</caption>
 <colgroup>
 <col style="width: 25%;">
 <col style="width: 25%;">
@@ -1535,7 +1585,7 @@ Authentication is required. Please see <a href="#_authentication">Authentication
 <div class="sect5">
 <h6 id="_response_5"><a class="link" href="#_response_5">Response</a></h6>
 <table class="tableblock frame-all grid-all stretch">
-<caption class="title">Table 12. Response Fields</caption>
+<caption class="title">Table 13. Response Fields</caption>
 <colgroup>
 <col style="width: 25%;">
 <col style="width: 25%;">
@@ -1573,6 +1623,12 @@ Authentication is required. Please see <a href="#_authentication">Authentication
 <td class="tableblock halign-left valign-top"><p class="tableblock">role</p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">String</p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">Security role of user.</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">false</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">blocked</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Boolean</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Blocks a user account.</p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">false</p></td>
 </tr>
 </tbody>
@@ -1626,7 +1682,7 @@ Path
 <div class="sect5">
 <h6 id="_request_6"><a class="link" href="#_request_6">Request</a></h6>
 <table class="tableblock frame-all grid-all stretch">
-<caption class="title">Table 13. Path Variables</caption>
+<caption class="title">Table 14. Path Variables</caption>
 <colgroup>
 <col style="width: 25%;">
 <col style="width: 25%;">
@@ -1718,7 +1774,7 @@ Path
 <div class="sect5">
 <h6 id="_request_7"><a class="link" href="#_request_7">Request</a></h6>
 <table class="tableblock frame-all grid-all stretch">
-<caption class="title">Table 14. Path Variables</caption>
+<caption class="title">Table 15. Path Variables</caption>
 <colgroup>
 <col style="width: 25%;">
 <col style="width: 25%;">
@@ -1743,7 +1799,7 @@ Path
 </tbody>
 </table>
 <table class="tableblock frame-all grid-all stretch">
-<caption class="title">Table 15. Request Fields</caption>
+<caption class="title">Table 16. Request Fields</caption>
 <colgroup>
 <col style="width: 25%;">
 <col style="width: 25%;">
@@ -1813,7 +1869,7 @@ Authentication is required. Please see <a href="#_authentication">Authentication
 <div class="sect5">
 <h6 id="_response_7"><a class="link" href="#_response_7">Response</a></h6>
 <table class="tableblock frame-all grid-all stretch">
-<caption class="title">Table 16. Response Fields</caption>
+<caption class="title">Table 17. Response Fields</caption>
 <colgroup>
 <col style="width: 25%;">
 <col style="width: 25%;">
@@ -1851,6 +1907,12 @@ Authentication is required. Please see <a href="#_authentication">Authentication
 <td class="tableblock halign-left valign-top"><p class="tableblock">role</p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">String</p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">Security role of user.</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">false</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">blocked</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Boolean</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Blocks a user account.</p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">false</p></td>
 </tr>
 </tbody>
@@ -1949,7 +2011,7 @@ Authentication is required. Please see <a href="#_authentication">Authentication
 <div class="sect5">
 <h6 id="_response_8"><a class="link" href="#_response_8">Response</a></h6>
 <table class="tableblock frame-all grid-all stretch">
-<caption class="title">Table 17. Response Fields</caption>
+<caption class="title">Table 18. Response Fields</caption>
 <colgroup>
 <col style="width: 25%;">
 <col style="width: 25%;">
@@ -2042,7 +2104,7 @@ Path
 <div class="sect5">
 <h6 id="_request_9"><a class="link" href="#_request_9">Request</a></h6>
 <table class="tableblock frame-all grid-all stretch">
-<caption class="title">Table 18. Path Variables</caption>
+<caption class="title">Table 19. Path Variables</caption>
 <colgroup>
 <col style="width: 25%;">
 <col style="width: 25%;">
@@ -2094,7 +2156,7 @@ Authentication is required. Please see <a href="#_authentication">Authentication
 <div class="sect5">
 <h6 id="_response_9"><a class="link" href="#_response_9">Response</a></h6>
 <table class="tableblock frame-all grid-all stretch">
-<caption class="title">Table 19. Response Fields</caption>
+<caption class="title">Table 20. Response Fields</caption>
 <colgroup>
 <col style="width: 25%;">
 <col style="width: 25%;">
@@ -2177,7 +2239,7 @@ Path
 <div class="sect5">
 <h6 id="_request_10"><a class="link" href="#_request_10">Request</a></h6>
 <table class="tableblock frame-all grid-all stretch">
-<caption class="title">Table 20. Request Fields</caption>
+<caption class="title">Table 21. Request Fields</caption>
 <colgroup>
 <col style="width: 25%;">
 <col style="width: 25%;">
@@ -2242,7 +2304,7 @@ Authentication is required. Please see <a href="#_authentication">Authentication
 <div class="sect5">
 <h6 id="_response_10"><a class="link" href="#_response_10">Response</a></h6>
 <table class="tableblock frame-all grid-all stretch">
-<caption class="title">Table 21. Response Fields</caption>
+<caption class="title">Table 22. Response Fields</caption>
 <colgroup>
 <col style="width: 25%;">
 <col style="width: 25%;">
@@ -2351,7 +2413,7 @@ Accept: application/json</code></pre>
 <i class="fa icon-note" title="Note"></i>
 </td>
 <td class="content">
-Pagination is supported. Please see <a href="#_pagination">Pagination</a> for details.
+Pagination and filtering is supported. Please see <a href="#_pagination">Pagination</a> and <a href="#_filtering_">Filtering</a> for details.
 </td>
 </tr>
 </table>
@@ -2372,7 +2434,7 @@ Authentication is required. Please see <a href="#_authentication">Authentication
 <div class="sect5">
 <h6 id="_response_11"><a class="link" href="#_response_11">Response</a></h6>
 <table class="tableblock frame-all grid-all stretch">
-<caption class="title">Table 22. Response Fields</caption>
+<caption class="title">Table 23. Response Fields</caption>
 <colgroup>
 <col style="width: 25%;">
 <col style="width: 25%;">
@@ -2479,7 +2541,7 @@ Path
 <div class="sect5">
 <h6 id="_request_12"><a class="link" href="#_request_12">Request</a></h6>
 <table class="tableblock frame-all grid-all stretch">
-<caption class="title">Table 23. Path Variables</caption>
+<caption class="title">Table 24. Path Variables</caption>
 <colgroup>
 <col style="width: 25%;">
 <col style="width: 25%;">
@@ -2531,7 +2593,7 @@ Authentication is required. Please see <a href="#_authentication">Authentication
 <div class="sect5">
 <h6 id="_response_12"><a class="link" href="#_response_12">Response</a></h6>
 <table class="tableblock frame-all grid-all stretch">
-<caption class="title">Table 24. Response Fields</caption>
+<caption class="title">Table 25. Response Fields</caption>
 <colgroup>
 <col style="width: 25%;">
 <col style="width: 25%;">
@@ -2622,7 +2684,7 @@ Path
 <div class="sect5">
 <h6 id="_request_13"><a class="link" href="#_request_13">Request</a></h6>
 <table class="tableblock frame-all grid-all stretch">
-<caption class="title">Table 25. Path Variables</caption>
+<caption class="title">Table 26. Path Variables</caption>
 <colgroup>
 <col style="width: 25%;">
 <col style="width: 25%;">
@@ -2714,7 +2776,7 @@ Path
 <div class="sect5">
 <h6 id="_request_14"><a class="link" href="#_request_14">Request</a></h6>
 <table class="tableblock frame-all grid-all stretch">
-<caption class="title">Table 26. Path Variables</caption>
+<caption class="title">Table 27. Path Variables</caption>
 <colgroup>
 <col style="width: 25%;">
 <col style="width: 25%;">
@@ -2739,7 +2801,7 @@ Path
 </tbody>
 </table>
 <table class="tableblock frame-all grid-all stretch">
-<caption class="title">Table 27. Request Fields</caption>
+<caption class="title">Table 28. Request Fields</caption>
 <colgroup>
 <col style="width: 25%;">
 <col style="width: 25%;">
@@ -2803,7 +2865,7 @@ Authentication is required. Please see <a href="#_authentication">Authentication
 <div class="sect5">
 <h6 id="_response_14"><a class="link" href="#_response_14">Response</a></h6>
 <table class="tableblock frame-all grid-all stretch">
-<caption class="title">Table 28. Response Fields</caption>
+<caption class="title">Table 29. Response Fields</caption>
 <colgroup>
 <col style="width: 25%;">
 <col style="width: 25%;">
@@ -2900,7 +2962,7 @@ Path
 <div class="sect5">
 <h6 id="_request_15"><a class="link" href="#_request_15">Request</a></h6>
 <table class="tableblock frame-all grid-all stretch">
-<caption class="title">Table 29. Path Variables</caption>
+<caption class="title">Table 30. Path Variables</caption>
 <colgroup>
 <col style="width: 25%;">
 <col style="width: 25%;">
@@ -2964,7 +3026,7 @@ Authentication is required. Please see <a href="#_authentication">Authentication
 <div class="sect5">
 <h6 id="_response_15"><a class="link" href="#_response_15">Response</a></h6>
 <table class="tableblock frame-all grid-all stretch">
-<caption class="title">Table 30. Response Fields</caption>
+<caption class="title">Table 31. Response Fields</caption>
 <colgroup>
 <col style="width: 25%;">
 <col style="width: 25%;">
@@ -3078,7 +3140,7 @@ Path
 <div class="sect5">
 <h6 id="_request_16"><a class="link" href="#_request_16">Request</a></h6>
 <table class="tableblock frame-all grid-all stretch">
-<caption class="title">Table 31. Path Variables</caption>
+<caption class="title">Table 32. Path Variables</caption>
 <colgroup>
 <col style="width: 25%;">
 <col style="width: 25%;">
@@ -3130,7 +3192,7 @@ Authentication is required. Please see <a href="#_authentication">Authentication
 <div class="sect5">
 <h6 id="_response_16"><a class="link" href="#_response_16">Response</a></h6>
 <table class="tableblock frame-all grid-all stretch">
-<caption class="title">Table 32. Response Fields</caption>
+<caption class="title">Table 33. Response Fields</caption>
 <colgroup>
 <col style="width: 25%;">
 <col style="width: 25%;">
@@ -3339,7 +3401,7 @@ e.g. <code>twaddle/error</code>.</p>
 is not established at all and the low-level event <code>connect_error</code> is used.</p>
 </div>
 <table class="tableblock frame-all grid-all stretch">
-<caption class="title">Table 33. Error Response Fields</caption>
+<caption class="title">Table 34. Error Response Fields</caption>
 <colgroup>
 <col style="width: 25%;">
 <col style="width: 25%;">
@@ -3381,7 +3443,7 @@ is not established at all and the low-level event <code>connect_error</code> is 
 <p>The following error codes are used by the Web Socket API and are intended to allow the client to respond more specifically to errors.</p>
 </div>
 <table class="tableblock frame-all grid-all stretch">
-<caption class="title">Table 34. Error Codes</caption>
+<caption class="title">Table 35. Error Codes</caption>
 <colgroup>
 <col style="width: 50%;">
 <col style="width: 50%;">
@@ -3473,7 +3535,7 @@ Payload
 </table>
 </div>
 <table class="tableblock frame-all grid-all stretch">
-<caption class="title">Table 35. Payload Fields</caption>
+<caption class="title">Table 36. Payload Fields</caption>
 <colgroup>
 <col style="width: 25%;">
 <col style="width: 25%;">
@@ -3666,7 +3728,7 @@ Payload
 </table>
 </div>
 <table class="tableblock frame-all grid-all stretch">
-<caption class="title">Table 36. Payload Fields</caption>
+<caption class="title">Table 37. Payload Fields</caption>
 <colgroup>
 <col style="width: 25%;">
 <col style="width: 25%;">
@@ -3733,7 +3795,7 @@ Payload
 </table>
 </div>
 <table class="tableblock frame-all grid-all stretch">
-<caption class="title">Table 37. Payload Fields</caption>
+<caption class="title">Table 38. Payload Fields</caption>
 <colgroup>
 <col style="width: 25%;">
 <col style="width: 25%;">
@@ -3800,7 +3862,7 @@ Payload
 </table>
 </div>
 <table class="tableblock frame-all grid-all stretch">
-<caption class="title">Table 38. Payload Fields</caption>
+<caption class="title">Table 39. Payload Fields</caption>
 <colgroup>
 <col style="width: 25%;">
 <col style="width: 25%;">
@@ -3867,7 +3929,7 @@ Payload
 </table>
 </div>
 <table class="tableblock frame-all grid-all stretch">
-<caption class="title">Table 39. Payload Fields</caption>
+<caption class="title">Table 40. Payload Fields</caption>
 <colgroup>
 <col style="width: 25%;">
 <col style="width: 25%;">
@@ -3934,7 +3996,7 @@ Payload
 </table>
 </div>
 <table class="tableblock frame-all grid-all stretch">
-<caption class="title">Table 40. Payload Fields</caption>
+<caption class="title">Table 41. Payload Fields</caption>
 <colgroup>
 <col style="width: 25%;">
 <col style="width: 25%;">
@@ -3990,7 +4052,7 @@ Payload
 </div>
 <div id="footer">
 <div id="footer-text">
-Last updated 2022-02-27 17:25:47 +0100
+Last updated 2022-03-01 12:10:35 +0100
 </div>
 </div>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.18.3/highlight.min.js"></script>

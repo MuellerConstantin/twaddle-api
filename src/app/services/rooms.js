@@ -1,6 +1,7 @@
 import joi from "joi";
 import { ApiError } from "../middlewares/error";
 import { validate } from "../middlewares/validation";
+import { parse as parseRsql } from "../middlewares/rsql";
 import Room from "../models/room";
 import redis from "../config/redis";
 
@@ -39,13 +40,16 @@ export const findById = async (id) => {
 /**
  * Find all available rooms paged.
  *
+ * @param {string=} filter RSQL query filter
  * @param {{perPage: number, page: number}=} pageable Pagination settings
  * @returns {Promise<[[RoomDTO], PageInfo]>} Returns the fetched page
  */
-export const findAll = async (pageable = { perPage: 25, page: 0 }) => {
+export const findAll = async (filter, pageable = { perPage: 25, page: 0 }) => {
   const { perPage, page } = pageable;
 
-  const rooms = await Room.find()
+  const mongoFilter = filter ? parseRsql(filter) : {};
+
+  const rooms = await Room.find(mongoFilter)
     .limit(perPage)
     .skip(perPage * page)
     .sort({ name: 1 });

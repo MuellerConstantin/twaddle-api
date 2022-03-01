@@ -108,11 +108,29 @@ The response contains the requested page depending on the optional query paramet
 |false
 |===
 
+==== Filtering
+
+Some endpoints allow filtering of the resource. Filtering is done using the
+https://github.com/jirutka/rsql-parser#grammar-and-semantic[RSQL] query language. For this purpose,
+an RSQL query via HTTP query parameter `filter` is sent with the actual request.
+
+.Filtering Query Parameters
+[cols="1,1,1]
+|===
+|Parameter |Description |Optional
+
+|filter
+|Contains the RSQL query used for filtering.
+|true
+|===
+
+CAUTION: Only a subset of the possible RSQL operations are supported. This relates in particular to the comparison operators.
+
 ==== Error handling
 The interface uses a uniform error format which, in addition to the HTTP status codes, also uses internal error codes.
 
 .Error Response Fields
-[cols="1,1,1,1] 
+[cols="1,1,1,1]
 |===
 |Field |Type |Description |Optional
 

@@ -31,11 +31,15 @@ router.get(
     joi.object({
       perPage: joi.number().positive().greater(0).default(25).optional(),
       page: joi.number().positive().allow(0).default(0).optional(),
+      filter: joi.string().optional(),
     })
   ),
   asyncHandler(async (req, res) => {
-    const { perPage, page } = req.query;
-    const [content, info] = await RoomService.findAll({ perPage, page });
+    const { perPage, page, filter } = req.query;
+    const [content, info] = await RoomService.findAll(filter, {
+      perPage,
+      page,
+    });
 
     return res.status(200).json({ content, info });
   })
