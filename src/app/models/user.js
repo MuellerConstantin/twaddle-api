@@ -42,6 +42,20 @@ UserSchema.pre("save", function (next) {
 });
 
 // eslint-disable-next-line func-names
+UserSchema.pre("findOneAndUpdate", function (next) {
+  const update = this.getUpdate();
+
+  if (update.$set?.password) {
+    const salt = bcrypt.genSaltSync(10);
+    const hash = bcrypt.hashSync(update.$set.password, salt);
+
+    update.$set.password = hash;
+  }
+
+  next();
+});
+
+// eslint-disable-next-line func-names
 UserSchema.methods.isValidPassword = function (plain) {
   return bcrypt.compareSync(plain, this.password);
 };
