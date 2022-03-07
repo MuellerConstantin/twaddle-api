@@ -1,0 +1,28 @@
+version: "3.9"
+services:
+  gateway:
+    image: traefik:latest
+    command:
+      - --providers.docker
+      - --entryPoints.web.address=:8080
+    ports:
+      - "8080:8080"
+    volumes:
+      - type: bind
+        source: /var/run/docker.sock
+        target: /var/run/docker.sock
+        read_only: true
+  backend:
+    image: twaddle/api:latest
+    build: .
+    expose:
+      - 3000
+    volumes:
+      - type: bind
+        source: ./resources
+        target: /usr/local/bin/twaddle/api/resources
+        read_only: true
+    labels:
+      - traefik.enable=true
+      - traefik.http.routers.backend.entrypoints=web
+      - traefik.http.routers.backend.rule=PathPrefix(`/`)
