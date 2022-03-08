@@ -66,7 +66,7 @@ export const findAll = async (
     .skip(perPage * page)
     .sort({ username: 1 });
 
-  const totalUsers = await User.count();
+  const totalUsers = await User.count(mongoFilter);
 
   const info = {
     page,

@@ -54,7 +54,7 @@ export const findAll = async (filter, pageable = { perPage: 25, page: 0 }) => {
     .skip(perPage * page)
     .sort({ name: 1 });
 
-  const totalRooms = await Room.count();
+  const totalRooms = await Room.count(mongoFilter);
 
   const info = {
     page,
