@@ -167,6 +167,17 @@ export const updateByUsername = async (username, doc, view) => {
   }
 
   if (
+    doc.blocked &&
+    !(await User.exists({ role: "ADMINISTRATOR", username: { $ne: username } }))
+  ) {
+    throw new ApiError(
+      "Blocking the last administrator is not allowed",
+      409,
+      "MustBeAdministrableError"
+    );
+  }
+
+  if (
     doc.role &&
     !(await User.exists({ role: "ADMINISTRATOR", username: { $ne: username } }))
   ) {
