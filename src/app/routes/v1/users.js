@@ -14,9 +14,11 @@ const router = express.Router();
 router.get(
   "/users/:username",
   authenticateToken(),
+  // Only moderators and admins and the user itself can fetch the account
   authorize(
     (req) =>
       req.user?.role === "ADMINISTRATOR" ||
+      req.user?.role === "MODERATOR" ||
       req.user?.username === req.params.username
   ),
   paramsValidationHandler(
@@ -32,7 +34,11 @@ router.get(
 router.get(
   "/users",
   authenticateToken(),
-  authorize((req) => req.user?.role === "ADMINISTRATOR"),
+  // Only moderators and admins can fetch user accounts
+  authorize(
+    (req) =>
+      req.user?.role === "ADMINISTRATOR" || req.user?.role === "MODERATOR"
+  ),
   queryValidationHandler(
     joi.object({
       perPage: joi.number().positive().greater(0).default(25).optional(),
