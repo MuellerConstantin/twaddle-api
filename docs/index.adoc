@@ -201,6 +201,9 @@ The following error codes are used by the API and are intended to allow the clie
 
 |AccountBlockedError
 |The account was blocked for policy violations.
+
+|TooManyRequestsError
+|Is sent when the request limit has been exceeded.
 |===
 
 ==== Authentication

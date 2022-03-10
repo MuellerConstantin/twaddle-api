@@ -17,6 +17,7 @@ import mongoose from "./config/mongoose";
 import redis from "./config/redis";
 import morgan from "./config/morgan";
 import passport from "./config/passport";
+import rateLimiter from "./config/rateLimiter";
 import * as error from "./middlewares/error";
 import { authenticateTicket } from "./middlewares/authentication";
 import v1Routes from "./routes/v1";
@@ -88,7 +89,7 @@ app.use(helmet());
 app.use(morgan());
 app.use(passport.initialize());
 
-app.use("/api", v1Routes);
+app.use("/api", rateLimiter(), v1Routes);
 
 app.use(error.notFoundHandler());
 app.use(error.errorHandler());

@@ -29,6 +29,7 @@ const envSchema = joi
     SECURITY_JWT_ISSUER: joi.string().required(),
     SECURITY_JWT_EXPIRES: joi.number().min(1).default(2700),
     SECURITY_TICKET_EXPIRES: joi.number().min(1).default(120),
+    SECURITY_RATE_LIMIT: joi.number().integer().positive().default(60),
   })
   .unknown();
 
@@ -61,5 +62,6 @@ export default {
     ticket: {
       expires: env.SECURITY_TICKET_EXPIRES,
     },
+    rateLimit: env.SECURITY_RATE_LIMIT,
   },
 };
