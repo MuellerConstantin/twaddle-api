@@ -2,11 +2,12 @@ version: "3.9"
 services:
   gateway:
     image: traefik:latest
+    restart: always
     command:
       - --providers.docker
       - --entryPoints.web.address=:8080
     ports:
-      - "8080:8080"
+      - "${GATEWAY_PORT:-8080}:8080"
     volumes:
       - type: bind
         source: /var/run/docker.sock
@@ -14,7 +15,9 @@ services:
         read_only: true
   backend:
     image: twaddle/api:latest
-    build: .
+    build:
+      context: .
+    restart: always
     expose:
       - 3000
     volumes:

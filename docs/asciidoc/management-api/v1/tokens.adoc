@@ -13,17 +13,17 @@ Path:: /api/v1/tokens
 .Request Fields
 [cols="1,1,1] 
 |===
-|Field |Type |Description |Optional
+|Field |Type |Description |Required
 
 |username
 |String
 |Name of user to generate token for.
-|false
+|true
 
 |password
 |String
 |Related secret of the user account.
-|false
+|true
 |===
 
 .Request Example
@@ -48,27 +48,27 @@ Content-Length: 46
 .Response Fields
 [cols="1,1,1,1] 
 |===
-|Field |Type |Description |Optional
+|Field |Type |Description |Required
 
 |type
 |String
 |Type of token, by default `Bearer`.
-|false
+|true
 
 |token
 |String
 |The actual access token.
-|false
+|true
 
 |subject
 |String
 |Username the token was generated for.
-|false
+|true
 
 |expires
 |Number
 |Duration of validity in seconds.
-|false
+|true
 |===
 
 .Response Example

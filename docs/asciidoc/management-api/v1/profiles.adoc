@@ -7,6 +7,9 @@ Get all available user profiles paged. See <<_pagination, Pagination>> for detai
 [horizontal]
 Method:: GET
 Path:: /api/v1/profiles
+Authentication:: Yes
+Pagination:: Yes
+Filtering:: Yes
 
 ====== Request
 
@@ -21,31 +24,27 @@ Accept: application/json
 ----
 ====
 
-NOTE: Pagination is supported. Please see <<_pagination, Pagination>> for details.
-
-CAUTION: Authentication is required. Please see <<_authentication, Authentication>> for details.
-
 ====== Response
 
 .Response Fields
 [cols="1,1,1,1] 
 |===
-|Field |Type |Description |Optional
+|Field |Type |Description |Required
 
 |content
 |Array
 |Array of found resources.
-|false
+|true
 
 |content[].id
 |String
 |Unique hexadecimal identifier of the user.
-|false
+|true
 
 |content[].username
 |String
 |Unique username of account.
-|false
+|true
 |===
 
 .Response Example
@@ -80,18 +79,19 @@ Get a profile by its identifier.
 [horizontal]
 Method:: GET
 Path:: /api/v1/profiles/:id
+Authentication:: Yes
 
 ====== Request
 
 .Path Variables
 [cols="1,1,1] 
 |===
-|Variable |Type |Description |Optional
+|Variable |Type |Description |Required
 
 |id
 |String
 |Unique identifier of user to search for.
-|false
+|true
 |===
 
 .Request Example
@@ -105,24 +105,22 @@ Accept: application/json
 ----
 ====
 
-CAUTION: Authentication is required. Please see <<_authentication, Authentication>> for details.
-
 ====== Response
 
 .Response Fields
 [cols="1,1,1,1] 
 |===
-|Field |Type |Description |Optional
+|Field |Type |Description |Required
 
 |id
 |String
 |Unique hexadecimal identifier of the user.
-|false
+|true
 
 |username
 |String
 |Unique name of user
-|false
+|true
 |===
 
 .Response Example

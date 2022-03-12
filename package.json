@@ -15,7 +15,7 @@
     "lint:fix": "eslint --fix .",
     "prettier": "prettier --check .",
     "prettier:fix": "prettier --write .",
-    "generate-docs": "asciidoctor -D public/docs docs/index.adoc"
+    "generate-docs": "asciidoctor -D public/docs docs/asciidoc/index.adoc"
   },
   "devDependencies": {
     "@babel/cli": "^7.16.0",

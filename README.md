@@ -39,16 +39,23 @@ communication. In addition to Redis, a [MongoDB](https://www.mongodb.com/) insta
 used for reasons of data persistence. While Redis acts as a message broker and temporary
 storage, this database persists data.
 
-![Architecture](docs/images/architecture.png)
+![Architecture](./docs/images/architecture.png)
 
-### RESTful API
+As already mentioned, the individual instance is a monolithic architecture which is organized
+according to the three-layer model. Accordingly, there is a presentation layer, depending on
+the API, HTTP RESTful or WebSocket Socket.IO is used, an application layer that contains the
+business logic and a data layer that is responsible for data persistence.
+
+![Architecture](./docs/images/layer-model.png)
+
+### Twaddle Management API
 
 The RESTful interface is used to exchange static data such as user profiles or access data.
 The communication is stateless based on the [HTTP/1.1](https://datatracker.ietf.org/doc/html/rfc2616/)
 protocol. The resources and endpoints are documented by the self-service documentation provided
 by the service itself. See `/docs` of the service instance for details.
 
-### Web Socket API
+### Twaddle Communication API
 
 A web socket interface is used for reactive tasks such as real-time communication. This is based on
 the [WebSocket](https://datatracker.ietf.org/doc/html/rfc6455) protocol or, based on it, on the

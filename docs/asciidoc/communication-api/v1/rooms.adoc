@@ -8,19 +8,17 @@ RESTful interface are eligible. See <<_rooms, Rooms>> for details.
 
 [horizontal]
 Name:: `twaddle/room:join`
-Sender:: Client
-Receiver:: Server
-Payload:: Yes
+Emitter:: Client
 
 .Payload Fields
 [cols="1,1,1,1] 
 |===
-|Field |Type |Description |Optional
+|Field |Type |Description |Required
 
 |id
 |String
 |Identifier of room to join.
-|false
+|true
 |===
 
 ===== Event: joined
@@ -28,46 +26,38 @@ Event is sent from the server to the client as a result of a successful room joi
 
 [horizontal]
 Name:: `twaddle/room:joined`
-Sender:: Server
-Receiver:: Client
-Payload:: No
+Emitter:: Server
 
 ===== Event: leave
 Allows a client to leave a chat room by sending this event.
 
 [horizontal]
 Name:: `twaddle/room:leave`
-Sender:: Client
-Receiver:: Server
-Payload:: No
+Emitter:: Client
 
 ===== Event: left
 Event is used to confirm a client leaving the chat room.
 
 [horizontal]
 Name:: `twaddle/room:left`
-Sender:: Server
-Receiver:: Client
-Payload:: No
+Emitter:: Server
 
 ===== Event: user-list
 This event is sent by the server to inform the clients about the current list of joined users.
 
 [horizontal]
 Name:: `twaddle/room:user-list`
-Sender:: Server
-Receiver:: Client
-Payload:: Yes
+Emitter:: Server
 
 .Payload Fields
 [cols="1,1,1,1] 
 |===
-|Field |Type |Description |Optional
+|Field |Type |Description |Required
 
 |users
 |Array
 |Array of usernames of current room's users.
-|false
+|true
 |===
 
 ===== Event: user-joined
@@ -75,19 +65,17 @@ Notifies the remaining users of a chat room that a new user has joined.
 
 [horizontal]
 Name:: `twaddle/room:user-joined`
-Sender:: Server
-Receiver:: Client
-Payload:: Yes
+Emitter:: Server
 
 .Payload Fields
 [cols="1,1,1,1] 
 |===
-|Field |Type |Description |Optional
+|Field |Type |Description |Required
 
 |user
 |String
 |Username of user that joined.
-|false
+|true
 |===
 
 ===== Event: user-left
@@ -95,19 +83,17 @@ Informs the remaining users of a chat room about leaving another user's room.
 
 [horizontal]
 Name:: `twaddle/room:user-left`
-Sender:: Server
-Receiver:: Client
-Payload:: Yes
+Emitter:: Server
 
 .Payload Fields
 [cols="1,1,1,1] 
 |===
-|Field |Type |Description |Optional
+|Field |Type |Description |Required
 
 |user
 |String
 |Username of user that left.
-|false
+|true
 |===
 
 ===== Event: send
@@ -115,19 +101,17 @@ Sent by the client to send a new message to the chat. This event stops the serve
 
 [horizontal]
 Name:: `twaddle/room:send`
-Sender:: Client
-Receiver:: Server
-Payload:: Yes
+Emitter:: Client
 
 .Payload Fields
 [cols="1,1,1,1] 
 |===
-|Field |Type |Description |Optional
+|Field |Type |Description |Required
 
 |message
 |String
 |Message to send.
-|false
+|true
 |===
 
 ===== Event: message
@@ -135,37 +119,35 @@ Used by the server to broadcast received messages.
 
 [horizontal]
 Name:: `twaddle/room:message`
-Sender:: Server
-Receiver:: Client
-Payload:: Yes
+Emitter:: Server
 
 .Payload Fields
 [cols="1,1,1,1] 
 |===
-|Field |Type |Description |Optional
+|Field |Type |Description |Required
 
 |id
 |String
 |Unique identifier of message.
-|false
+|true
 
 |content
 |String
 |The actual message sent in chat.
-|false
+|true
 
 |room
 |String
 |Identifier of the room in which the message was sent.
-|false
+|true
 
 |username
 |String
 |Unique username of user that sent the message.
-|false
+|true
 
 |timestamp
 |String
 |Time of sending the message.
-|false
+|true
 |===

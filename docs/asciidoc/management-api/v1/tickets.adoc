@@ -7,6 +7,7 @@ Generates a new ticket in exchange for the access token.
 [horizontal]
 Method:: POST
 Path:: /api/v1/tickets
+Authentication:: Yes
 
 ====== Request
 
@@ -21,34 +22,32 @@ Authorization: Bearer eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJyb2xlIjoiQURNSU5JU
 ----
 ====
 
-CAUTION: Authentication is required. Please see <<_authentication, Authentication>> for details.
-
 ====== Response
 
 .Response Fields
 [cols="1,1,1,1] 
 |===
-|Field |Type |Description |Optional
+|Field |Type |Description |Required
 
 |type
 |String
 |Type of token, by default `Ticket`.
-|false
+|true
 
 |ticket
 |String
 |The actual ticket.
-|false
+|true
 
 |subject
 |String
 |Username the ticket was generated for.
-|false
+|true
 
 |expires
 |Number
 |Duration of validity in seconds.
-|false
+|true
 |===
 
 .Response Example

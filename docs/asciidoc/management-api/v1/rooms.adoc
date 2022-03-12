@@ -1,36 +1,30 @@
-==== Users
-Represents the user accounts with the details.
+==== Rooms
+Represents the chat rooms in which you can write.
 
-===== Create user
-Creates a new user.
+===== Create room
+Creates a new chat room.
 
 [horizontal]
 Method:: POST
-Path:: /api/v1/users
-
-NOTE: The first user who registers on the platform is automatically made an administrator.
+Path:: /api/v1/rooms
+Authentication:: Yes
 
 ====== Request
 
 .Request Fields
 [cols="1,1,1] 
 |===
-|Field |Type |Description |Optional
+|Field |Type |Description |Required
 
-|username
+|name
 |String
-|Unique name of user
-|false
+|Name of the new room.
+|true
 
-|email
+|description
 |String
-|Unique email of user.
-|false
-
-|password
-|String
-|Password of the new account
-|false
+|Description of the new room.
+|true
 |===
 
 .Request Example
@@ -38,15 +32,15 @@ NOTE: The first user who registers on the platform is automatically made an admi
 ====
 [source,http,options="nowrap"]
 ----
-POST /api/v1/users HTTP/1.1
+POST /api/v1/rooms HTTP/1.1
 Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJyb2xlIjoiQURNSU5JU1RSQVRPUiIsImlhdCI6MTY0NTExMzQ4NiwiZXhwIjoxNjQ1MTEzNzg2LCJpc3MiOiJUd2FkZGxlIEFQSSIsInN1YiI6Im1heGkifQ.YuwEfMI8h9VHj3kou5pfVDe6tvQHKpNdNUoe0mFpCLxRTufpWxtOg0gd_chXq8ffXVov0qxyZ1ig_HwdbwGUFHZWtdL2PNUkqNkPbAfHB_N_gLmBGXBACgn1DPaFItaNKi0gE3loCgHmGemL4ONEk-si02GrsfqJQL96bwGAaB8
 Accept: application/json
-Content-Length: 74
+Content-Length: 73
 
 {
-  "username": "timi",
-  "email": "timi@gmail.com",
-  "password": "Abc123"
+  "name": "Lobby",
+  "description": "Main room to talk about anything."
 }
 ----
 ====
@@ -56,27 +50,27 @@ Content-Length: 74
 .Response Fields
 [cols="1,1,1,1] 
 |===
-|Field |Type |Description |Optional
+|Field |Type |Description |Required
 
 |id
 |String
-|Unique hexadecimal identifier of the user.
-|false
+|Unique hexadecimal identifier of the room.
+|true
 
-|username
+|name
 |String
-|Unique name of user
-|false
+|Room's name.
+|true
 
-|email
+|description
 |String
-|Unique email of user.
-|false
+|Room's description.
+|true
 
-|role
+|createdAt
 |String
-|Security role of user.
-|false
+|Timestamp of the creation.
+|true
 |===
 
 .Response Example
@@ -86,23 +80,26 @@ Content-Length: 74
 ----
 HTTP/1.1 201 Created
 Content-Type: application/json; charset=utf-8
-Content-Length: 92
+Content-Length: 137
 
 {
-	"id": "6207aedb47835c305054423c",
-	"username": "maxi",
-	"email": "maxi@gmail.com",
-	"role": "MEMBER"
+	"id": "620e70984248fc97396eb976",
+	"name": "Lobby",
+	"description": "Main room to talk about anything.",
+	"createdAt": "2022-02-17T15:58:16.598Z"
 }
 ----
 ====
 
-===== Get users
-Get all available users paged. See <<_pagination, Pagination>> for details.
+===== Get rooms
+Get all available rooms paged. See <<_pagination, Pagination>> for details.
 
 [horizontal]
 Method:: GET
-Path:: /api/v1/users
+Path:: /api/v1/rooms
+Authentication:: Yes
+Pagination:: Yes
+Filtering:: Yes
 
 ====== Request
 
@@ -111,51 +108,42 @@ Path:: /api/v1/users
 ====
 [source,http,options="nowrap"]
 ----
-GET /api/v1/users HTTP/1.1
+GET /api/v1/rooms HTTP/1.1
 Authorization: Bearer eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJyb2xlIjoiQURNSU5JU1RSQVRPUiIsImlhdCI6MTY0NTExMzQ4NiwiZXhwIjoxNjQ1MTEzNzg2LCJpc3MiOiJUd2FkZGxlIEFQSSIsInN1YiI6Im1heGkifQ.YuwEfMI8h9VHj3kou5pfVDe6tvQHKpNdNUoe0mFpCLxRTufpWxtOg0gd_chXq8ffXVov0qxyZ1ig_HwdbwGUFHZWtdL2PNUkqNkPbAfHB_N_gLmBGXBACgn1DPaFItaNKi0gE3loCgHmGemL4ONEk-si02GrsfqJQL96bwGAaB8
 Accept: application/json
 ----
 ====
-
-NOTE: Pagination and filtering is supported. Please see <<_pagination, Pagination>> and <<_filtering_, Filtering>> for details.
-
-CAUTION: Authentication is required. Please see <<_authentication, Authentication>> for details.
 
 ====== Response
 
 .Response Fields
 [cols="1,1,1,1] 
 |===
-|Field |Type |Description |Optional
+|Field |Type |Description |Required
 
 |content
 |Array
 |Array of found resources.
-|false
+|true
 
 |content[].id
 |String
-|Unique hexadecimal identifier of the user.
-|false
+|Unique hexadecimal identifier of the room.
+|true
 
-|content[].username
+|content[].name
 |String
-|Unique username of account.
-|false
+|Room's name.
+|true
 
-|content[].email
+|content[].description
 |String
-|Unique email of account.
-|false
+|Room's description.
+|true
 
-|content[].role
+|content[].createdAt
 |String
-|Security role of user.
-|false
-
-|content[].blocked
-|Boolean
-|Blocks a user account.
+|Timestamp of the creation.
 |true
 |===
 
@@ -171,12 +159,11 @@ Content-Length: 215
 {
 	"content": [
 		{
-	    "id": "6207aedb47835c305054423c",
-	    "username": "maxi",
-	    "email": "maxi@gmail.com",
-	    "role": "MEMBER"
-      "blocked": false
-    }
+			"id": "620e70984248fc97396eb976",
+			"name": "Lobby",
+			"description": "Main room to talk about anything.",
+			"createdAt": "2022-02-17T15:58:16.598Z"
+		}
 	],
 	"info": {
 		"page": 0,
@@ -188,24 +175,25 @@ Content-Length: 215
 ----
 ====
 
-===== Get user
-Get a user by its identifier.
+===== Get room
+Get a room by its identifier.
 
 [horizontal]
 Method:: GET
-Path:: /api/v1/users/:id
+Path:: /api/v1/rooms/:id
+Authentication:: Yes
 
 ====== Request
 
 .Path Variables
 [cols="1,1,1] 
 |===
-|Variable |Type |Description |Optional
+|Variable |Type |Description |Required
 
 |id
 |String
-|Unique identifier of user to search for.
-|false
+|Unique identifier of room to search for.
+|true
 |===
 
 .Request Example
@@ -213,45 +201,38 @@ Path:: /api/v1/users/:id
 ====
 [source,http,options="nowrap"]
 ----
-GET /api/v1/users/6207aedb47835c305054423c HTTP/1.1
+GET /api/v1/rooms/620e70984248fc97396eb976 HTTP/1.1
 Authorization: Bearer eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJyb2xlIjoiQURNSU5JU1RSQVRPUiIsImlhdCI6MTY0NTExMzQ4NiwiZXhwIjoxNjQ1MTEzNzg2LCJpc3MiOiJUd2FkZGxlIEFQSSIsInN1YiI6Im1heGkifQ.YuwEfMI8h9VHj3kou5pfVDe6tvQHKpNdNUoe0mFpCLxRTufpWxtOg0gd_chXq8ffXVov0qxyZ1ig_HwdbwGUFHZWtdL2PNUkqNkPbAfHB_N_gLmBGXBACgn1DPaFItaNKi0gE3loCgHmGemL4ONEk-si02GrsfqJQL96bwGAaB8
 Accept: application/json
 ----
 ====
-
-CAUTION: Authentication is required. Please see <<_authentication, Authentication>> for details.
 
 ====== Response
 
 .Response Fields
 [cols="1,1,1,1] 
 |===
-|Field |Type |Description |Optional
+|Field |Type |Description |Required
 
 |id
 |String
-|Unique hexadecimal identifier of the user.
-|false
+|Unique hexadecimal identifier of the room.
+|true
 
-|username
+|name
 |String
-|Unique name of user
-|false
+|Room's name.
+|true
 
-|email
+|description
 |String
-|Unique email of user.
-|false
+|Room's description.
+|true
 
-|role
+|createdAt
 |String
-|Security role of user.
-|false
-
-|blocked
-|Boolean
-|Blocks a user account.
-|false
+|Timestamp of the creation.
+|true
 |===
 
 .Response Example
@@ -261,35 +242,36 @@ CAUTION: Authentication is required. Please see <<_authentication, Authenticatio
 ----
 HTTP/1.1 200 OK
 Content-Type: application/json; charset=utf-8
-Content-Length: 92
+Content-Length: 97
 
 {
-	"id": "6207aedb47835c305054423c",
-	"username": "maxi",
-	"email": "maxi@gmail.com",
-	"role": "MEMBER"
+	"id": "620e70984248fc97396eb976",
+	"name": "Lobby",
+	"description": "Main room to talk about anything",
+  "createdAt": "2022-02-17T15:58:16.598Z"
 }
 ----
 ====
 
-===== Delete user
-Delete a user by its identifier.
+===== Delete room
+Delete a room by its identifier.
 
 [horizontal]
 Method:: DELETE
-Path:: /api/v1/users/:id
+Path:: /api/v1/rooms/:id
+Authentication:: Yes
 
 ====== Request
 
 .Path Variables
 [cols="1,1,1] 
 |===
-|Variable |Type |Description |Optional
+|Variable |Type |Description |Required
 
 |id
 |String
-|Unique identifier of user to search for.
-|false
+|Unique identifier of room to search for.
+|true
 |===
 
 .Request Example
@@ -297,13 +279,11 @@ Path:: /api/v1/users/:id
 ====
 [source,http,options="nowrap"]
 ----
-DELETE /api/v1/users/6207aedb47835c305054423c HTTP/1.1
+DELETE /api/v1/rooms/620e70984248fc97396eb976 HTTP/1.1
 Authorization: Bearer eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJyb2xlIjoiQURNSU5JU1RSQVRPUiIsImlhdCI6MTY0NTExMzQ4NiwiZXhwIjoxNjQ1MTEzNzg2LCJpc3MiOiJUd2FkZGxlIEFQSSIsInN1YiI6Im1heGkifQ.YuwEfMI8h9VHj3kou5pfVDe6tvQHKpNdNUoe0mFpCLxRTufpWxtOg0gd_chXq8ffXVov0qxyZ1ig_HwdbwGUFHZWtdL2PNUkqNkPbAfHB_N_gLmBGXBACgn1DPaFItaNKi0gE3loCgHmGemL4ONEk-si02GrsfqJQL96bwGAaB8
 Accept: application/json
 ----
 ====
-
-CAUTION: Authentication is required. Please see <<_authentication, Authentication>> for details.
 
 ====== Response
 
@@ -317,45 +297,41 @@ Content-Type: application/json; charset=utf-8
 ----
 ====
 
-===== Update user
-Update a user by its identifier.
+===== Update room
+Update a room by its identifier.
 
 [horizontal]
 Method:: PATCH
-Path:: /api/v1/users/:id
+Path:: /api/v1/rooms/:id
+Authentication:: Yes
 
 ====== Request
 
 .Path Variables
 [cols="1,1,1] 
 |===
-|Variable |Type |Description |Optional
+|Variable |Type |Description |Required
 
 |id
 |String
-|Unique identifier of user to search for.
-|false
+|Unique identifier of room to search for.
+|true
 |===
 
 .Request Fields
 [cols="1,1,1] 
 |===
-|Variable |Type |Description |Optional
+|Field |Type |Description |Required
 
-|email
+|name
 |String
-|New email of user.
-|true
+|Name of the new room.
+|false
 
-|password
+|description
 |String
-|New password of user.
-|true
-
-|blocked
-|Boolean
-|Blocks a user account.
-|true
+|Description of the new room.
+|false
 |===
 
 .Request Example
@@ -363,51 +339,44 @@ Path:: /api/v1/users/:id
 ====
 [source,http,options="nowrap"]
 ----
-PATCH /api/v1/users/6207aedb47835c305054423c HTTP/1.1
+PATCH /api/v1/rooms/620e70984248fc97396eb976 HTTP/1.1
 Content-Type: application/json
 Authorization: Bearer eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJyb2xlIjoiQURNSU5JU1RSQVRPUiIsImlhdCI6MTY0NTExMzQ4NiwiZXhwIjoxNjQ1MTEzNzg2LCJpc3MiOiJUd2FkZGxlIEFQSSIsInN1YiI6Im1heGkifQ.YuwEfMI8h9VHj3kou5pfVDe6tvQHKpNdNUoe0mFpCLxRTufpWxtOg0gd_chXq8ffXVov0qxyZ1ig_HwdbwGUFHZWtdL2PNUkqNkPbAfHB_N_gLmBGXBACgn1DPaFItaNKi0gE3loCgHmGemL4ONEk-si02GrsfqJQL96bwGAaB8
 Accept: application/json
-Content-Length: 29
+Content-Length: 18
 
 {
-  "email": "maxi@web.de"
+  "name": "Main"
 }
 ----
 ====
-
-CAUTION: Authentication is required. Please see <<_authentication, Authentication>> for details.
 
 ====== Response
 
 .Response Fields
 [cols="1,1,1,1] 
 |===
-|Field |Type |Description |Optional
+|Field |Type |Description |Required
 
 |id
 |String
-|Unique hexadecimal identifier of the user.
-|false
+|Unique hexadecimal identifier of the room.
+|true
 
-|username
+|name
 |String
-|Unique name of user
-|false
+|Room's name.
+|true
 
-|email
+|description
 |String
-|Unique email of user.
-|false
+|Room's description.
+|true
 
-|role
+|createdAt
 |String
-|Security role of user.
-|false
-
-|blocked
-|Boolean
-|Blocks a user account.
-|false
+|Timestamp of the creation.
+|true
 |===
 
 .Response Example
@@ -417,13 +386,13 @@ CAUTION: Authentication is required. Please see <<_authentication, Authenticatio
 ----
 HTTP/1.1 200 OK
 Content-Type: application/json; charset=utf-8
-Content-Length: 90
+Content-Length: 136
 
 {
-	"id": "6207aedb47835c305054423c",
-	"username": "maxi",
-	"email": "maxi@web.com",
-	"role": "MEMBER"
+	"id": "620e70984248fc97396eb976",
+	"name": "Main",
+	"description": "Main room to talk about anything.",
+	"createdAt": "2022-02-17T15:58:16.598Z"
 }
 ----
 ====

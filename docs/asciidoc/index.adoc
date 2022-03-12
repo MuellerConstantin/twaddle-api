@@ -1,0 +1,398 @@
+= Twaddle API
+:favicon: /favicon.svg
+:doctype: book
+:icons: font
+:source-highlighter: highlightjs
+:toc: left
+:toclevels: 4
+:sectlinks:
+
+== Getting started
+The Twaddle API allows programmatic access to the Twaddle Platform and all its resources.
+The platform enables real-time exchange of information, news and messages with users
+around the world. Hence, the platform provides the necessary resources, endpoints and
+communication channels for this.
+
+The Twaddle API is organized into two modules, the _Twaddle Management API_ and the
+_Twaddle Communication API_. While the former enables the programmatic handling of
+administrative tasks, the latter is used to implement the real-time exchange of messages
+and information.
+
+== Twaddle Management API
+The _Twaddle Management API_ is a set of programmatic endpoints that can be used to fullfil
+administrative tasks. The interface allows retrieving, creating and manipulating numerous
+resources used by the platform.
+
+Technically, it is a RESTful API based on the https://datatracker.ietf.org/doc/html/rfc2616/[HTTP]
+protocol. The interface is organized in so-called resource collections, each of which offers
+an HTTP end point for access. Programmatic access can take place via these endpoints in the
+form of HTTP requests.
+
+=== Fundamentals
+First, basic techniques are introduced which apply equally to all endpoints.
+
+==== Terminology
+To avoid misunderstandings, some terms are first introduced which are used to describe this API.
+
+Resource:: When we talk about a resource, it always refers to a single element, such as a user
+account or a chat message. It is the smallest possible data unit of the API.
+Collection:: Whenever a collection is mentioned, it always means a set of the same resources.
+For example, the set of all user accounts.
+Endpoint:: An endpoint is an HTTP RESTful endpoint that allows access to a collection and its
+resources. The endpoint can offer various operations such as the CRUD and beyond.
+
+==== Versioning
+The API uses a URI based versioning strategy to ensure backward compatibility. This enables
+breaking changes of newer versions without having to update existing software at the same time.
+For this purpose, a so-called version prefix is built into the actual URI.
+
+[source,http,options="nowrap"]
+----
+http://twaddle.com/api/v1
+----
+
+Recently the _Twaddle Management API_ `v1` was released. This provides the basis for management
+access. At the time of generation of this documentation, the following other versions of the
+_Twaddle Management API_ exist:
+
+* Version 1: `http://twaddle.com/api/v1`
+
+CAUTION: Depending on the API version, endpoints can change, be omitted or added.
+
+==== Content negotiation
+A word about content negotiation: The current version of this API does not support content
+negotiation. For the sake of simplicity, only https://datatracker.ietf.org/doc/html/rfc8259[JSON]
+is consumed and only https://datatracker.ietf.org/doc/html/rfc8259[JSON] is produced. This
+applies without exception API wide.
+
+The following media types are accepted/used in `Accept`/`Content-Type` header:
+
+* `application/json`
+* `application/json; charset=utf-8`
+
+==== Pagination
+All resources are organized in so-called collections. Depending on the endpoint, not only
+individual resources but entire collections can be loaded. In the case of large collections,
+this can lead to incredible amounts of data. Pagination is used to prevent this. An entire
+collection is therefore never loaded at once. Rather, the collection is divided into parts,
+into so-called pages, and individual pages are loaded.
+
+Depending on which page is to be loaded in which size, the pagination behavior of the endpoint
+can be configured using the following HTTP query parameters:
+
+.Pagination Query Parameters
+[cols="1,1,1] 
+|===
+|Parameter |Description |Required
+
+|page
+|Specifies the index of page to load. It must be a positive integer and the index is zero-based.
+By default the value is 0.
+|false
+
+|perPage
+|Indicates the size of a page, i.e. how many elements are to be loaded with a page at once. By
+default the value is 25.
+|false
+|===
+
+In addition to the required page, i.e. the actual elements of the collection, the response also
+contains meta information. This meta information provides information about the pagination made.
+
+.Pagination Response Fields
+[cols="1,1,1,1] 
+|===
+|Field |Type |Description |Required
+
+|info
+|Object
+|Contains the meta information of the pagination made.
+|true
+
+|info.page
+|Number
+|Zero based integer that specifies the page index.
+|true
+
+|info.perPage
+|Number
+|Integer that gives the page size.
+|true
+
+|info.totalElements
+|Number
+|Integer that gives the amount of total elements in collection.
+|true
+
+|info.totalPages
+|Number
+|Integer that gives the amount of available pages.
+|true
+
+|content
+|Array
+|An array with the actual elements loaded from the collection.
+|true
+|===
+
+==== Filtering
+Some endpoints also allow the collection to be filtered. Only elements that correspond to
+a filter and therefore have very special properties are taken from the collection. Filtering
+is done using the HTTP query parameter `filter` and the query language
+https://github.com/jirutka/rsql-parser#grammar-and-semantic[RSQL]:
+
+.Filtering Query Parameters
+[cols="1,1,1]
+|===
+|Parameter |Description |Required
+
+|filter
+|Contains the RSQL query used for filtering. By default there is no filtering.
+|false
+|===
+
+In addition to the standard operations of the RSQL query language, the LIKE operator `=like=`
+is supported. This allows filtering for similarly named text items.
+
+==== Error handling
+To allow clients to respond appropriately, the API uses a consistent and relatively detailed error
+format. In addition to the HTTP status code available via the protocol, information on an error
+object is also sent in the event of an error. The error object to be sent has the following fields:
+
+.Error Response Fields
+[cols="1,1,1,1]
+|===
+|Field |Type |Description |Required
+
+|status
+|Number
+|HTTP status code used in response.
+|true
+
+|code
+|String
+|API internal error code. See <<_error_codes, Error codes>> for details.
+|true
+
+|message
+|String
+|Humans legible message describing the error. The message is not i18n compliant and
+is written in English. I18n support must be implemented on the client side and done
+through `code`.
+|true
+
+|details
+|Array
+|Additional information for describing the error more detailed.
+|false
+|===
+
+===== Error codes
+The following error codes are used by the API and are intended to allow the client to respond
+more specifically to errors.
+
+.Error Codes
+[cols="1,1] 
+|===
+|Code |Description
+
+|InternalServerError
+|Basic code which indicates an unexpected error. This can only be fixed on the server side.
+
+|NotFoundError
+|Used when a resource could not be found. Check for wrong paths or missing path variables.
+
+|InvalidQueryParameterError
+|Used when a wrong HTTP query parameter is used or the validation of it failed.
+
+|InvalidPathVariableError
+|Used when a path variable is missing or malformed.
+
+|ValidationError
+|Used when the requets body validation failed due to semantic errors.
+
+|InvalidCredentialsError
+|Used when the user credentials, username and password, are wrong.
+
+|InvalidTokenError
+|Used when the access token is invalid.
+
+|AccessDeniedError
+|Used when permission is denied.
+
+|RoomNameAlreadyInUseError
+|It is not possible to name the room because a room with this name already exists.
+
+|UsernameAlreadyInUseError
+|The username is already in use.
+
+|EmailAlreadyInUseError
+|The email address is already in use.
+
+|MustBeAdministrableError
+|The operation, usually changing a user, is not possible to ensure manageability.
+
+|AccountBlockedError
+|The account was blocked for policy violations.
+
+|TooManyRequestsError
+|Is sent when the request limit has been exceeded.
+|===
+
+==== Authentication
+Most requests require prior authentication. Basically, stateless access tokens are used for this.
+An access token can be issued to a single user for a limited period of validity. The access token
+must then be sent with every request. The HTTP `Authorization` header in `Bearer` format is used here.
+
+[source,http,options="nowrap"]
+----
+Authorization: Bearer eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJyb2xlIjoiQURNSU5JU1RSQVRPUiIsImlhdCI6MTY0NTQ1MTgyNiwiZXhwIjoxNjQ1NDUyMTI2LCJpc3MiOiJUd2FkZGxlIEFQSSIsInN1YiI6Im1heGkifQ.QA7fQXvf0f21JUtdxgLrJO6BdqxyrY66kRrWiHqYwrjEjvA46NT74IYhGf3uSS1_dMT131mZe_chc8qhXnjUXS1xbEntI7jwlPxPl9x0kiF6FSrkCtyazqwvHUnwpokNUH3xmfVvUYjCM2GH0wEkXndovebykK_1hFLpXrUQSPU
+----
+
+For issuing such access tokens see <<_tokens, Tokens>>.
+
+=== V1 Endpoints
+
+include::management-api/v1/tokens.adoc[]
+
+include::management-api/v1/tickets.adoc[]
+
+include::management-api/v1/users.adoc[]
+
+include::management-api/v1/profiles.adoc[]
+
+include::management-api/v1/rooms.adoc[]
+
+include::management-api/v1/messages.adoc[]
+
+== Twaddle Communication API
+The _Twaddle Communication API_ enables the programmatic exchange of messages and information in
+real time between the clients.
+
+Technically, the API is based on the https://datatracker.ietf.org/doc/html/rfc6455[WebSocket]
+protocol and uses the https://github.com/socketio/socket.io-protocol[Socket.IO] protocol to
+handle communication and as a high-level abstraction layer.
+
+=== Fundamentals
+First, basic techniques are introduced which apply equally to all endpoints.
+
+==== Terminology
+To avoid misunderstandings, some terms are first introduced which are used to describe this API.
+
+Event:: When we talk about an event, we are talking about a domain event and not a native websocket
+event. If a native websocket event is meant, this is specified. Domain events represent the basic
+building block of asynchronous domain communication. Technically, domain events are the same as
+custom Socket.IO events.
+Resource:: In this context, a resource is a grouping of logically related events. For example,
+all events related to a chat room.
+
+==== Versioning
+The API uses a Socket.IO namespace versioning strategy to ensure backward compatibility. It is
+expressly not a URI prefix, since websockets do not act on a URI basis. This enables breaking
+changes of newer versions without having to update existing software at the same time.
+
+[source,http,options="nowrap"]
+----
+http://twaddle.com/ws/v1
+----
+
+Recently the _Twaddle Communication API_ `v1` was released. This provides the basis for communication
+access. At the time of generation of this documentation, the following other versions of the
+_Twaddle Communication API_ exist:
+
+* Version 1: `http://twaddle.com/ws/v1`
+
+CAUTION: Depending on the API version, events can change, be omitted or added.
+
+==== Authentication
+In principle, unauthenticated web socket connections are rejected. Authentication is therefore always
+required. So-called short-lived tickets are used for this. The ticket is transferred as HTTP query
+parameter `ticket` when the web socket connection is established for the first time.
+
+[source,http,options="nowrap"]
+----
+ws://twaddle.com/ws/v1?ticket=eb12a561895153c3f0b70325
+----
+
+Depending on the configuration, tickets are only valid for a few minutes and definitely only once.
+They are issued per user via the <<_tickets, Twaddle Managment API>>. Any number of tickets can be
+generated at the same time.
+
+CAUTION: The current version only allows one _Twaddle Communication API_ connection per user at a time.
+Subsequent connections will also be rejected, also with valid tickets.
+
+==== Content negotiation
+Content negotiation is rather unusual for web socket interfaces. This interface also does not offer
+content negotiation and, based on the https://github.com/socketio/socket.io-protocol[Socket.IO]
+protocol, only uses https://datatracker.ietf.org/doc/html/rfc8259[JSON] to format data.
+
+==== Error handling
+Like the rest of the communication, the error handling of the _Twaddle Communication API_ is
+asynchronous but uniform. In the case of an error, two events are used depending on the type of
+error:
+
+`connect_error`:: Technically it is an event of the Socket.IO protocol. It always occurs when
+there are already problems while establishing the connection or with the connection in general.
+For example, if the connection was rejected due to an invalid ticket or too many connections or
+because the connection was lost.
+`twaddle/error`:: This event is used if an error has occurred during operation after the
+connection was successfully established. Every business error is processed here.
+
+The error object sent in the payload event always has the following structure:
+
+.Error Response Fields
+[cols="1,1,1,1] 
+|===
+|Field |Type |Description |Required
+
+|code
+|String
+|API internal error code. See <<_error_codes_2, Error codes>> for details.
+|true
+
+|message
+|String
+|Humans legible message describing the error. The message is not i18n compliant and
+is written in English. I18n support must be implemented on the client side and done
+through `code`.
+|true
+
+|details
+|Array
+|Additional information for describing the error more detailed.
+|false
+|===
+
+===== Error codes
+The following error codes are used by the Web Socket API and are intended to allow the client to
+respond more specifically to errors.
+
+.Error Codes
+[cols="1,1] 
+|===
+|Code |Description
+
+|InternalServerError
+|Basic code which indicates an unexpected error. This can only be fixed on the server side.
+
+|NotFoundError
+|Used when a resource can't be found.
+
+|InvalidTicketError
+|Used when the authentication ticket is invalid.
+
+|AlreadyConnectedError
+|Used when a user tries to establish a second web socket connection. Only one connection is
+allowed per user.
+
+|NoRoomAssociatedError
+|Used when a client tries to send a message before it joined a room. Sending messages outside
+of a room is not possible.
+
+|AccountBlockedError
+|The account was blocked for policy violations.
+|===
+
+=== V1 Resources
+
+include::communication-api/v1/rooms.adoc[]

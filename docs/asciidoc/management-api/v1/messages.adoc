@@ -7,18 +7,20 @@ Get all available messages of a room paged. See <<_pagination, Pagination>> for 
 [horizontal]
 Method:: GET
 Path:: /api/v1/rooms/:roomId/messages
+Authentication:: Yes
+Pagination:: Yes
 
 ====== Request
 
 .Path Variables
 [cols="1,1,1] 
 |===
-|Variable |Type |Description |Optional
+|Variable |Type |Description |Required
 
 |roomId
 |String
 |Unique identifier of room to search for.
-|false
+|true
 |===
 
 .Request Example
@@ -32,46 +34,42 @@ Accept: application/json
 ----
 ====
 
-NOTE: Pagination is supported. Please see <<_pagination, Pagination>> for details.
-
-CAUTION: Authentication is required. Please see <<_authentication, Authentication>> for details.
-
 ====== Response
 
 .Response Fields
 [cols="1,1,1,1] 
 |===
-|Field |Type |Description |Optional
+|Field |Type |Description |Required
 
 |content
 |Array
 |Array of found resources.
-|false
+|true
 
 |content[].id
 |String
 |Unique identifier of message.
-|false
+|true
 
 |content[].content
 |String
 |The actual message sent in chat.
-|false
+|true
 
 |content[].room
 |String
 |Identifier of the room in which the message was sent.
-|false
+|true
 
 |content[].username
 |String
 |Unique username of user that sent the message.
-|false
+|true
 
 |content[].timestamp
 |String
 |Time of sending the message.
-|false
+|true
 |===
 
 .Response Example
@@ -109,18 +107,19 @@ Get a message by its identifier.
 [horizontal]
 Method:: GET
 Path:: /api/v1/messages/:id
+Authentication:: Yes
 
 ====== Request
 
 .Path Variables
 [cols="1,1,1] 
 |===
-|Variable |Type |Description |Optional
+|Variable |Type |Description |Required
 
 |id
 |String
 |Unique identifier of message to search for.
-|false
+|true
 |===
 
 .Request Example
@@ -134,39 +133,37 @@ Accept: application/json
 ----
 ====
 
-CAUTION: Authentication is required. Please see <<_authentication, Authentication>> for details.
-
 ====== Response
 
 .Response Fields
 [cols="1,1,1,1] 
 |===
-|Field |Type |Description |Optional
+|Field |Type |Description |Required
 
 |id
 |String
 |Unique identifier of message.
-|false
+|true
 
 |content
 |String
 |The actual message sent in chat.
-|false
+|true
 
 |room
 |String
 |Identifier of the room in which the message was sent.
-|false
+|true
 
 |username
 |String
 |Unique username of user that sent the message.
-|false
+|true
 
 |timestamp
 |String
 |Time of sending the message.
-|false
+|true
 |===
 
 .Response Example
