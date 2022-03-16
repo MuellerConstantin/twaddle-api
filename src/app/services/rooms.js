@@ -1,5 +1,5 @@
 import joi from "joi";
-import { ApiError } from "../middlewares/error";
+import { ApiError, ApiErrorCode } from "../middlewares/error";
 import { validate } from "../middlewares/validation";
 import { parse as parseRsql } from "../middlewares/rsql";
 import Room from "../models/room";
@@ -31,7 +31,7 @@ export const findById = async (id) => {
   const room = await Room.findById(id);
 
   if (!room) {
-    throw new ApiError("Resource not found", 404, "NotFoundError");
+    throw new ApiError("Resource not found", 404, ApiErrorCode.NOT_FOUND_ERROR);
   }
 
   return room.toDTO();
@@ -87,7 +87,7 @@ export const create = async (doc) => {
     throw new ApiError(
       "Room name is already in use",
       409,
-      "RoomNameAlreadyInUseError"
+      ApiErrorCode.ROOM_NAME_ALREADY_IN_USE_ERROR
     );
   }
 
@@ -115,7 +115,7 @@ export const updateById = async (id, doc) => {
     throw new ApiError(
       "Room name is already in use",
       409,
-      "RoomNameAlreadyInUseError"
+      ApiErrorCode.ROOM_NAME_ALREADY_IN_USE_ERROR
     );
   }
 
@@ -134,7 +134,7 @@ export const updateById = async (id, doc) => {
   });
 
   if (!room) {
-    throw new ApiError("Resource not found", 404, "NotFoundError");
+    throw new ApiError("Resource not found", 404, ApiErrorCode.NOT_FOUND_ERROR);
   }
 
   return room.toDTO();
@@ -150,7 +150,7 @@ export const deleteById = async (id) => {
   const room = await Room.findByIdAndDelete(id);
 
   if (!room) {
-    throw new ApiError("Resource not found", 404, "NotFoundError");
+    throw new ApiError("Resource not found", 404, ApiErrorCode.NOT_FOUND_ERROR);
   }
 };
 

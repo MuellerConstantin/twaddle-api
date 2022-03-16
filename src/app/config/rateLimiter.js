@@ -1,7 +1,7 @@
 import { RateLimiterRedis } from "rate-limiter-flexible";
 import env from "./env";
 import redis from "./redis";
-import { ApiError } from "../middlewares/error";
+import { ApiError, ApiErrorCode } from "../middlewares/error";
 
 /*
  * Since the rate limiter only supports node-redis version 3,
@@ -36,7 +36,7 @@ const middleware = () => (req, res, next) => {
         new ApiError(
           "Too Many Requests",
           429,
-          "TooManyRequestsError",
+          ApiErrorCode.TOO_MANY_REQUESTS_ERROR,
           undefined,
           headers
         )

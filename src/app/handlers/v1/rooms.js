@@ -2,9 +2,32 @@
 import { Socket } from "socket.io";
 
 import logger from "../../config/logger";
-import { SocketError } from "../../middlewares/error";
+import { SocketError, SocketErrorCode } from "../../middlewares/error";
 import * as RoomService from "../../services/rooms";
 import * as MessageService from "../../services/messages";
+
+/**
+ * General events that apply to all domains.
+ */
+export const GeneralEvent = {
+  DISCONNECT: "disconnect",
+  ERROR: "twaddle/error",
+};
+
+/**
+ * Events used in the room domain.
+ */
+export const RoomEvent = {
+  JOIN: "twaddle/room:join",
+  LEAVE: "twaddle/room:leave",
+  SEND: "twaddle/room:send",
+  JOINED: "twaddle/room:joined",
+  LEFT: "twaddle/room:left",
+  USER_LIST: "twaddle/room:user-list",
+  USER_LEFT: "twaddle/room:user-left",
+  USER_JOINED: "twaddle/room:user-joined",
+  MESSAGE: "twaddle/room:message",
+};
 
 /**
  * Room handler for handling all room related operations.
@@ -18,13 +41,13 @@ const roomHandler = (socket) => {
     } catch (err) {
       if (err.code === "NotFoundError") {
         socket.emit(
-          "twaddle/error",
-          new SocketError("Resource not found", "NotFoundError")
+          GeneralEvent.ERROR,
+          new SocketError("Resource not found", SocketErrorCode.NOT_FOUND_ERROR)
         );
         return;
       }
 
-      socket.emit("twaddle/error", new SocketError());
+      socket.emit(GeneralEvent.ERROR, new SocketError());
       return;
     }
 
@@ -36,17 +59,20 @@ const roomHandler = (socket) => {
 
     const roomUsers = await RoomService.getRoomUsers(id);
 
-    socket.emit("twaddle/room:joined");
-    socket.emit("twaddle/room:user-list", { users: roomUsers });
+    socket.emit(RoomEvent.JOINED);
+    socket.emit(RoomEvent.USER_LIST, { users: roomUsers });
 
-    socket.broadcast.to(id).emit("twaddle/room:user-joined", {
+    socket.broadcast.to(id).emit(RoomEvent.USER_JOINED, {
       user: socket.user.username,
     });
-    socket.broadcast.to(id).emit("twaddle/room:user-list", {
+    socket.broadcast.to(id).emit(RoomEvent.USER_LIST, {
       users: roomUsers,
     });
   };
 
+  /**
+   * Handles the case when a client wants to leave the room.
+   */
   const leaveRoom = async () => {
     const id = await RoomService.getRoomByUsername(socket.user.username);
 
@@ -58,17 +84,27 @@ const roomHandler = (socket) => {
 
       const roomUsers = await RoomService.getRoomUsers(id);
 
-      socket.emit("twaddle/room:left");
+      // Confirms to the client that he has successfully left the room
+      socket.emit(RoomEvent.LEFT);
 
-      socket.broadcast.to(id).emit("twaddle/room:user-left", {
+      // Informs all other clients about leaving
+      socket.broadcast.to(id).emit(RoomEvent.USER_LEFT, {
         user: socket.user.username,
       });
-      socket.broadcast.to(id).emit("twaddle/room:user-list", {
+
+      // Sends an updated user list
+      socket.broadcast.to(id).emit(RoomEvent.USER_LIST, {
         users: roomUsers,
       });
     }
   };
 
+  /**
+   * Responsible for receiving messages to be sent. These are then distributed
+   * equally to all clients in the room.
+   *
+   * @param {{message: string}} properties Properties of message to broadcast
+   */
   const broadcastMessage = async ({ message }) => {
     const id = await RoomService.getRoomByUsername(socket.user.username);
 
@@ -80,18 +116,21 @@ const roomHandler = (socket) => {
         user: socket.user._id.toString(),
       });
 
-      socket.emit("twaddle/room:message", newMessage);
-      socket.broadcast.to(id).emit("twaddle/room:message", newMessage);
+      // Acknowledges its own message to the sender
+      socket.emit(RoomEvent.MESSAGE, newMessage);
+
+      // Broadcasts the message to all other clients
+      socket.broadcast.to(id).emit(RoomEvent.MESSAGE, newMessage);
 
       logger.debug(
         `WS ${socket.nsp.name} - ${socket.user.username} send message to room ${id}`
       );
     } else {
       socket.emit(
-        "twaddle/error",
+        GeneralEvent.ERROR,
         new SocketError(
           "There is no connection to a chat room",
-          "NoRoomAssociatedError"
+          SocketErrorCode.NO_ROOM_ASSOCIATED_ERROR
         )
       );
 
@@ -101,10 +140,10 @@ const roomHandler = (socket) => {
     }
   };
 
-  socket.on("twaddle/room:join", joinRoom);
-  socket.on("twaddle/room:leave", leaveRoom);
-  socket.on("twaddle/room:send", broadcastMessage);
-  socket.on("disconnect", leaveRoom);
+  socket.on(RoomEvent.JOIN, joinRoom);
+  socket.on(RoomEvent.LEAVE, leaveRoom);
+  socket.on(RoomEvent.SEND, broadcastMessage);
+  socket.on(GeneralEvent.DISCONNECT, leaveRoom);
 };
 
 export default roomHandler;

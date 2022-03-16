@@ -237,6 +237,9 @@ more specifically to errors.
 
 |TooManyRequestsError
 |Is sent when the request limit has been exceeded.
+
+|RestQueryLanguageError
+|Thrown if the filter format is not correct.
 |===
 
 ==== Authentication

@@ -1,7 +1,7 @@
 // eslint-disable-next-line no-unused-vars
 import joi from "joi";
 
-import { ApiError } from "./error";
+import { ApiError, ApiErrorCode } from "./error";
 
 /**
  * Validation middleware to validate the request queries.
@@ -27,7 +27,7 @@ export const queryValidationHandler = (schema) => (req, res, next) => {
     const apiError = new ApiError(
       "Validation failed",
       400,
-      "InvalidQueryParameterError",
+      ApiErrorCode.INVALID_QUERY_PARAMETER_ERROR,
       errorDetails
     );
 
@@ -62,7 +62,7 @@ export const paramsValidationHandler = (schema) => (req, res, next) => {
     const apiError = new ApiError(
       "Validation failed",
       400,
-      "InvalidPathVariableError",
+      ApiErrorCode.INVALID_PATH_VARIABLE_ERROR,
       errorDetails
     );
 
@@ -98,7 +98,7 @@ export const bodyValidationHandler = (schema) => (req, res, next) => {
     const apiError = new ApiError(
       "Validation failed",
       422,
-      "ValidationError",
+      ApiErrorCode.VALIDATION_ERROR,
       errorDetails
     );
 
@@ -133,7 +133,7 @@ export const validate = (schema, data) => {
     throw new ApiError(
       "Validation failed",
       422,
-      "ValidationError",
+      ApiErrorCode.VALIDATION_ERROR,
       errorDetails
     );
   } else {

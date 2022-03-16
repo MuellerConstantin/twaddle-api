@@ -2,9 +2,17 @@
 import { Socket } from "socket.io";
 
 import logger from "../../config/logger";
-import { SocketError } from "../../middlewares/error";
+import { SocketError, SocketErrorCode } from "../../middlewares/error";
 import * as UserService from "../../services/users";
 import roomHandler from "./rooms";
+
+/**
+ * General events that apply to all domains.
+ */
+export const GeneralEvent = {
+  DISCONNECT: "disconnect",
+  ERROR: "twaddle/error",
+};
 
 /**
  * Root handler for handling incoming socket connections.
@@ -18,10 +26,10 @@ const handler = async (socket) => {
   // Ensure user can establish only one connection at the same time
   if (!canConnect) {
     socket.emit(
-      "twaddle/error",
+      GeneralEvent.ERROR,
       new SocketError(
         "A connection already exists, only one connection per user allowed",
-        "AlreadyConnectedError"
+        SocketErrorCode.ALREADY_CONNECTED_ERROR
       )
     );
 
@@ -44,7 +52,7 @@ const handler = async (socket) => {
 
   roomHandler(socket);
 
-  socket.on("disconnect", async () => {
+  socket.on(GeneralEvent.DISCONNECT, async () => {
     await UserService.unlockOnlineStatus(socket.user.username);
     logger.debug(
       `WS ${socket.nsp.name} - ${socket.user.username} closed connection`

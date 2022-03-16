@@ -1,5 +1,5 @@
 import joi from "joi";
-import { ApiError } from "../middlewares/error";
+import { ApiError, ApiErrorCode } from "../middlewares/error";
 import { validate } from "../middlewares/validation";
 import Message from "../models/message";
 
@@ -31,7 +31,7 @@ export const findById = async (id) => {
   const message = await Message.findById(id).populate("user", "username");
 
   if (!message) {
-    throw new ApiError("Resource not found", 404, "NotFoundError");
+    throw new ApiError("Resource not found", 404, ApiErrorCode.NOT_FOUND_ERROR);
   }
 
   return message.toDTO();
@@ -102,6 +102,6 @@ export const deleteById = async (id) => {
   const message = await Message.findByIdAndDelete(id);
 
   if (!message) {
-    throw new ApiError("Resource not found", 404, "NotFoundError");
+    throw new ApiError("Resource not found", 404, ApiErrorCode.NOT_FOUND_ERROR);
   }
 };

@@ -1,5 +1,5 @@
 import joi from "joi";
-import { ApiError } from "../middlewares/error";
+import { ApiError, ApiErrorCode } from "../middlewares/error";
 import { validate } from "../middlewares/validation";
 import { parse as parseRsql } from "../middlewares/rsql";
 import User from "../models/user";
@@ -38,7 +38,7 @@ export const findByUsername = async (username, view) => {
   const user = await User.findOne({ username });
 
   if (!user) {
-    throw new ApiError("Resource not found", 404, "NotFoundError");
+    throw new ApiError("Resource not found", 404, ApiErrorCode.NOT_FOUND_ERROR);
   }
 
   return user.toDTO(view);
@@ -111,7 +111,7 @@ export const create = async (doc, view) => {
     throw new ApiError(
       "Username is already in use",
       409,
-      "UsernameAlreadyInUseError"
+      ApiErrorCode.USERNAME_ALREAY_IN_USE_ERROR
     );
   }
 
@@ -119,7 +119,7 @@ export const create = async (doc, view) => {
     throw new ApiError(
       "Email is already in use",
       409,
-      "EmailAlreadyInUseError"
+      ApiErrorCode.EMAIL_ALREADY_IN_USE_ERROR
     );
   }
 
@@ -162,7 +162,7 @@ export const updateByUsername = async (username, doc, view) => {
     throw new ApiError(
       "Email is already in use",
       409,
-      "EmailAlreadyInUseError"
+      ApiErrorCode.EMAIL_ALREADY_IN_USE_ERROR
     );
   }
 
@@ -173,7 +173,7 @@ export const updateByUsername = async (username, doc, view) => {
     throw new ApiError(
       "Blocking the last administrator is not allowed",
       409,
-      "MustBeAdministrableError"
+      ApiErrorCode.MUST_BE_ADMINISTRABLE_ERROR
     );
   }
 
@@ -184,7 +184,7 @@ export const updateByUsername = async (username, doc, view) => {
     throw new ApiError(
       "Removing the last administrator is not allowed",
       409,
-      "MustBeAdministrableError"
+      ApiErrorCode.MUST_BE_ADMINISTRABLE_ERROR
     );
   }
 
@@ -203,7 +203,7 @@ export const updateByUsername = async (username, doc, view) => {
   });
 
   if (!user) {
-    throw new ApiError("Resource not found", 404, "NotFoundError");
+    throw new ApiError("Resource not found", 404, ApiErrorCode.NOT_FOUND_ERROR);
   }
 
   return user.toDTO(view);
@@ -222,14 +222,14 @@ export const deleteByUsername = async (username) => {
     throw new ApiError(
       "Removing the last administrator is not allowed",
       409,
-      "MustBeAdministrableError"
+      ApiErrorCode.MUST_BE_ADMINISTRABLE_ERROR
     );
   }
 
   const user = await User.findOneAndDelete({ username });
 
   if (!user) {
-    throw new ApiError("Resource not found", 404, "NotFoundError");
+    throw new ApiError("Resource not found", 404, ApiErrorCode.NOT_FOUND_ERROR);
   }
 };
 

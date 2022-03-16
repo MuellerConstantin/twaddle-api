@@ -18,8 +18,34 @@ export const asyncHandler = (route) => async (req, res, next) => {
 };
 
 /**
+ * All error codes used by the RESTful interface.
+ */
+export const ApiErrorCode = {
+  INTERNAL_SERVER_ERROR: "InternalServerError",
+  NOT_FOUND_ERROR: "NotFoundError",
+  INVALID_QUERY_PARAMETER_ERROR: "InvalidQueryParameterError",
+  INVALID_PATH_VARIABLE_ERROR: "InvalidPathVariableError",
+  VALIDATION_ERROR: "ValidationError",
+  INVALID_CREDENTIALS_ERROR: "InvalidCredentialsError",
+  INVALID_TOKEN_ERROR: "InvalidTokenError",
+  ACCESS_DENIED_ERROR: "AccessDeniedError",
+  ROOM_NAME_ALREADY_IN_USE_ERROR: "RoomNameAlreadyInUseError",
+  USERNAME_ALREAY_IN_USE_ERROR: "UsernameAlreadyInUseError",
+  EMAIL_ALREADY_IN_USE_ERROR: "EmailAlreadyInUseError",
+  MUST_BE_ADMINISTRABLE_ERROR: "MustBeAdministrableError",
+  ACCOUNT_BLOCKED_ERROR: "AccountBlockedError",
+  TOO_MANY_REQUESTS_ERROR: "TooManyRequestsError",
+  REST_QUERY_LANGUAGE_ERROR: "RestQueryLanguageError",
+};
+
+Object.freeze(ApiErrorCode);
+
+/**
  * Standardized API error Format for implementing uniform error messages.
  * This class should be used instead of the base class {@link Error}.
+ *
+ * @class
+ * @extends Error
  */
 export class ApiError extends Error {
   /**
@@ -34,7 +60,7 @@ export class ApiError extends Error {
   constructor(message, status, code, details, headers) {
     super(message || "Internal server error occurred");
     this.status = status || 500;
-    this.code = code || "InternalServerError";
+    this.code = code || ApiErrorCode.INTERNAL_SERVER_ERROR;
     this.details = details;
     this.headers = headers;
   }
@@ -50,8 +76,25 @@ export class ApiError extends Error {
 }
 
 /**
+ * All error codes used by the WebSocket interface.
+ */
+export const SocketErrorCode = {
+  INTERNAL_SERVER_ERROR: "InternalServerError",
+  NOT_FOUND_ERROR: "NotFoundError",
+  INVALID_TICKET_ERROR: "InvalidTicketError",
+  ALREADY_CONNECTED_ERROR: "AlreadyConnectedError",
+  NO_ROOM_ASSOCIATED_ERROR: "NoRoomAssociatedError",
+  ACCOUNT_BLOCKED_ERROR: "AccountBlockedError",
+};
+
+Object.freeze(SocketErrorCode);
+
+/**
  * Standardized socket error Format for implementing uniform error messages.
  * This class should be used instead of the base class {@link Error}.
+ *
+ * @class
+ * @extends Error
  */
 export class SocketError extends Error {
   /**
@@ -63,7 +106,7 @@ export class SocketError extends Error {
    */
   constructor(message, code, details) {
     super(message || "Internal server error occurred");
-    this.code = code || "InternalServerError";
+    this.code = code || SocketErrorCode.INTERNAL_SERVER_ERROR;
     this.details = details;
   }
 
@@ -82,14 +125,14 @@ export class SocketError extends Error {
  * @returns Returns the default handler.
  */
 export const notFoundHandler = () => (req, res, next) => {
-  next(new ApiError("Resource not found", 404, "NotFoundError"));
+  next(new ApiError("Resource not found", 404, ApiErrorCode.NOT_FOUND_ERROR));
 };
 
 /**
  * Middleware handles API errors and transforms them to meaningful
  * HTTP responses.
  *
- * @returns Returns the error handling middleware.
+ * @returns {expres} Returns the error handling middleware.
  */
 export const errorHandler = () => (error, req, res, next) => {
   let apiError;

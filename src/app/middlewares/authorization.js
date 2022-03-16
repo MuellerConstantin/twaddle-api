@@ -1,4 +1,4 @@
-import { ApiError } from "./error";
+import { ApiError, ApiErrorCode } from "./error";
 
 /**
  * Authorization middleware that expects a predicate. If predicate resolves to true, the access
@@ -18,7 +18,7 @@ export const authorize = (predicate) => async (req, res, next) => {
       new ApiError(
         "Access denied because of missing permissions",
         403,
-        "AccessDeniedError"
+        ApiErrorCode.ACCESS_DENIED_ERROR
       )
     );
   }

@@ -53,15 +53,16 @@ business logic and a data layer that is responsible for data persistence.
 The RESTful interface is used to exchange static data such as user profiles or access data.
 The communication is stateless based on the [HTTP/1.1](https://datatracker.ietf.org/doc/html/rfc2616/)
 protocol. The resources and endpoints are documented by the self-service documentation provided
-by the service itself. See `/docs` of the service instance for details.
+by the service itself. See [Documentation](./docs/asciidoc/index.adoc#twaddle-management-api)
+for details.
 
 ### Twaddle Communication API
 
 A web socket interface is used for reactive tasks such as real-time communication. This is based on
 the [WebSocket](https://datatracker.ietf.org/doc/html/rfc6455) protocol or, based on it, on the
 [Socket.IO](https://github.com/socketio/socket.io-protocol) protocol. The resources and events
-are documented by the self-service documentation provided by the service itself. See `/docs` of the
-service instance for details.
+are documented by the self-service documentation provided by the service itself. See
+[Documentation](./docs/asciidoc/index.adoc#twaddle-communication-api) for details.
 
 ## Configuration
 

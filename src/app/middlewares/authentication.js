@@ -1,5 +1,5 @@
 import passport from "passport";
-import { ApiError, SocketError } from "./error";
+import { ApiError, SocketError, ApiErrorCode, SocketErrorCode } from "./error";
 import logger from "../config/logger";
 
 /**
@@ -16,7 +16,11 @@ export const authenticateToken = () => (req, res, next) => {
 
     if (!user) {
       return next(
-        new ApiError("Invalid token provided", 401, "InvalidTokenError")
+        new ApiError(
+          "Invalid token provided",
+          401,
+          ApiErrorCode.INVALID_TOKEN_ERROR
+        )
       );
     }
 
@@ -42,7 +46,7 @@ export const authenticateCredentials = () => (req, res, next) => {
         new ApiError(
           "Invalid credentials provided",
           401,
-          "InvalidCredentialsError"
+          ApiErrorCode.INVALID_CREDENTIALS_ERROR
         )
       );
     }
@@ -75,7 +79,7 @@ export const authenticateTicket = () => async (socket, next) => {
       const authErr = new Error("Invalid ticket provided");
       authErr.data = new SocketError(
         "Invalid ticket provided",
-        "InvalidTicketError"
+        SocketErrorCode.INVALID_TICKET_ERROR
       ).toJSON();
 
       return next(authErr);
@@ -87,7 +91,7 @@ export const authenticateTicket = () => async (socket, next) => {
       );
       authErr.data = new SocketError(
         "The account was blocked for policy violations",
-        "AccountBlockedError"
+        SocketErrorCode.ACCOUNT_BLOCKED_ERROR
       ).toJSON();
 
       return next(authErr);

@@ -1,5 +1,5 @@
 import { parse as parseRsql } from "@rsql/parser";
-import { ApiError } from "./error";
+import { ApiError, ApiErrorCode } from "./error";
 
 const resolveComparisonOperator = (operator) => {
   switch (operator) {
@@ -38,7 +38,7 @@ const resolveComparisonOperator = (operator) => {
       throw new ApiError(
         "Invalid query language comparison operator",
         400,
-        "RestQueryLanguageError"
+        ApiErrorCode.REST_QUERY_LANGUAGE_ERROR
       );
     }
   }
@@ -58,7 +58,7 @@ const resolveLogicOperator = (operator) => {
       throw new ApiError(
         "Invalid query language logic operator",
         400,
-        "RestQueryLanguageError"
+        ApiErrorCode.REST_QUERY_LANGUAGE_ERROR
       );
     }
   }
@@ -94,7 +94,7 @@ const parseLogic = (logic) => {
     throw new ApiError(
       "Invalid query language type",
       400,
-      "RestQueryLanguageError"
+      ApiErrorCode.REST_QUERY_LANGUAGE_ERROR
     );
   }
 
@@ -106,7 +106,7 @@ const parseLogic = (logic) => {
     throw new ApiError(
       "Invalid query language type",
       400,
-      "RestQueryLanguageError"
+      ApiErrorCode.REST_QUERY_LANGUAGE_ERROR
     );
   }
 
@@ -124,7 +124,7 @@ const parseAst = (ast) => {
     throw new ApiError(
       "Invalid query language type",
       400,
-      "RestQueryLanguageError"
+      ApiErrorCode.REST_QUERY_LANGUAGE_ERROR
     );
   }
 
@@ -147,7 +147,7 @@ export const parse = (rsql) => {
     throw new ApiError(
       "Invalid query language syntax",
       400,
-      "RestQueryLanguageError"
+      ApiErrorCode.REST_QUERY_LANGUAGE_ERROR
     );
   }
 
