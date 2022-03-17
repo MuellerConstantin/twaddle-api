@@ -1,6 +1,8 @@
 import joi from "joi";
 import { ApiError, ApiErrorCode } from "../middlewares/error";
 import { validate } from "../middlewares/validation";
+import { parse as parseRsql } from "../middlewares/rsql";
+import { parse as parseSort } from "../middlewares/sorting";
 import Message from "../models/message";
 
 /**
@@ -41,20 +43,27 @@ export const findById = async (id) => {
  * Find all available messages of a room paged.
  *
  * @param {string} roomId Id of the room from which messages should be loaded
+ * @param {string=} filter RSQL query filter
+ * @param {string=} sort Sorting instruction
  * @param {{perPage: number, page: number}=} pageable Pagination settings
  * @returns {Promise<[[MessageDTO], PageInfo]>} Returns the fetched page
  */
 export const findAllByRoom = async (
   roomId,
+  filter,
+  sort,
   pageable = { perPage: 25, page: 0 }
 ) => {
   const { perPage, page } = pageable;
 
-  const messages = await Message.find({ room: roomId })
+  const mongoFilter = filter ? parseRsql(filter) : {};
+  const mongoSort = sort ? parseSort(sort) : { createdAt: -1 };
+
+  const messages = await Message.find({ ...mongoFilter, room: roomId })
+    .sort(mongoSort)
     .populate("user", "username")
     .limit(perPage)
-    .skip(perPage * page)
-    .sort({ name: 1 });
+    .skip(perPage * page);
 
   const totalMessages = await Message.count();
 

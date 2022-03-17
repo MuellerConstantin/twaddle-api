@@ -44,11 +44,15 @@ router.get(
       perPage: joi.number().positive().greater(0).default(25).optional(),
       page: joi.number().positive().allow(0).default(0).optional(),
       filter: joi.string().optional(),
+      sort: joi
+        .string()
+        .regex(/^[A-Za-z0-9_-]+,(asc|desc)$/)
+        .optional(),
     })
   ),
   asyncHandler(async (req, res) => {
-    const { perPage, page, filter } = req.query;
-    const [content, info] = await UserService.findAll(filter, {
+    const { perPage, page, filter, sort } = req.query;
+    const [content, info] = await UserService.findAll(filter, sort, {
       perPage,
       page,
     });

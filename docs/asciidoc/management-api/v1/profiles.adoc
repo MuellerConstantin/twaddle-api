@@ -8,8 +8,6 @@ Get all available user profiles paged. See <<_pagination, Pagination>> for detai
 Method:: GET
 Path:: /api/v1/profiles
 Authentication:: Yes
-Pagination:: Yes
-Filtering:: Yes
 
 ====== Request
 

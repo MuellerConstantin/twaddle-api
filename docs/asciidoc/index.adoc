@@ -136,10 +136,15 @@ contains meta information. This meta information provides information about the 
 |===
 
 ==== Filtering
-Some endpoints also allow the collection to be filtered. Only elements that correspond to
+Moreover, all endpoints also allow the collection to be filtered. Only elements that correspond to
 a filter and therefore have very special properties are taken from the collection. Filtering
 is done using the HTTP query parameter `filter` and the query language
 https://github.com/jirutka/rsql-parser#grammar-and-semantic[RSQL]:
+
+[source,http,options="nowrap"]
+----
+http://twaddle.com/api/v1/rooms?filter="name==Lobby"
+----
 
 .Filtering Query Parameters
 [cols="1,1,1]
@@ -153,6 +158,26 @@ https://github.com/jirutka/rsql-parser#grammar-and-semantic[RSQL]:
 
 In addition to the standard operations of the RSQL query language, the LIKE operator `=like=`
 is supported. This allows filtering for similarly named text items.
+
+==== Sorting
+In addition, collections can also be sorted. The list of elements is sorted according to specific
+properties. The sorting is done using the HTTP query parameter `sort`.
+
+[source,http,options="nowrap"]
+----
+http://twaddle.com/api/v1/rooms?sort="name,asc"
+----
+
+.Sorting Query Parameters
+[cols="1,1,1]
+|===
+|Parameter |Description |Required
+
+|sort
+|Contains the sort instruction consisting of a field name and the sort direction separated by a comma.
+Possible sorting directions are `asc` for ascending and `desc` for descending.
+|false
+|===
 
 ==== Error handling
 To allow clients to respond appropriately, the API uses a consistent and relatively detailed error

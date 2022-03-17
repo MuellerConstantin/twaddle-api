@@ -104,8 +104,6 @@ Get all available users paged. See <<_pagination, Pagination>> for details.
 Method:: GET
 Path:: /api/v1/users
 Authentication:: Yes
-Pagination:: Yes
-Filtering:: Yes
 
 ====== Request
 

@@ -98,8 +98,6 @@ Get all available rooms paged. See <<_pagination, Pagination>> for details.
 Method:: GET
 Path:: /api/v1/rooms
 Authentication:: Yes
-Pagination:: Yes
-Filtering:: Yes
 
 ====== Request
 

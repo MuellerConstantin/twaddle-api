@@ -36,6 +36,7 @@ export const ApiErrorCode = {
   ACCOUNT_BLOCKED_ERROR: "AccountBlockedError",
   TOO_MANY_REQUESTS_ERROR: "TooManyRequestsError",
   REST_QUERY_LANGUAGE_ERROR: "RestQueryLanguageError",
+  SORTING_INSTRUCTION_ERROR: "SortingInstructionError",
 };
 
 Object.freeze(ApiErrorCode);

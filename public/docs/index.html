@@ -455,6 +455,7 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 <li><a href="#_content_negotiation">Content negotiation</a></li>
 <li><a href="#_pagination">Pagination</a></li>
 <li><a href="#_filtering">Filtering</a></li>
+<li><a href="#_sorting">Sorting</a></li>
 <li><a href="#_error_handling">Error handling</a>
 <ul class="sectlevel4">
 <li><a href="#_error_codes">Error codes</a></li>
@@ -772,10 +773,15 @@ contains meta information. This meta information provides information about the 
 <div class="sect3">
 <h4 id="_filtering"><a class="link" href="#_filtering">Filtering</a></h4>
 <div class="paragraph">
-<p>Some endpoints also allow the collection to be filtered. Only elements that correspond to
+<p>Moreover, all endpoints also allow the collection to be filtered. Only elements that correspond to
 a filter and therefore have very special properties are taken from the collection. Filtering
 is done using the HTTP query parameter <code>filter</code> and the query language
 <a href="https://github.com/jirutka/rsql-parser#grammar-and-semantic">RSQL</a>:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight nowrap"><code class="language-http hljs" data-lang="http">http://twaddle.com/api/v1/rooms?filter="name==Lobby"</code></pre>
+</div>
 </div>
 <table class="tableblock frame-all grid-all stretch">
 <caption class="title">Table 3. Filtering Query Parameters</caption>
@@ -805,6 +811,41 @@ is supported. This allows filtering for similarly named text items.</p>
 </div>
 </div>
 <div class="sect3">
+<h4 id="_sorting"><a class="link" href="#_sorting">Sorting</a></h4>
+<div class="paragraph">
+<p>In addition, collections can also be sorted. The list of elements is sorted according to specific
+properties. The sorting is done using the HTTP query parameter <code>sort</code>.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight nowrap"><code class="language-http hljs" data-lang="http">http://twaddle.com/api/v1/rooms?sort="name,asc"</code></pre>
+</div>
+</div>
+<table class="tableblock frame-all grid-all stretch">
+<caption class="title">Table 4. Sorting Query Parameters</caption>
+<colgroup>
+<col style="width: 33.3333%;">
+<col style="width: 33.3333%;">
+<col style="width: 33.3334%;">
+</colgroup>
+<thead>
+<tr>
+<th class="tableblock halign-left valign-top">Parameter</th>
+<th class="tableblock halign-left valign-top">Description</th>
+<th class="tableblock halign-left valign-top">Required</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">sort</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Contains the sort instruction consisting of a field name and the sort direction separated by a comma.
+Possible sorting directions are <code>asc</code> for ascending and <code>desc</code> for descending.</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">false</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="sect3">
 <h4 id="_error_handling"><a class="link" href="#_error_handling">Error handling</a></h4>
 <div class="paragraph">
 <p>To allow clients to respond appropriately, the API uses a consistent and relatively detailed error
@@ -812,7 +853,7 @@ format. In addition to the HTTP status code available via the protocol, informat
 object is also sent in the event of an error. The error object to be sent has the following fields:</p>
 </div>
 <table class="tableblock frame-all grid-all stretch">
-<caption class="title">Table 4. Error Response Fields</caption>
+<caption class="title">Table 5. Error Response Fields</caption>
 <colgroup>
 <col style="width: 25%;">
 <col style="width: 25%;">
@@ -863,7 +904,7 @@ through <code>code</code>.</p></td>
 more specifically to errors.</p>
 </div>
 <table class="tableblock frame-all grid-all stretch">
-<caption class="title">Table 5. Error Codes</caption>
+<caption class="title">Table 6. Error Codes</caption>
 <colgroup>
 <col style="width: 50%;">
 <col style="width: 50%;">
@@ -991,7 +1032,7 @@ Path
 <div class="sect5">
 <h6 id="_request"><a class="link" href="#_request">Request</a></h6>
 <table class="tableblock frame-all grid-all stretch">
-<caption class="title">Table 6. Request Fields</caption>
+<caption class="title">Table 7. Request Fields</caption>
 <colgroup>
 <col style="width: 25%;">
 <col style="width: 25%;">
@@ -1043,7 +1084,7 @@ Content-Length: 46
 <div class="sect5">
 <h6 id="_response"><a class="link" href="#_response">Response</a></h6>
 <table class="tableblock frame-all grid-all stretch">
-<caption class="title">Table 7. Response Fields</caption>
+<caption class="title">Table 8. Response Fields</caption>
 <colgroup>
 <col style="width: 25%;">
 <col style="width: 25%;">
@@ -1163,7 +1204,7 @@ Authorization: Bearer eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJyb2xlIjoiQURNSU5JU
 <div class="sect5">
 <h6 id="_response_2"><a class="link" href="#_response_2">Response</a></h6>
 <table class="tableblock frame-all grid-all stretch">
-<caption class="title">Table 8. Response Fields</caption>
+<caption class="title">Table 9. Response Fields</caption>
 <colgroup>
 <col style="width: 25%;">
 <col style="width: 25%;">
@@ -1272,7 +1313,7 @@ The first user who registers on the platform is automatically made an administra
 <div class="sect5">
 <h6 id="_request_3"><a class="link" href="#_request_3">Request</a></h6>
 <table class="tableblock frame-all grid-all stretch">
-<caption class="title">Table 9. Request Fields</caption>
+<caption class="title">Table 10. Request Fields</caption>
 <colgroup>
 <col style="width: 25%;">
 <col style="width: 25%;">
@@ -1331,7 +1372,7 @@ Content-Length: 74
 <div class="sect5">
 <h6 id="_response_3"><a class="link" href="#_response_3">Response</a></h6>
 <table class="tableblock frame-all grid-all stretch">
-<caption class="title">Table 10. Response Fields</caption>
+<caption class="title">Table 11. Response Fields</caption>
 <colgroup>
 <col style="width: 25%;">
 <col style="width: 25%;">
@@ -1425,22 +1466,6 @@ Authentication
 <p>Yes</p>
 </td>
 </tr>
-<tr>
-<td class="hdlist1">
-Pagination
-</td>
-<td class="hdlist2">
-<p>Yes</p>
-</td>
-</tr>
-<tr>
-<td class="hdlist1">
-Filtering
-</td>
-<td class="hdlist2">
-<p>Yes</p>
-</td>
-</tr>
 </table>
 </div>
 <div class="sect5">
@@ -1461,7 +1486,7 @@ Accept: application/json</code></pre>
 <div class="sect5">
 <h6 id="_response_4"><a class="link" href="#_response_4">Response</a></h6>
 <table class="tableblock frame-all grid-all stretch">
-<caption class="title">Table 11. Response Fields</caption>
+<caption class="title">Table 12. Response Fields</caption>
 <colgroup>
 <col style="width: 25%;">
 <col style="width: 25%;">
@@ -1583,7 +1608,7 @@ Authentication
 <div class="sect5">
 <h6 id="_request_5"><a class="link" href="#_request_5">Request</a></h6>
 <table class="tableblock frame-all grid-all stretch">
-<caption class="title">Table 12. Path Variables</caption>
+<caption class="title">Table 13. Path Variables</caption>
 <colgroup>
 <col style="width: 25%;">
 <col style="width: 25%;">
@@ -1623,7 +1648,7 @@ Accept: application/json</code></pre>
 <div class="sect5">
 <h6 id="_response_5"><a class="link" href="#_response_5">Response</a></h6>
 <table class="tableblock frame-all grid-all stretch">
-<caption class="title">Table 13. Response Fields</caption>
+<caption class="title">Table 14. Response Fields</caption>
 <colgroup>
 <col style="width: 25%;">
 <col style="width: 25%;">
@@ -1728,7 +1753,7 @@ Authentication
 <div class="sect5">
 <h6 id="_request_6"><a class="link" href="#_request_6">Request</a></h6>
 <table class="tableblock frame-all grid-all stretch">
-<caption class="title">Table 14. Path Variables</caption>
+<caption class="title">Table 15. Path Variables</caption>
 <colgroup>
 <col style="width: 25%;">
 <col style="width: 25%;">
@@ -1816,7 +1841,7 @@ Authentication
 <div class="sect5">
 <h6 id="_request_7"><a class="link" href="#_request_7">Request</a></h6>
 <table class="tableblock frame-all grid-all stretch">
-<caption class="title">Table 15. Path Variables</caption>
+<caption class="title">Table 16. Path Variables</caption>
 <colgroup>
 <col style="width: 25%;">
 <col style="width: 25%;">
@@ -1841,7 +1866,7 @@ Authentication
 </tbody>
 </table>
 <table class="tableblock frame-all grid-all stretch">
-<caption class="title">Table 16. Request Fields</caption>
+<caption class="title">Table 17. Request Fields</caption>
 <colgroup>
 <col style="width: 25%;">
 <col style="width: 25%;">
@@ -1899,7 +1924,7 @@ Content-Length: 29
 <div class="sect5">
 <h6 id="_response_7"><a class="link" href="#_response_7">Response</a></h6>
 <table class="tableblock frame-all grid-all stretch">
-<caption class="title">Table 17. Response Fields</caption>
+<caption class="title">Table 18. Response Fields</caption>
 <colgroup>
 <col style="width: 25%;">
 <col style="width: 25%;">
@@ -2005,22 +2030,6 @@ Authentication
 <p>Yes</p>
 </td>
 </tr>
-<tr>
-<td class="hdlist1">
-Pagination
-</td>
-<td class="hdlist2">
-<p>Yes</p>
-</td>
-</tr>
-<tr>
-<td class="hdlist1">
-Filtering
-</td>
-<td class="hdlist2">
-<p>Yes</p>
-</td>
-</tr>
 </table>
 </div>
 <div class="sect5">
@@ -2041,7 +2050,7 @@ Accept: application/json</code></pre>
 <div class="sect5">
 <h6 id="_response_8"><a class="link" href="#_response_8">Response</a></h6>
 <table class="tableblock frame-all grid-all stretch">
-<caption class="title">Table 18. Response Fields</caption>
+<caption class="title">Table 19. Response Fields</caption>
 <colgroup>
 <col style="width: 25%;">
 <col style="width: 25%;">
@@ -2142,7 +2151,7 @@ Authentication
 <div class="sect5">
 <h6 id="_request_9"><a class="link" href="#_request_9">Request</a></h6>
 <table class="tableblock frame-all grid-all stretch">
-<caption class="title">Table 19. Path Variables</caption>
+<caption class="title">Table 20. Path Variables</caption>
 <colgroup>
 <col style="width: 25%;">
 <col style="width: 25%;">
@@ -2182,7 +2191,7 @@ Accept: application/json</code></pre>
 <div class="sect5">
 <h6 id="_response_9"><a class="link" href="#_response_9">Response</a></h6>
 <table class="tableblock frame-all grid-all stretch">
-<caption class="title">Table 20. Response Fields</caption>
+<caption class="title">Table 21. Response Fields</caption>
 <colgroup>
 <col style="width: 25%;">
 <col style="width: 25%;">
@@ -2273,7 +2282,7 @@ Authentication
 <div class="sect5">
 <h6 id="_request_10"><a class="link" href="#_request_10">Request</a></h6>
 <table class="tableblock frame-all grid-all stretch">
-<caption class="title">Table 21. Request Fields</caption>
+<caption class="title">Table 22. Request Fields</caption>
 <colgroup>
 <col style="width: 25%;">
 <col style="width: 25%;">
@@ -2326,7 +2335,7 @@ Content-Length: 73
 <div class="sect5">
 <h6 id="_response_10"><a class="link" href="#_response_10">Response</a></h6>
 <table class="tableblock frame-all grid-all stretch">
-<caption class="title">Table 22. Response Fields</caption>
+<caption class="title">Table 23. Response Fields</caption>
 <colgroup>
 <col style="width: 25%;">
 <col style="width: 25%;">
@@ -2420,22 +2429,6 @@ Authentication
 <p>Yes</p>
 </td>
 </tr>
-<tr>
-<td class="hdlist1">
-Pagination
-</td>
-<td class="hdlist2">
-<p>Yes</p>
-</td>
-</tr>
-<tr>
-<td class="hdlist1">
-Filtering
-</td>
-<td class="hdlist2">
-<p>Yes</p>
-</td>
-</tr>
 </table>
 </div>
 <div class="sect5">
@@ -2456,7 +2449,7 @@ Accept: application/json</code></pre>
 <div class="sect5">
 <h6 id="_response_11"><a class="link" href="#_response_11">Response</a></h6>
 <table class="tableblock frame-all grid-all stretch">
-<caption class="title">Table 23. Response Fields</caption>
+<caption class="title">Table 24. Response Fields</caption>
 <colgroup>
 <col style="width: 25%;">
 <col style="width: 25%;">
@@ -2571,7 +2564,7 @@ Authentication
 <div class="sect5">
 <h6 id="_request_12"><a class="link" href="#_request_12">Request</a></h6>
 <table class="tableblock frame-all grid-all stretch">
-<caption class="title">Table 24. Path Variables</caption>
+<caption class="title">Table 25. Path Variables</caption>
 <colgroup>
 <col style="width: 25%;">
 <col style="width: 25%;">
@@ -2611,7 +2604,7 @@ Accept: application/json</code></pre>
 <div class="sect5">
 <h6 id="_response_12"><a class="link" href="#_response_12">Response</a></h6>
 <table class="tableblock frame-all grid-all stretch">
-<caption class="title">Table 25. Response Fields</caption>
+<caption class="title">Table 26. Response Fields</caption>
 <colgroup>
 <col style="width: 25%;">
 <col style="width: 25%;">
@@ -2710,7 +2703,7 @@ Authentication
 <div class="sect5">
 <h6 id="_request_13"><a class="link" href="#_request_13">Request</a></h6>
 <table class="tableblock frame-all grid-all stretch">
-<caption class="title">Table 26. Path Variables</caption>
+<caption class="title">Table 27. Path Variables</caption>
 <colgroup>
 <col style="width: 25%;">
 <col style="width: 25%;">
@@ -2798,7 +2791,7 @@ Authentication
 <div class="sect5">
 <h6 id="_request_14"><a class="link" href="#_request_14">Request</a></h6>
 <table class="tableblock frame-all grid-all stretch">
-<caption class="title">Table 27. Path Variables</caption>
+<caption class="title">Table 28. Path Variables</caption>
 <colgroup>
 <col style="width: 25%;">
 <col style="width: 25%;">
@@ -2823,7 +2816,7 @@ Authentication
 </tbody>
 </table>
 <table class="tableblock frame-all grid-all stretch">
-<caption class="title">Table 28. Request Fields</caption>
+<caption class="title">Table 29. Request Fields</caption>
 <colgroup>
 <col style="width: 25%;">
 <col style="width: 25%;">
@@ -2875,7 +2868,7 @@ Content-Length: 18
 <div class="sect5">
 <h6 id="_response_14"><a class="link" href="#_response_14">Response</a></h6>
 <table class="tableblock frame-all grid-all stretch">
-<caption class="title">Table 29. Response Fields</caption>
+<caption class="title">Table 30. Response Fields</caption>
 <colgroup>
 <col style="width: 25%;">
 <col style="width: 25%;">
@@ -2975,20 +2968,12 @@ Authentication
 <p>Yes</p>
 </td>
 </tr>
-<tr>
-<td class="hdlist1">
-Pagination
-</td>
-<td class="hdlist2">
-<p>Yes</p>
-</td>
-</tr>
 </table>
 </div>
 <div class="sect5">
 <h6 id="_request_15"><a class="link" href="#_request_15">Request</a></h6>
 <table class="tableblock frame-all grid-all stretch">
-<caption class="title">Table 30. Path Variables</caption>
+<caption class="title">Table 31. Path Variables</caption>
 <colgroup>
 <col style="width: 25%;">
 <col style="width: 25%;">
@@ -3028,7 +3013,7 @@ Accept: application/json</code></pre>
 <div class="sect5">
 <h6 id="_response_15"><a class="link" href="#_response_15">Response</a></h6>
 <table class="tableblock frame-all grid-all stretch">
-<caption class="title">Table 31. Response Fields</caption>
+<caption class="title">Table 32. Response Fields</caption>
 <colgroup>
 <col style="width: 25%;">
 <col style="width: 25%;">
@@ -3150,7 +3135,7 @@ Authentication
 <div class="sect5">
 <h6 id="_request_16"><a class="link" href="#_request_16">Request</a></h6>
 <table class="tableblock frame-all grid-all stretch">
-<caption class="title">Table 32. Path Variables</caption>
+<caption class="title">Table 33. Path Variables</caption>
 <colgroup>
 <col style="width: 25%;">
 <col style="width: 25%;">
@@ -3190,7 +3175,7 @@ Accept: application/json</code></pre>
 <div class="sect5">
 <h6 id="_response_16"><a class="link" href="#_response_16">Response</a></h6>
 <table class="tableblock frame-all grid-all stretch">
-<caption class="title">Table 33. Response Fields</caption>
+<caption class="title">Table 34. Response Fields</caption>
 <colgroup>
 <col style="width: 25%;">
 <col style="width: 25%;">
@@ -3406,7 +3391,7 @@ connection was successfully established. Every business error is processed here.
 <p>The error object sent in the payload event always has the following structure:</p>
 </div>
 <table class="tableblock frame-all grid-all stretch">
-<caption class="title">Table 34. Error Response Fields</caption>
+<caption class="title">Table 35. Error Response Fields</caption>
 <colgroup>
 <col style="width: 25%;">
 <col style="width: 25%;">
@@ -3451,7 +3436,7 @@ through <code>code</code>.</p></td>
 respond more specifically to errors.</p>
 </div>
 <table class="tableblock frame-all grid-all stretch">
-<caption class="title">Table 35. Error Codes</caption>
+<caption class="title">Table 36. Error Codes</caption>
 <colgroup>
 <col style="width: 50%;">
 <col style="width: 50%;">
@@ -3529,7 +3514,7 @@ Emitter
 </table>
 </div>
 <table class="tableblock frame-all grid-all stretch">
-<caption class="title">Table 36. Payload Fields</caption>
+<caption class="title">Table 37. Payload Fields</caption>
 <colgroup>
 <col style="width: 25%;">
 <col style="width: 25%;">
@@ -3658,7 +3643,7 @@ Emitter
 </table>
 </div>
 <table class="tableblock frame-all grid-all stretch">
-<caption class="title">Table 37. Payload Fields</caption>
+<caption class="title">Table 38. Payload Fields</caption>
 <colgroup>
 <col style="width: 25%;">
 <col style="width: 25%;">
@@ -3709,7 +3694,7 @@ Emitter
 </table>
 </div>
 <table class="tableblock frame-all grid-all stretch">
-<caption class="title">Table 38. Payload Fields</caption>
+<caption class="title">Table 39. Payload Fields</caption>
 <colgroup>
 <col style="width: 25%;">
 <col style="width: 25%;">
@@ -3760,7 +3745,7 @@ Emitter
 </table>
 </div>
 <table class="tableblock frame-all grid-all stretch">
-<caption class="title">Table 39. Payload Fields</caption>
+<caption class="title">Table 40. Payload Fields</caption>
 <colgroup>
 <col style="width: 25%;">
 <col style="width: 25%;">
@@ -3811,7 +3796,7 @@ Emitter
 </table>
 </div>
 <table class="tableblock frame-all grid-all stretch">
-<caption class="title">Table 40. Payload Fields</caption>
+<caption class="title">Table 41. Payload Fields</caption>
 <colgroup>
 <col style="width: 25%;">
 <col style="width: 25%;">
@@ -3862,7 +3847,7 @@ Emitter
 </table>
 </div>
 <table class="tableblock frame-all grid-all stretch">
-<caption class="title">Table 41. Payload Fields</caption>
+<caption class="title">Table 42. Payload Fields</caption>
 <colgroup>
 <col style="width: 25%;">
 <col style="width: 25%;">
@@ -3918,7 +3903,7 @@ Emitter
 </div>
 <div id="footer">
 <div id="footer-text">
-Last updated 2022-03-16 10:16:03 +0100
+Last updated 2022-03-17 18:02:45 +0100
 </div>
 </div>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.18.3/highlight.min.js"></script>

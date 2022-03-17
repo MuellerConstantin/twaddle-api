@@ -8,7 +8,6 @@ Get all available messages of a room paged. See <<_pagination, Pagination>> for 
 Method:: GET
 Path:: /api/v1/rooms/:roomId/messages
 Authentication:: Yes
-Pagination:: Yes
 
 ====== Request
 
