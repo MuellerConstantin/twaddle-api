@@ -50,6 +50,11 @@ Accept: application/json
 |Unique identifier of message.
 |true
 
+|content[].type
+|String
+|Content type of message. All MIME type compliant types are allowed. The default type is 'text/plain'.
+|true
+
 |content[].content
 |String
 |The actual message sent in chat.
@@ -142,6 +147,11 @@ Accept: application/json
 |id
 |String
 |Unique identifier of message.
+|true
+
+|type
+|String
+|Content type of message. All MIME type compliant types are allowed. The default type is 'text/plain'.
 |true
 
 |content

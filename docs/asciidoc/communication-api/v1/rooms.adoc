@@ -108,9 +108,14 @@ Emitter:: Client
 |===
 |Field |Type |Description |Required
 
-|message
+|content
 |String
 |Message to send.
+|true
+
+|type
+|String
+|Content type of message. All MIME type compliant types are allowed. The default type is 'text/plain'.
 |true
 |===
 
@@ -129,6 +134,11 @@ Emitter:: Server
 |id
 |String
 |Unique identifier of message.
+|true
+
+|type
+|String
+|Content type of message. All MIME type compliant types are allowed. The default type is 'text/plain'.
 |true
 
 |content

@@ -3,6 +3,11 @@ import connection from "../config/mongoose";
 
 const MessageSchema = new mongoose.Schema(
   {
+    type: {
+      type: String,
+      required: true,
+      default: "text/plain",
+    },
     content: {
       type: String,
       required: true,
@@ -27,6 +32,7 @@ MessageSchema.methods.toDTO = function (view) {
         // eslint-disable-next-line no-underscore-dangle
         id: this._id,
         content: this.content,
+        type: this.type,
         username: this.user.username,
         // eslint-disable-next-line no-underscore-dangle
         room: this.populated("room") ? this.room._id : this.room,

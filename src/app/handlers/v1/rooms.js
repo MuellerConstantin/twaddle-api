@@ -103,14 +103,15 @@ const roomHandler = (socket) => {
    * Responsible for receiving messages to be sent. These are then distributed
    * equally to all clients in the room.
    *
-   * @param {{message: string}} properties Properties of message to broadcast
+   * @param {{content: string, type: string}} properties Properties of message to broadcast
    */
-  const broadcastMessage = async ({ message }) => {
+  const broadcastMessage = async ({ type, content }) => {
     const id = await RoomService.getRoomByUsername(socket.user.username);
 
     if (id) {
       const newMessage = await MessageService.create({
-        content: message,
+        type,
+        content,
         room: id,
         // eslint-disable-next-line no-underscore-dangle
         user: socket.user._id.toString(),

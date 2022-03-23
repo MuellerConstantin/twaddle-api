@@ -88,6 +88,7 @@ export const findAllByRoom = async (
 export const create = async (doc) => {
   validate(
     joi.object({
+      type: joi.string().default("text/plain").optional(),
       content: joi.string().required(),
       room: joi.string().hex().length(24).required(),
       user: joi.string().hex().length(24).required(),
