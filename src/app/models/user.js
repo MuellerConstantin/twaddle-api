@@ -26,6 +26,13 @@ const UserSchema = new mongoose.Schema({
     type: Boolean,
     default: false,
   },
+  firstName: String,
+  lastName: String,
+  sex: {
+    type: String,
+    enum: ["MALE", "FEMALE", "DIVERS"],
+  },
+  biography: String,
 });
 
 // eslint-disable-next-line func-names
@@ -68,6 +75,10 @@ UserSchema.methods.toDTO = function (view) {
         // eslint-disable-next-line no-underscore-dangle
         id: this._id,
         username: this.username,
+        firstName: this.firstName || undefined,
+        lastName: this.lastName || undefined,
+        sex: this.sex || undefined,
+        biography: this.biography || undefined,
       };
     }
     default: {
@@ -78,6 +89,10 @@ UserSchema.methods.toDTO = function (view) {
         email: this.email,
         role: this.role,
         blocked: this.blocked,
+        firstName: this.firstName || undefined,
+        lastName: this.lastName || undefined,
+        sex: this.sex || undefined,
+        biography: this.biography || undefined,
       };
     }
   }

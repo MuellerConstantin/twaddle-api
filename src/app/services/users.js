@@ -11,12 +11,20 @@ import redis from "../config/redis";
  * @property {string} id
  * @property {string} username
  * @property {string} email
+ * @property {string=} firstName
+ * @property {string=} lastName
+ * @property {string=} biography
+ * @property {string=} sex
  */
 
 /**
  * @typedef {object} ProfileDTO
  * @property {string} id
  * @property {string} username
+ * @property {string=} firstName
+ * @property {string=} lastName
+ * @property {string=} biography
+ * @property {string=} sex
  */
 
 /**
@@ -158,6 +166,14 @@ export const updateByUsername = async (username, doc, view) => {
         .valid("ADMINISTRATOR", "MODERATOR", "MEMBER")
         .optional(),
       blocked: joi.boolean().optional(),
+      firstName: joi.string().max(200).allow(null).optional(),
+      lastName: joi.string().max(200).allow(null).optional(),
+      biography: joi.string().max(2000).allow(null).optional(),
+      sex: joi
+        .string()
+        .valid("MALE", "FEMALE", "DIVERS")
+        .allow(null)
+        .optional(),
     }),
     doc
   );

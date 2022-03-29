@@ -154,6 +154,21 @@ Accept: application/json
 |Boolean
 |Blocks a user account.
 |true
+
+|content[].firstName
+|String
+|First name of the user.
+|false
+
+|content[].lastName
+|String
+|Last name of the user.
+|false
+
+|content[].sex
+|String
+|Sex of the user. Either 'MALE' or 'FEMALE' or 'DIVERS'.
+|false
 |===
 
 .Response Example
@@ -248,6 +263,21 @@ Accept: application/json
 |Boolean
 |Blocks a user account.
 |true
+
+|firstName
+|String
+|First name of the user.
+|false
+
+|lastName
+|String
+|Last name of the user.
+|false
+
+|sex
+|String
+|Sex of the user. Either 'MALE' or 'FEMALE' or 'DIVERS'.
+|false
 |===
 
 .Response Example
@@ -352,6 +382,21 @@ Authentication:: Yes
 |Boolean
 |Blocks a user account.
 |false
+
+|firstName
+|String
+|First name of the user.
+|false
+
+|lastName
+|String
+|Last name of the user.
+|false
+
+|sex
+|String
+|Sex of the user. Either 'MALE' or 'FEMALE' or 'DIVERS'.
+|false
 |===
 
 .Request Example
@@ -402,6 +447,21 @@ Content-Length: 29
 |Boolean
 |Blocks a user account.
 |true
+
+|firstName
+|String
+|First name of the user.
+|false
+
+|lastName
+|String
+|Last name of the user.
+|false
+
+|sex
+|String
+|Sex of the user. Either 'MALE' or 'FEMALE' or 'DIVERS'.
+|false
 |===
 
 .Response Example

@@ -43,6 +43,21 @@ Accept: application/json
 |String
 |Unique username of account.
 |true
+
+|content[].firstName
+|String
+|First name of the user.
+|false
+
+|content[].lastName
+|String
+|Last name of the user.
+|false
+
+|content[].sex
+|String
+|Sex of the user. Either 'MALE' or 'FEMALE' or 'DIVERS'.
+|false
 |===
 
 .Response Example
@@ -117,8 +132,23 @@ Accept: application/json
 
 |username
 |String
-|Unique name of user
+|Unique name of user.
 |true
+
+|firstName
+|String
+|First name of the user.
+|false
+
+|lastName
+|String
+|Last name of the user.
+|false
+
+|sex
+|String
+|Sex of the user. Either 'MALE' or 'FEMALE' or 'DIVERS'.
+|false
 |===
 
 .Response Example
