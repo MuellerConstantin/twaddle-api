@@ -28,5 +28,6 @@ COPY --from=build /usr/local/src/twaddle/api/dist ./dist
 EXPOSE 3000
 VOLUME [ "/usr/local/bin/twaddle/api/public" ]
 VOLUME [ "/usr/local/bin/twaddle/api/resources" ]
+VOLUME [ "/usr/local/bin/twaddle/api/uploads" ]
 
 CMD npm run start

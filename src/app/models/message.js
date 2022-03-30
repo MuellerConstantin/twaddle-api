@@ -33,7 +33,7 @@ MessageSchema.methods.toDTO = function (view) {
         id: this._id,
         content: this.content,
         type: this.type,
-        username: this.user.username,
+        username: this.populated("user") ? this.user.username : this.user,
         // eslint-disable-next-line no-underscore-dangle
         room: this.populated("room") ? this.room._id : this.room,
         timestamp: this.createdAt,

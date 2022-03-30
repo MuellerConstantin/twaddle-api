@@ -29,7 +29,10 @@ services:
         source: ./resources
         target: /usr/local/bin/twaddle/api/resources
         read_only: true
+      - backend-uploads:/usr/local/bin/twaddle/api/uploads
     labels:
       - traefik.enable=true
       - traefik.http.routers.backend.entrypoints=web
       - traefik.http.routers.backend.rule=PathPrefix(`/`)
+volumes:
+  backend-uploads:

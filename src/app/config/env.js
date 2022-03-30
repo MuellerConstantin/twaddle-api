@@ -4,6 +4,7 @@
 
 import joi from "joi";
 import fs from "fs";
+import path from "path";
 
 const envSchema = joi
   .object()
@@ -24,12 +25,18 @@ const envSchema = joi
     LOGGER_FILENAME: joi.string().optional(),
     DATABASE_URI: joi.string().required().uri(),
     CACHE_URI: joi.string().required().uri(),
-    SECURITY_JWT_PUBLIC_KEY: joi.string().required(),
-    SECURITY_JWT_PRIVATE_KEY: joi.string().required(),
+    SECURITY_JWT_PUBLIC_KEY_PATH: joi.string().required(),
+    SECURITY_JWT_PRIVATE_KEY_PATH: joi.string().required(),
     SECURITY_JWT_ISSUER: joi.string().required(),
     SECURITY_JWT_EXPIRES: joi.number().min(1).default(2700),
     SECURITY_TICKET_EXPIRES: joi.number().min(1).default(120),
     SECURITY_RATE_LIMIT: joi.number().integer().positive().default(60),
+    UPLOADS_PATH: joi.string().required(),
+    UPLOADS_LIMITS_FILESIZE: joi
+      .number()
+      .integer()
+      .positive()
+      .default(1024 * 1024 * 5 /* 5MB */),
   })
   .unknown();
 
@@ -49,13 +56,23 @@ export default {
   database: {
     uri: env.DATABASE_URI,
   },
+  uploads: {
+    path: env.UPLOADS_PATH,
+    limits: {
+      fileSize: env.UPLOADS_LIMITS_FILESIZE,
+    },
+  },
   cache: {
     uri: env.CACHE_URI,
   },
   security: {
     jwt: {
-      publicKey: fs.readFileSync(env.SECURITY_JWT_PUBLIC_KEY),
-      privateKey: fs.readFileSync(env.SECURITY_JWT_PRIVATE_KEY),
+      publicKey: fs.readFileSync(
+        path.resolve(env.SECURITY_JWT_PUBLIC_KEY_PATH)
+      ),
+      privateKey: fs.readFileSync(
+        path.resolve(env.SECURITY_JWT_PRIVATE_KEY_PATH)
+      ),
       issuer: env.SECURITY_JWT_ISSUER,
       expires: env.SECURITY_JWT_EXPIRES,
     },

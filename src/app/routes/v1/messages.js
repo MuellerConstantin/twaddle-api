@@ -20,8 +20,8 @@ router.get(
   ),
   asyncHandler(async (req, res) => {
     const { id } = req.params;
-    const room = await MessageService.findById(id);
-    return res.status(200).json(room);
+    const message = await MessageService.findById(id);
+    return res.status(200).json(message);
   })
 );
 
