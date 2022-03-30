@@ -13,6 +13,14 @@ services:
         source: /var/run/docker.sock
         target: /var/run/docker.sock
         read_only: true
+  database:
+    image: mongo:latest
+    restart: always
+    volumes:
+      - database-datadb:/data/db
+      - database-configdb:/data/configdb
+    expose:
+      - 27017
   backend:
     image: twaddle/api:latest
     build:
@@ -20,6 +28,9 @@ services:
     restart: always
     expose:
       - 3000
+    environment:
+      PORT: 3000
+      DATABASE_URI: mongodb://database:27017/twaddle
     volumes:
       - type: bind
         source: ./public
@@ -35,4 +46,6 @@ services:
       - traefik.http.routers.backend.entrypoints=web
       - traefik.http.routers.backend.rule=PathPrefix(`/`)
 volumes:
+  database-datadb:
+  database-configdb:
   backend-uploads:
