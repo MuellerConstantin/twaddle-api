@@ -105,17 +105,25 @@ const roomHandler = (socket) => {
    *
    * @param {{content: string, type: string}} properties Properties of message to broadcast
    */
-  const broadcastMessage = async ({ type, content }) => {
+  const broadcastMessage = async ({ type, content, attachment }) => {
     const id = await RoomService.getRoomByUsername(socket.user.username);
 
     if (id) {
-      const newMessage = await MessageService.create({
-        type,
-        content,
-        room: id,
-        // eslint-disable-next-line no-underscore-dangle
-        user: socket.user._id.toString(),
-      });
+      let newMessage;
+
+      try {
+        newMessage = await MessageService.create({
+          type,
+          content,
+          attachment,
+          room: id,
+          // eslint-disable-next-line no-underscore-dangle
+          user: socket.user._id.toString(),
+        });
+      } catch (err) {
+        socket.emit(GeneralEvent.ERROR, new SocketError());
+        return;
+      }
 
       // Acknowledges its own message to the sender
       socket.emit(RoomEvent.MESSAGE, newMessage);

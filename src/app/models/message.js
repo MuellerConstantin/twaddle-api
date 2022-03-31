@@ -6,11 +6,13 @@ const MessageSchema = new mongoose.Schema(
     type: {
       type: String,
       required: true,
-      default: "text/plain",
+      enum: ["TEXT", "IMAGE", "VIDEO", "AUDIO"],
+      default: "TEXT",
     },
-    content: {
-      type: String,
-      required: true,
+    content: String,
+    attachment: {
+      type: mongoose.SchemaTypes.ObjectId,
+      ref: "Attachment",
     },
     user: {
       type: mongoose.SchemaTypes.ObjectId,
@@ -31,9 +33,13 @@ MessageSchema.methods.toDTO = function (view) {
       return {
         // eslint-disable-next-line no-underscore-dangle
         id: this._id,
-        content: this.content,
+        content: this.content || undefined,
+        attachment: this.populated("attachment")
+          ? // eslint-disable-next-line no-underscore-dangle
+            this.attachment._id
+          : this.attachment || undefined,
         type: this.type,
-        username: this.populated("user") ? this.user.username : this.user,
+        user: this.populated("user") ? this.user.username : this.user,
         // eslint-disable-next-line no-underscore-dangle
         room: this.populated("room") ? this.room._id : this.room,
         timestamp: this.createdAt,
