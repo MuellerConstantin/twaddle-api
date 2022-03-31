@@ -33,6 +33,10 @@ const UserSchema = new mongoose.Schema({
     enum: ["MALE", "FEMALE", "DIVERS"],
   },
   biography: String,
+  image: {
+    type: mongoose.SchemaTypes.ObjectId,
+    ref: "Attachment",
+  },
 });
 
 // eslint-disable-next-line func-names
@@ -79,6 +83,10 @@ UserSchema.methods.toDTO = function (view) {
         lastName: this.lastName || undefined,
         sex: this.sex || undefined,
         biography: this.biography || undefined,
+        image: this.populated("image")
+          ? // eslint-disable-next-line no-underscore-dangle
+            this.image._id
+          : this.image || undefined,
       };
     }
     default: {
@@ -93,6 +101,10 @@ UserSchema.methods.toDTO = function (view) {
         lastName: this.lastName || undefined,
         sex: this.sex || undefined,
         biography: this.biography || undefined,
+        image: this.populated("image")
+          ? // eslint-disable-next-line no-underscore-dangle
+            this.image._id
+          : this.image || undefined,
       };
     }
   }

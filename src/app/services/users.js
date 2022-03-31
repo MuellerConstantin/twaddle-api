@@ -174,6 +174,7 @@ export const updateByUsername = async (username, doc, view) => {
         .valid("MALE", "FEMALE", "DIVERS")
         .allow(null)
         .optional(),
+      image: joi.string().hex().length(24).allow(null).optional(),
     }),
     doc
   );
