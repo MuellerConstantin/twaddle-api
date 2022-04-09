@@ -1,0 +1,260 @@
+==== Attachments
+Allows uploading of digital attachments and media.
+
+===== Upload attachment
+Uploads an attachment.
+
+[horizontal]
+Method:: POST
+Path:: /api/v1/rooms
+Authentication:: Yes
+
+CAUTION: At this point, the content type of the request shouldn't be set to `application/json` as
+usual, but to `multipart/form-data`.
+
+====== Request
+
+.Request Fields
+[cols="1,1,1] 
+|===
+|Field |Type |Description |Required
+
+|file
+|String
+|Media file to upload.
+|true
+|===
+
+.Request Example
+[%collapsible]
+====
+[source,http,options="nowrap"]
+----
+POST /api/v1/attachments HTTP/1.1
+Content-Type: multipart/form-data
+Authorization: Bearer eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJyb2xlIjoiQURNSU5JU1RSQVRPUiIsImlhdCI6MTY0NTExMzQ4NiwiZXhwIjoxNjQ1MTEzNzg2LCJpc3MiOiJUd2FkZGxlIEFQSSIsInN1YiI6Im1heGkifQ.YuwEfMI8h9VHj3kou5pfVDe6tvQHKpNdNUoe0mFpCLxRTufpWxtOg0gd_chXq8ffXVov0qxyZ1ig_HwdbwGUFHZWtdL2PNUkqNkPbAfHB_N_gLmBGXBACgn1DPaFItaNKi0gE3loCgHmGemL4ONEk-si02GrsfqJQL96bwGAaB8
+Accept: application/json
+Content-Length: 293003
+
+...
+----
+====
+
+====== Response
+
+.Response Fields
+[cols="1,1,1,1] 
+|===
+|Field |Type |Description |Required
+
+|id
+|String
+|Unique hexadecimal identifier of the attachment.
+|true
+
+|path
+|String
+|Storage location of the medium on the server side.
+|true
+
+|mimeType
+|String
+|MIME type of the stored media.
+|true
+
+|size
+|Number
+|Size of the stored media in bytes.
+|true
+|===
+
+.Response Example
+[%collapsible]
+====
+[source,http,options="nowrap"]
+----
+HTTP/1.1 201 Created
+Content-Type: application/json; charset=utf-8
+Content-Length: 137
+
+{
+	"id": "620e70984248fc97396eb976",
+	"path": "/tmp/uploads/1648796112100.jpg",
+	"mediaType": "image/jpg",
+  "size": 293003
+}
+----
+====
+
+===== Get attachment
+Get an attachment by its identifier.
+
+[horizontal]
+Method:: GET
+Path:: /api/v1/attachments/:id
+Authentication:: Yes
+
+CAUTION: This does not download the medium itself but returns the meta information.
+
+====== Request
+
+.Path Variables
+[cols="1,1,1] 
+|===
+|Variable |Type |Description |Required
+
+|id
+|String
+|Unique identifier of attachment to search for.
+|true
+|===
+
+.Request Example
+[%collapsible]
+====
+[source,http,options="nowrap"]
+----
+GET /api/v1/attachments/00000020f51bb4362eee2a4d HTTP/1.1
+Authorization: Bearer eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJyb2xlIjoiQURNSU5JU1RSQVRPUiIsImlhdCI6MTY0NTExMzQ4NiwiZXhwIjoxNjQ1MTEzNzg2LCJpc3MiOiJUd2FkZGxlIEFQSSIsInN1YiI6Im1heGkifQ.YuwEfMI8h9VHj3kou5pfVDe6tvQHKpNdNUoe0mFpCLxRTufpWxtOg0gd_chXq8ffXVov0qxyZ1ig_HwdbwGUFHZWtdL2PNUkqNkPbAfHB_N_gLmBGXBACgn1DPaFItaNKi0gE3loCgHmGemL4ONEk-si02GrsfqJQL96bwGAaB8
+Accept: application/json
+----
+====
+
+====== Response
+
+.Response Fields
+[cols="1,1,1,1] 
+|===
+|Field |Type |Description |Required
+
+|id
+|String
+|Unique hexadecimal identifier of the attachment.
+|true
+
+|path
+|String
+|Storage location of the medium on the server side.
+|true
+
+|mimeType
+|String
+|MIME type of the stored media.
+|true
+
+|size
+|Number
+|Size of the stored media in bytes.
+|true
+|===
+
+.Response Example
+[%collapsible]
+====
+[source,http,options="nowrap"]
+----
+HTTP/1.1 200 OK
+Content-Type: application/json; charset=utf-8
+Content-Length: 137
+
+{
+	"id": "620e70984248fc97396eb976",
+	"path": "/tmp/uploads/1648796112100.jpg",
+	"mediaType": "image/jpg",
+  "size": 293003
+}
+----
+====
+
+===== Get raw attachment
+Download an attachment by its identifier.
+
+[horizontal]
+Method:: GET
+Path:: /api/v1/attachments/:id/raw
+Authentication:: Yes
+
+====== Request
+
+.Path Variables
+[cols="1,1,1] 
+|===
+|Variable |Type |Description |Required
+
+|id
+|String
+|Unique identifier of attachment to search for.
+|true
+|===
+
+.Request Example
+[%collapsible]
+====
+[source,http,options="nowrap"]
+----
+GET /api/v1/attachments/00000020f51bb4362eee2a4d/raw HTTP/1.1
+Authorization: Bearer eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJyb2xlIjoiQURNSU5JU1RSQVRPUiIsImlhdCI6MTY0NTExMzQ4NiwiZXhwIjoxNjQ1MTEzNzg2LCJpc3MiOiJUd2FkZGxlIEFQSSIsInN1YiI6Im1heGkifQ.YuwEfMI8h9VHj3kou5pfVDe6tvQHKpNdNUoe0mFpCLxRTufpWxtOg0gd_chXq8ffXVov0qxyZ1ig_HwdbwGUFHZWtdL2PNUkqNkPbAfHB_N_gLmBGXBACgn1DPaFItaNKi0gE3loCgHmGemL4ONEk-si02GrsfqJQL96bwGAaB8
+Accept: */*
+----
+====
+
+====== Response
+The response body contains the binary representation of the media downloaded. Therefore, also the used content type
+depends on the media and may differ.
+
+.Response Example
+[%collapsible]
+====
+[source,http,options="nowrap"]
+----
+HTTP/1.1 200 OK
+Content-Type: image/jpeg
+Content-Length: 293003
+
+...
+----
+====
+
+===== Delete attachment
+Delete an attachment by its identifier.
+
+[horizontal]
+Method:: DELETE
+Path:: /api/v1/attachments/:id
+Authentication:: Yes
+
+====== Request
+
+.Path Variables
+[cols="1,1,1] 
+|===
+|Variable |Type |Description |Required
+
+|id
+|String
+|Unique identifier of attachment to search for.
+|true
+|===
+
+.Request Example
+[%collapsible]
+====
+[source,http,options="nowrap"]
+----
+DELETE /api/v1/attachments/00000020f51bb4362eee2a4d HTTP/1.1
+Authorization: Bearer eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJyb2xlIjoiQURNSU5JU1RSQVRPUiIsImlhdCI6MTY0NTExMzQ4NiwiZXhwIjoxNjQ1MTEzNzg2LCJpc3MiOiJUd2FkZGxlIEFQSSIsInN1YiI6Im1heGkifQ.YuwEfMI8h9VHj3kou5pfVDe6tvQHKpNdNUoe0mFpCLxRTufpWxtOg0gd_chXq8ffXVov0qxyZ1ig_HwdbwGUFHZWtdL2PNUkqNkPbAfHB_N_gLmBGXBACgn1DPaFItaNKi0gE3loCgHmGemL4ONEk-si02GrsfqJQL96bwGAaB8
+Accept: application/json
+----
+====
+
+====== Response
+
+.Response Example
+[%collapsible]
+====
+[source,http,options="nowrap"]
+----
+HTTP/1.1 204 No Content
+Content-Type: application/json; charset=utf-8
+----
+====

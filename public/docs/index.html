@@ -506,6 +506,14 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 <li><a href="#_get_message">Get message</a></li>
 </ul>
 </li>
+<li><a href="#_attachments">Attachments</a>
+<ul class="sectlevel4">
+<li><a href="#_upload_attachment">Upload attachment</a></li>
+<li><a href="#_get_attachment">Get attachment</a></li>
+<li><a href="#_get_raw_attachment">Get raw attachment</a></li>
+<li><a href="#_delete_attachment">Delete attachment</a></li>
+</ul>
+</li>
 </ul>
 </li>
 </ul>
@@ -3152,14 +3160,21 @@ Accept: application/json</code></pre>
 <tr>
 <td class="tableblock halign-left valign-top"><p class="tableblock">content[].type</p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">String</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Content type of message. All MIME type compliant types are allowed. The default type is 'text/plain'.</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Type of message. Basically there are 4 types of messages: Simple 'TEXT' messages, 'IMAGE', 'VIDEO' or 'AUDIO' messages.</p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">true</p></td>
 </tr>
 <tr>
 <td class="tableblock halign-left valign-top"><p class="tableblock">content[].content</p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">String</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">The actual message sent in chat.</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">true</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">The actual message content. This field does not exist for multimedia messages.</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">false</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">content[].attachment</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">String</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Contains the unique identifier of the multimedia attachment. This field only exists for multimedia messages.
+The actual media can be downloaded via <a href="#_attachments">Attachments</a>.</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">false</p></td>
 </tr>
 <tr>
 <td class="tableblock halign-left valign-top"><p class="tableblock">content[].room</p></td>
@@ -3168,9 +3183,9 @@ Accept: application/json</code></pre>
 <td class="tableblock halign-left valign-top"><p class="tableblock">true</p></td>
 </tr>
 <tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock">content[].username</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">content[].user</p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">String</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Unique username of user that sent the message.</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Username of the user who sent the message.</p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">true</p></td>
 </tr>
 <tr>
@@ -3314,14 +3329,21 @@ Accept: application/json</code></pre>
 <tr>
 <td class="tableblock halign-left valign-top"><p class="tableblock">type</p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">String</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Content type of message. All MIME type compliant types are allowed. The default type is 'text/plain'.</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Type of message. Basically there are 4 types of messages: Simple 'TEXT' messages, 'IMAGE', 'VIDEO' or 'AUDIO' messages.</p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">true</p></td>
 </tr>
 <tr>
 <td class="tableblock halign-left valign-top"><p class="tableblock">content</p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">String</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">The actual message sent in chat.</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">true</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">The actual message content. This field does not exist for multimedia messages.</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">false</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">attachment</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">String</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Contains the unique identifier of the multimedia attachment. This field only exists for multimedia messages.
+The actual media can be downloaded via <a href="#_attachments">Attachments</a>.</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">false</p></td>
 </tr>
 <tr>
 <td class="tableblock halign-left valign-top"><p class="tableblock">room</p></td>
@@ -3330,9 +3352,9 @@ Accept: application/json</code></pre>
 <td class="tableblock halign-left valign-top"><p class="tableblock">true</p></td>
 </tr>
 <tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock">username</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">user</p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">String</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Unique username of user that sent the message.</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Username of the user who sent the message.</p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">true</p></td>
 </tr>
 <tr>
@@ -3359,6 +3381,502 @@ Content-Length: 169
 	"room": "620e70984248fc97396eb976",
 	"timestamp": "2022-02-27T16:12:14.496Z"
 }</code></pre>
+</div>
+</div>
+</div>
+</details>
+</div>
+</div>
+</div>
+<div class="sect3">
+<h4 id="_attachments"><a class="link" href="#_attachments">Attachments</a></h4>
+<div class="paragraph">
+<p>Allows uploading of digital attachments and media.</p>
+</div>
+<div class="sect4">
+<h5 id="_upload_attachment"><a class="link" href="#_upload_attachment">Upload attachment</a></h5>
+<div class="paragraph">
+<p>Uploads an attachment.</p>
+</div>
+<div class="hdlist">
+<table>
+<tr>
+<td class="hdlist1">
+Method
+</td>
+<td class="hdlist2">
+<p>POST</p>
+</td>
+</tr>
+<tr>
+<td class="hdlist1">
+Path
+</td>
+<td class="hdlist2">
+<p>/api/v1/rooms</p>
+</td>
+</tr>
+<tr>
+<td class="hdlist1">
+Authentication
+</td>
+<td class="hdlist2">
+<p>Yes</p>
+</td>
+</tr>
+</table>
+</div>
+<div class="admonitionblock caution">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-caution" title="Caution"></i>
+</td>
+<td class="content">
+At this point, the content type of the request shouldn&#8217;t be set to <code>application/json</code> as
+usual, but to <code>multipart/form-data</code>.
+</td>
+</tr>
+</table>
+</div>
+<div class="sect5">
+<h6 id="_request_17"><a class="link" href="#_request_17">Request</a></h6>
+<table class="tableblock frame-all grid-all stretch">
+<caption class="title">Table 35. Request Fields</caption>
+<colgroup>
+<col style="width: 25%;">
+<col style="width: 25%;">
+<col style="width: 25%;">
+<col style="width: 25%;">
+</colgroup>
+<thead>
+<tr>
+<th class="tableblock halign-left valign-top">Field</th>
+<th class="tableblock halign-left valign-top">Type</th>
+<th class="tableblock halign-left valign-top">Description</th>
+<th class="tableblock halign-left valign-top">Required</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">file</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">String</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Media file to upload.</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">true</p></td>
+</tr>
+</tbody>
+</table>
+<details>
+<summary class="title">Request Example</summary>
+<div class="content">
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight nowrap"><code class="language-http hljs" data-lang="http">POST /api/v1/attachments HTTP/1.1
+Content-Type: multipart/form-data
+Authorization: Bearer eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJyb2xlIjoiQURNSU5JU1RSQVRPUiIsImlhdCI6MTY0NTExMzQ4NiwiZXhwIjoxNjQ1MTEzNzg2LCJpc3MiOiJUd2FkZGxlIEFQSSIsInN1YiI6Im1heGkifQ.YuwEfMI8h9VHj3kou5pfVDe6tvQHKpNdNUoe0mFpCLxRTufpWxtOg0gd_chXq8ffXVov0qxyZ1ig_HwdbwGUFHZWtdL2PNUkqNkPbAfHB_N_gLmBGXBACgn1DPaFItaNKi0gE3loCgHmGemL4ONEk-si02GrsfqJQL96bwGAaB8
+Accept: application/json
+Content-Length: 293003
+
+...</code></pre>
+</div>
+</div>
+</div>
+</details>
+</div>
+<div class="sect5">
+<h6 id="_response_17"><a class="link" href="#_response_17">Response</a></h6>
+<table class="tableblock frame-all grid-all stretch">
+<caption class="title">Table 36. Response Fields</caption>
+<colgroup>
+<col style="width: 25%;">
+<col style="width: 25%;">
+<col style="width: 25%;">
+<col style="width: 25%;">
+</colgroup>
+<thead>
+<tr>
+<th class="tableblock halign-left valign-top">Field</th>
+<th class="tableblock halign-left valign-top">Type</th>
+<th class="tableblock halign-left valign-top">Description</th>
+<th class="tableblock halign-left valign-top">Required</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">id</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">String</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Unique hexadecimal identifier of the attachment.</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">true</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">path</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">String</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Storage location of the medium on the server side.</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">true</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">mimeType</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">String</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">MIME type of the stored media.</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">true</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">size</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Number</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Size of the stored media in bytes.</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">true</p></td>
+</tr>
+</tbody>
+</table>
+<details>
+<summary class="title">Response Example</summary>
+<div class="content">
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight nowrap"><code class="language-http hljs" data-lang="http">HTTP/1.1 201 Created
+Content-Type: application/json; charset=utf-8
+Content-Length: 137
+
+{
+	"id": "620e70984248fc97396eb976",
+	"path": "/tmp/uploads/1648796112100.jpg",
+	"mediaType": "image/jpg",
+  "size": 293003
+}</code></pre>
+</div>
+</div>
+</div>
+</details>
+</div>
+</div>
+<div class="sect4">
+<h5 id="_get_attachment"><a class="link" href="#_get_attachment">Get attachment</a></h5>
+<div class="paragraph">
+<p>Get an attachment by its identifier.</p>
+</div>
+<div class="hdlist">
+<table>
+<tr>
+<td class="hdlist1">
+Method
+</td>
+<td class="hdlist2">
+<p>GET</p>
+</td>
+</tr>
+<tr>
+<td class="hdlist1">
+Path
+</td>
+<td class="hdlist2">
+<p>/api/v1/attachments/:id</p>
+</td>
+</tr>
+<tr>
+<td class="hdlist1">
+Authentication
+</td>
+<td class="hdlist2">
+<p>Yes</p>
+</td>
+</tr>
+</table>
+</div>
+<div class="admonitionblock caution">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-caution" title="Caution"></i>
+</td>
+<td class="content">
+This does not download the medium itself but returns the meta information.
+</td>
+</tr>
+</table>
+</div>
+<div class="sect5">
+<h6 id="_request_18"><a class="link" href="#_request_18">Request</a></h6>
+<table class="tableblock frame-all grid-all stretch">
+<caption class="title">Table 37. Path Variables</caption>
+<colgroup>
+<col style="width: 25%;">
+<col style="width: 25%;">
+<col style="width: 25%;">
+<col style="width: 25%;">
+</colgroup>
+<thead>
+<tr>
+<th class="tableblock halign-left valign-top">Variable</th>
+<th class="tableblock halign-left valign-top">Type</th>
+<th class="tableblock halign-left valign-top">Description</th>
+<th class="tableblock halign-left valign-top">Required</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">id</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">String</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Unique identifier of attachment to search for.</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">true</p></td>
+</tr>
+</tbody>
+</table>
+<details>
+<summary class="title">Request Example</summary>
+<div class="content">
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight nowrap"><code class="language-http hljs" data-lang="http">GET /api/v1/attachments/00000020f51bb4362eee2a4d HTTP/1.1
+Authorization: Bearer eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJyb2xlIjoiQURNSU5JU1RSQVRPUiIsImlhdCI6MTY0NTExMzQ4NiwiZXhwIjoxNjQ1MTEzNzg2LCJpc3MiOiJUd2FkZGxlIEFQSSIsInN1YiI6Im1heGkifQ.YuwEfMI8h9VHj3kou5pfVDe6tvQHKpNdNUoe0mFpCLxRTufpWxtOg0gd_chXq8ffXVov0qxyZ1ig_HwdbwGUFHZWtdL2PNUkqNkPbAfHB_N_gLmBGXBACgn1DPaFItaNKi0gE3loCgHmGemL4ONEk-si02GrsfqJQL96bwGAaB8
+Accept: application/json</code></pre>
+</div>
+</div>
+</div>
+</details>
+</div>
+<div class="sect5">
+<h6 id="_response_18"><a class="link" href="#_response_18">Response</a></h6>
+<table class="tableblock frame-all grid-all stretch">
+<caption class="title">Table 38. Response Fields</caption>
+<colgroup>
+<col style="width: 25%;">
+<col style="width: 25%;">
+<col style="width: 25%;">
+<col style="width: 25%;">
+</colgroup>
+<thead>
+<tr>
+<th class="tableblock halign-left valign-top">Field</th>
+<th class="tableblock halign-left valign-top">Type</th>
+<th class="tableblock halign-left valign-top">Description</th>
+<th class="tableblock halign-left valign-top">Required</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">id</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">String</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Unique hexadecimal identifier of the attachment.</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">true</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">path</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">String</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Storage location of the medium on the server side.</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">true</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">mimeType</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">String</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">MIME type of the stored media.</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">true</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">size</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Number</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Size of the stored media in bytes.</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">true</p></td>
+</tr>
+</tbody>
+</table>
+<details>
+<summary class="title">Response Example</summary>
+<div class="content">
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight nowrap"><code class="language-http hljs" data-lang="http">HTTP/1.1 200 OK
+Content-Type: application/json; charset=utf-8
+Content-Length: 137
+
+{
+	"id": "620e70984248fc97396eb976",
+	"path": "/tmp/uploads/1648796112100.jpg",
+	"mediaType": "image/jpg",
+  "size": 293003
+}</code></pre>
+</div>
+</div>
+</div>
+</details>
+</div>
+</div>
+<div class="sect4">
+<h5 id="_get_raw_attachment"><a class="link" href="#_get_raw_attachment">Get raw attachment</a></h5>
+<div class="paragraph">
+<p>Download an attachment by its identifier.</p>
+</div>
+<div class="hdlist">
+<table>
+<tr>
+<td class="hdlist1">
+Method
+</td>
+<td class="hdlist2">
+<p>GET</p>
+</td>
+</tr>
+<tr>
+<td class="hdlist1">
+Path
+</td>
+<td class="hdlist2">
+<p>/api/v1/attachments/:id/raw</p>
+</td>
+</tr>
+<tr>
+<td class="hdlist1">
+Authentication
+</td>
+<td class="hdlist2">
+<p>Yes</p>
+</td>
+</tr>
+</table>
+</div>
+<div class="sect5">
+<h6 id="_request_19"><a class="link" href="#_request_19">Request</a></h6>
+<table class="tableblock frame-all grid-all stretch">
+<caption class="title">Table 39. Path Variables</caption>
+<colgroup>
+<col style="width: 25%;">
+<col style="width: 25%;">
+<col style="width: 25%;">
+<col style="width: 25%;">
+</colgroup>
+<thead>
+<tr>
+<th class="tableblock halign-left valign-top">Variable</th>
+<th class="tableblock halign-left valign-top">Type</th>
+<th class="tableblock halign-left valign-top">Description</th>
+<th class="tableblock halign-left valign-top">Required</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">id</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">String</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Unique identifier of attachment to search for.</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">true</p></td>
+</tr>
+</tbody>
+</table>
+<details>
+<summary class="title">Request Example</summary>
+<div class="content">
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight nowrap"><code class="language-http hljs" data-lang="http">GET /api/v1/attachments/00000020f51bb4362eee2a4d/raw HTTP/1.1
+Authorization: Bearer eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJyb2xlIjoiQURNSU5JU1RSQVRPUiIsImlhdCI6MTY0NTExMzQ4NiwiZXhwIjoxNjQ1MTEzNzg2LCJpc3MiOiJUd2FkZGxlIEFQSSIsInN1YiI6Im1heGkifQ.YuwEfMI8h9VHj3kou5pfVDe6tvQHKpNdNUoe0mFpCLxRTufpWxtOg0gd_chXq8ffXVov0qxyZ1ig_HwdbwGUFHZWtdL2PNUkqNkPbAfHB_N_gLmBGXBACgn1DPaFItaNKi0gE3loCgHmGemL4ONEk-si02GrsfqJQL96bwGAaB8
+Accept: */*</code></pre>
+</div>
+</div>
+</div>
+</details>
+</div>
+<div class="sect5">
+<h6 id="_response_19"><a class="link" href="#_response_19">Response</a></h6>
+<div class="paragraph">
+<p>The response body contains the binary representation of the media downloaded. Therefore, also the used content type
+depends on the media and may differ.</p>
+</div>
+<details>
+<summary class="title">Response Example</summary>
+<div class="content">
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight nowrap"><code class="language-http hljs" data-lang="http">HTTP/1.1 200 OK
+Content-Type: image/jpeg
+Content-Length: 293003
+
+...</code></pre>
+</div>
+</div>
+</div>
+</details>
+</div>
+</div>
+<div class="sect4">
+<h5 id="_delete_attachment"><a class="link" href="#_delete_attachment">Delete attachment</a></h5>
+<div class="paragraph">
+<p>Delete an attachment by its identifier.</p>
+</div>
+<div class="hdlist">
+<table>
+<tr>
+<td class="hdlist1">
+Method
+</td>
+<td class="hdlist2">
+<p>DELETE</p>
+</td>
+</tr>
+<tr>
+<td class="hdlist1">
+Path
+</td>
+<td class="hdlist2">
+<p>/api/v1/attachments/:id</p>
+</td>
+</tr>
+<tr>
+<td class="hdlist1">
+Authentication
+</td>
+<td class="hdlist2">
+<p>Yes</p>
+</td>
+</tr>
+</table>
+</div>
+<div class="sect5">
+<h6 id="_request_20"><a class="link" href="#_request_20">Request</a></h6>
+<table class="tableblock frame-all grid-all stretch">
+<caption class="title">Table 40. Path Variables</caption>
+<colgroup>
+<col style="width: 25%;">
+<col style="width: 25%;">
+<col style="width: 25%;">
+<col style="width: 25%;">
+</colgroup>
+<thead>
+<tr>
+<th class="tableblock halign-left valign-top">Variable</th>
+<th class="tableblock halign-left valign-top">Type</th>
+<th class="tableblock halign-left valign-top">Description</th>
+<th class="tableblock halign-left valign-top">Required</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">id</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">String</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Unique identifier of attachment to search for.</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">true</p></td>
+</tr>
+</tbody>
+</table>
+<details>
+<summary class="title">Request Example</summary>
+<div class="content">
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight nowrap"><code class="language-http hljs" data-lang="http">DELETE /api/v1/attachments/00000020f51bb4362eee2a4d HTTP/1.1
+Authorization: Bearer eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJyb2xlIjoiQURNSU5JU1RSQVRPUiIsImlhdCI6MTY0NTExMzQ4NiwiZXhwIjoxNjQ1MTEzNzg2LCJpc3MiOiJUd2FkZGxlIEFQSSIsInN1YiI6Im1heGkifQ.YuwEfMI8h9VHj3kou5pfVDe6tvQHKpNdNUoe0mFpCLxRTufpWxtOg0gd_chXq8ffXVov0qxyZ1ig_HwdbwGUFHZWtdL2PNUkqNkPbAfHB_N_gLmBGXBACgn1DPaFItaNKi0gE3loCgHmGemL4ONEk-si02GrsfqJQL96bwGAaB8
+Accept: application/json</code></pre>
+</div>
+</div>
+</div>
+</details>
+</div>
+<div class="sect5">
+<h6 id="_response_20"><a class="link" href="#_response_20">Response</a></h6>
+<details>
+<summary class="title">Response Example</summary>
+<div class="content">
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight nowrap"><code class="language-http hljs" data-lang="http">HTTP/1.1 204 No Content
+Content-Type: application/json; charset=utf-8</code></pre>
 </div>
 </div>
 </div>
@@ -3511,7 +4029,7 @@ connection was successfully established. Every business error is processed here.
 <p>The error object sent in the payload event always has the following structure:</p>
 </div>
 <table class="tableblock frame-all grid-all stretch">
-<caption class="title">Table 35. Error Response Fields</caption>
+<caption class="title">Table 41. Error Response Fields</caption>
 <colgroup>
 <col style="width: 25%;">
 <col style="width: 25%;">
@@ -3556,7 +4074,7 @@ through <code>code</code>.</p></td>
 respond more specifically to errors.</p>
 </div>
 <table class="tableblock frame-all grid-all stretch">
-<caption class="title">Table 36. Error Codes</caption>
+<caption class="title">Table 42. Error Codes</caption>
 <colgroup>
 <col style="width: 50%;">
 <col style="width: 50%;">
@@ -3634,7 +4152,7 @@ Emitter
 </table>
 </div>
 <table class="tableblock frame-all grid-all stretch">
-<caption class="title">Table 37. Payload Fields</caption>
+<caption class="title">Table 43. Payload Fields</caption>
 <colgroup>
 <col style="width: 25%;">
 <col style="width: 25%;">
@@ -3763,7 +4281,7 @@ Emitter
 </table>
 </div>
 <table class="tableblock frame-all grid-all stretch">
-<caption class="title">Table 38. Payload Fields</caption>
+<caption class="title">Table 44. Payload Fields</caption>
 <colgroup>
 <col style="width: 25%;">
 <col style="width: 25%;">
@@ -3814,7 +4332,7 @@ Emitter
 </table>
 </div>
 <table class="tableblock frame-all grid-all stretch">
-<caption class="title">Table 39. Payload Fields</caption>
+<caption class="title">Table 45. Payload Fields</caption>
 <colgroup>
 <col style="width: 25%;">
 <col style="width: 25%;">
@@ -3865,7 +4383,7 @@ Emitter
 </table>
 </div>
 <table class="tableblock frame-all grid-all stretch">
-<caption class="title">Table 40. Payload Fields</caption>
+<caption class="title">Table 46. Payload Fields</caption>
 <colgroup>
 <col style="width: 25%;">
 <col style="width: 25%;">
@@ -3893,7 +4411,14 @@ Emitter
 <div class="sect4">
 <h5 id="_event_send"><a class="link" href="#_event_send">Event: send</a></h5>
 <div class="paragraph">
-<p>Sent by the client to send a new message to the chat. This event stops the server from redistributing the message.</p>
+<p>This event is triggered by the client to send a new message to all chat participants. The message to
+be sent can be a pure text message (<code>TEXT</code>) or a multimedia message (<code>IMAGE</code>, <code>VIDEO</code> or <code>AUDIO</code>).</p>
+</div>
+<div class="paragraph">
+<p>It should be noted that in the case of multimedia messages, it is not the actual content that is
+transmitted via the <em>Twaddle Communication API</em>. Instead, the medium must first be uploaded as an
+attachment via the <a href="#_attachments">Twaddle Management API</a>. Instead, the unique identifier of the
+attachment is transferred.</p>
 </div>
 <div class="hdlist">
 <table>
@@ -3916,7 +4441,7 @@ Emitter
 </table>
 </div>
 <table class="tableblock frame-all grid-all stretch">
-<caption class="title">Table 41. Payload Fields</caption>
+<caption class="title">Table 47. Payload Fields</caption>
 <colgroup>
 <col style="width: 25%;">
 <col style="width: 25%;">
@@ -3935,13 +4460,20 @@ Emitter
 <tr>
 <td class="tableblock halign-left valign-top"><p class="tableblock">content</p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">String</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Message to send.</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">true</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">The actual content of the message. This field is not required for multimedia messages.</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">false</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">attachment</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">String</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Contains the unique identifier of the previously uploaded multimedia attachment. This field is only required if
+a multimedia message is to be sent.</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">false</p></td>
 </tr>
 <tr>
 <td class="tableblock halign-left valign-top"><p class="tableblock">type</p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">String</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Content type of message. All MIME type compliant types are allowed. The default type is 'text/plain'.</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Type of message. Basically there are 4 types of messages: Simple <code>TEXT</code> messages, <code>IMAGE</code>, <code>VIDEO</code> or <code>AUDIO</code> messages.</p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">true</p></td>
 </tr>
 </tbody>
@@ -3973,7 +4505,7 @@ Emitter
 </table>
 </div>
 <table class="tableblock frame-all grid-all stretch">
-<caption class="title">Table 42. Payload Fields</caption>
+<caption class="title">Table 48. Payload Fields</caption>
 <colgroup>
 <col style="width: 25%;">
 <col style="width: 25%;">
@@ -3998,14 +4530,21 @@ Emitter
 <tr>
 <td class="tableblock halign-left valign-top"><p class="tableblock">type</p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">String</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Content type of message. All MIME type compliant types are allowed. The default type is 'text/plain'.</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Type of message. Basically there are 4 types of messages: Simple 'TEXT' messages, 'IMAGE', 'VIDEO' or 'AUDIO' messages.</p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">true</p></td>
 </tr>
 <tr>
 <td class="tableblock halign-left valign-top"><p class="tableblock">content</p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">String</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">The actual message sent in chat.</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">true</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">The actual message content. This field does not exist for multimedia messages.</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">false</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">attachment</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">String</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Contains the unique identifier of the multimedia attachment. This field only exists for multimedia messages.
+The actual media can be downloaded via <a href="#_attachments">Attachments</a>.</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">false</p></td>
 </tr>
 <tr>
 <td class="tableblock halign-left valign-top"><p class="tableblock">room</p></td>
@@ -4014,9 +4553,9 @@ Emitter
 <td class="tableblock halign-left valign-top"><p class="tableblock">true</p></td>
 </tr>
 <tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock">username</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">user</p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">String</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Unique username of user that sent the message.</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Username of the user who sent the message.</p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">true</p></td>
 </tr>
 <tr>
@@ -4035,7 +4574,7 @@ Emitter
 </div>
 <div id="footer">
 <div id="footer-text">
-Last updated 2022-03-17 18:02:45 +0100
+Last updated 2022-04-09 19:19:59 +0200
 </div>
 </div>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.18.3/highlight.min.js"></script>

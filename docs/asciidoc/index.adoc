@@ -293,6 +293,8 @@ include::management-api/v1/rooms.adoc[]
 
 include::management-api/v1/messages.adoc[]
 
+include::management-api/v1/attachments.adoc[]
+
 == Twaddle Communication API
 The _Twaddle Communication API_ enables the programmatic exchange of messages and information in
 real time between the clients.

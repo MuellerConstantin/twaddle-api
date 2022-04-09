@@ -52,22 +52,28 @@ Accept: application/json
 
 |content[].type
 |String
-|Content type of message. All MIME type compliant types are allowed. The default type is 'text/plain'.
+|Type of message. Basically there are 4 types of messages: Simple 'TEXT' messages, 'IMAGE', 'VIDEO' or 'AUDIO' messages.
 |true
 
 |content[].content
 |String
-|The actual message sent in chat.
-|true
+|The actual message content. This field does not exist for multimedia messages.
+|false
+
+|content[].attachment
+|String
+|Contains the unique identifier of the multimedia attachment. This field only exists for multimedia messages.
+The actual media can be downloaded via <<_attachments, Attachments>>.
+|false
 
 |content[].room
 |String
 |Identifier of the room in which the message was sent.
 |true
 
-|content[].username
+|content[].user
 |String
-|Unique username of user that sent the message.
+|Username of the user who sent the message.
 |true
 
 |content[].timestamp
@@ -151,22 +157,28 @@ Accept: application/json
 
 |type
 |String
-|Content type of message. All MIME type compliant types are allowed. The default type is 'text/plain'.
+|Type of message. Basically there are 4 types of messages: Simple 'TEXT' messages, 'IMAGE', 'VIDEO' or 'AUDIO' messages.
 |true
 
 |content
 |String
-|The actual message sent in chat.
-|true
+|The actual message content. This field does not exist for multimedia messages.
+|false
+
+|attachment
+|String
+|Contains the unique identifier of the multimedia attachment. This field only exists for multimedia messages.
+The actual media can be downloaded via <<_attachments, Attachments>>.
+|false
 
 |room
 |String
 |Identifier of the room in which the message was sent.
 |true
 
-|username
+|user
 |String
-|Unique username of user that sent the message.
+|Username of the user who sent the message.
 |true
 
 |timestamp

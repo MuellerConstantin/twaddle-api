@@ -97,7 +97,13 @@ Emitter:: Server
 |===
 
 ===== Event: send
-Sent by the client to send a new message to the chat. This event stops the server from redistributing the message.
+This event is triggered by the client to send a new message to all chat participants. The message to
+be sent can be a pure text message (`TEXT`) or a multimedia message (`IMAGE`, `VIDEO` or `AUDIO`).
+
+It should be noted that in the case of multimedia messages, it is not the actual content that is
+transmitted via the _Twaddle Communication API_. Instead, the medium must first be uploaded as an
+attachment via the <<_attachments, Twaddle Management API>>. Instead, the unique identifier of the
+attachment is transferred.
 
 [horizontal]
 Name:: `twaddle/room:send`
@@ -110,12 +116,18 @@ Emitter:: Client
 
 |content
 |String
-|Message to send.
-|true
+|The actual content of the message. This field is not required for multimedia messages.
+|false
+
+|attachment
+|String
+|Contains the unique identifier of the previously uploaded multimedia attachment. This field is only required if
+a multimedia message is to be sent.
+|false
 
 |type
 |String
-|Content type of message. All MIME type compliant types are allowed. The default type is 'text/plain'.
+|Type of message. Basically there are 4 types of messages: Simple `TEXT` messages, `IMAGE`, `VIDEO` or `AUDIO` messages.
 |true
 |===
 
@@ -138,22 +150,28 @@ Emitter:: Server
 
 |type
 |String
-|Content type of message. All MIME type compliant types are allowed. The default type is 'text/plain'.
+|Type of message. Basically there are 4 types of messages: Simple 'TEXT' messages, 'IMAGE', 'VIDEO' or 'AUDIO' messages.
 |true
 
 |content
 |String
-|The actual message sent in chat.
-|true
+|The actual message content. This field does not exist for multimedia messages.
+|false
+
+|attachment
+|String
+|Contains the unique identifier of the multimedia attachment. This field only exists for multimedia messages.
+The actual media can be downloaded via <<_attachments, Attachments>>.
+|false
 
 |room
 |String
 |Identifier of the room in which the message was sent.
 |true
 
-|username
+|user
 |String
-|Unique username of user that sent the message.
+|Username of the user who sent the message.
 |true
 
 |timestamp
