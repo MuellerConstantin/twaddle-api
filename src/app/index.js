@@ -33,7 +33,7 @@ import v1Handlers from "./handlers/v1";
 export const beforeStarting = async (server) => {
   logger.notice("Application is starting");
   await redis.connect();
-  await mongoose.openUri(env.database.uri);
+  await mongoose.openUri(env.database.url);
 
   const ioSubRedis = redis.duplicate();
   const ioPubRedis = redis.duplicate();

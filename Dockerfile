@@ -24,10 +24,11 @@ COPY --from=build /usr/local/src/twaddle/api/package-lock.json ./package-lock.js
 RUN npm install --production
 
 COPY --from=build /usr/local/src/twaddle/api/dist ./dist
+COPY ./public ./public
+COPY ./resources ./resources
+
+VOLUME [ "/usr/local/bin/twaddle/api/uploads" ]
 
 EXPOSE 3000
-VOLUME [ "/usr/local/bin/twaddle/api/public" ]
-VOLUME [ "/usr/local/bin/twaddle/api/resources" ]
-VOLUME [ "/usr/local/bin/twaddle/api/uploads" ]
 
 CMD npm run start

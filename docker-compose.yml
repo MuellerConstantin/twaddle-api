@@ -37,17 +37,9 @@ services:
       - 3000
     environment:
       PORT: 3000
-      DATABASE_URI: mongodb://database:27017/twaddle
-      CACHE_URI: redis://cache:6379/
+      DATABASE_URL: mongodb://database:27017/twaddle
+      CACHE_URL: redis://cache:6379/
     volumes:
-      - type: bind
-        source: ./public
-        target: /usr/local/bin/twaddle/api/public
-        read_only: true
-      - type: bind
-        source: ./resources
-        target: /usr/local/bin/twaddle/api/resources
-        read_only: true
       - backend-uploads:/usr/local/bin/twaddle/api/uploads
     labels:
       - traefik.enable=true

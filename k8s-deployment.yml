@@ -1,0 +1,149 @@
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: twaddle-database-pvc
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 1024Mi
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: twaddle-database
+spec:
+  selector:
+    matchLabels:
+      app: twaddle-database
+  template:
+    metadata:
+      labels:
+        app: twaddle-database
+    spec:
+      containers:
+        - name: twaddle-database
+          image: mongo:latest
+          resources:
+            limits:
+              memory: 200Mi
+              cpu: "1"
+          ports:
+            - containerPort: 27017
+          volumeMounts:
+            - name: twaddle-database-storage
+              mountPath: /data/db
+          imagePullPolicy: Never
+      volumes:
+        - name: twaddle-database-storage
+          persistentVolumeClaim:
+            claimName: twaddle-database-pvc
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: twaddle-database
+spec:
+  selector:
+    app: twaddle-database
+  ports:
+    - port: 27017
+      targetPort: 27017
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: twaddle-cache-pvc
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 256Mi
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: twaddle-cache
+spec:
+  selector:
+    matchLabels:
+      app: twaddle-cache
+  template:
+    metadata:
+      labels:
+        app: twaddle-cache
+    spec:
+      containers:
+        - name: twaddle-cache
+          image: redis:latest
+          resources:
+            limits:
+              memory: 200Mi
+              cpu: "1"
+          ports:
+            - containerPort: 6379
+          volumeMounts:
+            - name: twaddle-cache-storage
+              mountPath: /data
+          imagePullPolicy: Never
+      volumes:
+        - name: twaddle-cache-storage
+          persistentVolumeClaim:
+            claimName: twaddle-cache-pvc
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: twaddle-cache
+spec:
+  selector:
+    app: twaddle-cache
+  ports:
+    - port: 6379
+      targetPort: 6379
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: twaddle-api
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: twaddle-api
+  template:
+    metadata:
+      labels:
+        app: twaddle-api
+    spec:
+      containers:
+        - name: twaddle-api
+          image: twaddle/api:latest
+          resources:
+            limits:
+              memory: 200Mi
+              cpu: "1"
+          ports:
+            - containerPort: 3000
+          env:
+            - name: PORT
+              value: "3000"
+            - name: DATABASE_URL
+              value: mongodb://twaddle-database:27017/twaddle
+            - name: CACHE_URL
+              value: redis://twaddle-cache:6379/
+          imagePullPolicy: Never
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: twaddle-api
+spec:
+  selector:
+    app: twaddle-api
+  ports:
+    - port: 8080
+      targetPort: 3000
+  type: LoadBalancer

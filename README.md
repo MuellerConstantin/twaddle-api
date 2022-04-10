@@ -10,7 +10,7 @@
   - [Web Socket API](#web-socket-api)
 - [Configuration](#configuration)
   - [Envrionment Variables](#environment-variables)
-  - [Environment Files](#environment-files)
+  - [Operating Environment](#operating-environment)
 - [Deployment](#deployment)
   - [Standalone operation](#standalone-operation)
   - [Cloud operation](#cloud-operation)
@@ -76,55 +76,72 @@ According to these profiles, the appropriate environment file is also loaded.
 
 The following variables are service parameters and affect the way it works.
 
-**NOTE**: Unless otherwise specified, relative paths are always relative to the current working directory,
-hence the directory in which the process is started.
+| Variable                | Description                                                 | Required |
+| ----------------------- | ----------------------------------------------------------- | -------- |
+| LOGGER_LEVEL            | Logging level to use during runtime                         | false    |
+| LOGGER_FILENAME         | Optional file to which the logs are also written            | false    |
+| DATABASE_URL            | URL of the MongoDB database used as primary data store      | true     |
+| CACHE_URL               | URL of the Redis instance used as secondary data store      | true     |
+| SECURITY_TOKEN_EXPIRES  | Validity period of a access token in seconds                | false    |
+| SECURITY_TICKET_EXPIRES | Validity period of a ticket in seconds                      | false    |
+| SECURITY_RATE_LIMIT     | The request limit of the server per time in requests/second | false    |
+| UPLOADS_LIMITS_FILESIZE | Limit for file uploads in bytes                             | false    |
 
-| Variable                 | Description                                            | Required |
-| ------------------------ | ------------------------------------------------------ | -------- |
-| LOGGER_LEVEL             | Logging level to use during runtime                    | false    |
-| LOGGER_FILENAME          | Optional file to which the logs are also written       | false    |
-| DATABASE_URI             | URI of the MongoDB database used as primary data store | true     |
-| CACHE_URI                | URI of the Redis instance used as secondary data store | true     |
-| SECURITY_JWT_PUBLIC_KEY  | Path of the public key file for the JWT signing        | true     |
-| SECURITY_JWT_PRIVATE_KEY | Path of the private key file for the JWT signing       | true     |
-| SECURITY_JWT_ISSUER      | Identifier of the JWT issuer                           | true     |
-| SECURITY_JWT_EXPIRES     | Validity period of a access token in seconds           | false    |
-| SECURITY_TICKET_EXPIRES  | Validity period of a ticket in seconds                 | false    |
-
-The following environment variables are not used directly by the Twaddle service, but by the
+Moreover, the following environment variables are not used directly by the Twaddle service, but by the
 underlying system infrastructure such as the application server. Please note that only the
-service-specific environment variables can be loaded from an environment file, but not the
-following variables that affect the system infrastructure.
+service-specific environment variables can be loaded from an environment file, but not the following
+variables that affect the system infrastructure.
 
 | Variable | Description                                                                 | Required |
 | -------- | --------------------------------------------------------------------------- | -------- |
 | NODE_ENV | Sets the environment profile, based on which the environment file is loaded | false    |
 | PORT     | Sets the port of the underlying application server                          | false    |
 
-### Environment files
+#### Environment files
 
-It is possible to load the environment variables from a file. Environment files with the following
-signature are always loaded: `.env` and `.env.<PROFILE>`. Possible configuration profiles are
-`development`, `test` and `production`. The standard file `.env` should not contain any sensitive
-information since it is included in the VCS, while the profile-specific file `.env.<PROFILE>` is
-generally not included in the VCS and is therefore suitable for setting sensitive and profile
-specific environment variables. The above variables are to be listed inside of the environment
-file as key-value pairs per line, separated by an equals sign.
+The dynamic configuration, in the form of environment variables, can also be loaded from files for
+the sake of simplicity. So-called environment files. The variables introduced in the above section
+can be written to the file as a key-value pair per line separated by an equals sign. The environment
+files must be in the current working directory and named appropriately to be loaded. Basically, it
+tries to load the following four files in descending order:
 
-Environment files can be loaded from two locations, from the current working directory or from
-the `resources` directory of the application. The default and the profile-specific file are
-searched for in each of the two locations. If files are found in one or both locations, conflicts
-can arise if the same environment variable is set in multiple files. In this case, the environment
-variables are preferably set in the following order:
+- `.env.<PROFILE>.local`
+- `.env.<PROFILE>`
+- `.env.local`
+- `.env`
 
-- `<CURRENT WORKDIR>/.env.<PROFILE>`
-- `<APPLICATION ROOT>/resources/.env.<PROFILE>`
-- `<CURRENT WORKDIR>/.env`
-- `<APPLICATION ROOT>/resources/.env`
+Configuration profiles enable profile-specific environments to be configured. Possible configuration
+profiles are `development`, `test` and `production`. The `local` suffix marks an environment file as
+local and prevents the configuration file from being included in the _Version Control System (VCS)_.
+Secret information should therefore always be included in a local environment file.
 
 Values of higher-ordered paths have higher priority and "override" values of lower-ordered paths. This
-means that profile-specific files always take precedence over default files, and files from the current
-working directory always take precedence over files from the `resources` directory.
+means that profile-specific files always take precedence over default files, and local always take
+precedence over public files.
+
+### Operating environment
+
+In addition to configurable settings, the server also places a number of requirements on its environment
+that must be met for smooth operation. These settings are embedded in the implementation and cannot be
+changed.
+
+#### Certificates
+
+The server uses various encryption mechanisms, including issuing access tokens. certificates are required
+for this. The server expects to find these in a directory named `resources` relative to the current working
+directory without exception. Specifically, an RSA (RS256) public key and an RSA private key are expected under
+the following paths:
+
+- `resources/private.pem`
+- `resources/public.pem`
+
+The certificates must be stored in the current working directory alongside the installation.
+
+#### Uploads
+
+The server basically enables file uploads, the binary data is stored in the file system. For this, the server
+uses the `uploads` directory relative to the current working directory. If not available, this directory must
+be created before starting the server or a volume must be mounted at this mount point.
 
 ## Deployment
 
@@ -179,12 +196,6 @@ simplest form, a container is created with the following command.
 ```sh
 $ docker run -p <PORT>:3000/tcp -v <VOLUME>:/usr/local/bin/twaddle/api/resources:ro --name twaddle-api twaddle/api:latest
 ```
-
-In contrast to standalone operation, the application in a container no longer has access to the project files.
-Any assets such as certificates or environment files that were stored in the `resources` folder must therefore be
-mounted in the form of a volume under the container path `/usr/local/bin/twaddle/api/resources`, because they are not
-included into the Docker image. Of course, the placeholder must be replaced with the name of a volume that contains the
-contents of the `resources` folder. In addition, an external port must be set which is bound to the internal port.
 
 ## License
 
