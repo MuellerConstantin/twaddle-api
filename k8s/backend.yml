@@ -1,0 +1,63 @@
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: twaddle-uploads
+  namespace: twaddle-api
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 2048Mi
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: twaddle-backend
+  namespace: twaddle-api
+spec:
+  selector:
+    app: backend
+  ports:
+    - port: 3000
+      targetPort: 3000
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: twaddle-backend
+  namespace: twaddle-api
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: backend
+  template:
+    metadata:
+      labels:
+        app: backend
+    spec:
+      containers:
+        - name: backend
+          image: twaddle/api:latest
+          resources:
+            limits:
+              memory: 200Mi
+              cpu: "1"
+          ports:
+            - containerPort: 3000
+          env:
+            - name: PORT
+              value: "3000"
+            - name: DATABASE_URL
+              value: mongodb://twaddle-database.twaddle-api.svc.cluster.local:27017/twaddle
+            - name: CACHE_URL
+              value: redis://twaddle-cache.twaddle-api.svc.cluster.local:6379/0
+          volumeMounts:
+            - name: uploads-storage
+              mountPath: /usr/local/bin/twaddle/api/uploads
+          imagePullPolicy: Never
+      volumes:
+        - name: uploads-storage
+          persistentVolumeClaim:
+            claimName: twaddle-uploads

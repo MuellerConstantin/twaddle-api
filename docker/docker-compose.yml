@@ -31,7 +31,7 @@ services:
   backend:
     image: twaddle/api:latest
     build:
-      context: .
+      context: ../
     restart: always
     expose:
       - 3000
