@@ -17,7 +17,7 @@ but rather to understand communication processes in the area of messaging.
 
 ## License
 
-Copyright (c) 2022 0x1C1B
+Copyright (c) 2023 0x1C1B
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal

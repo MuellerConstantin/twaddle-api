@@ -1,8 +1,22 @@
+import path from 'path';
+import fs from 'fs';
+import dotenv from 'dotenv';
+
 /**
- * @file Module that loads the environment variables from an environment file when loaded itself.
+ * Paths of envorinment files.
+ *
+ * The order of these environment files does matter. Environment variables already
+ * set are not overwritten by environment variables of later files.
  */
+const envPaths = [
+  path.resolve(process.cwd(), `.env.${process.env.NODE_ENV}.local`),
+  path.resolve(process.cwd(), `.env.${process.env.NODE_ENV}`),
+  path.resolve(process.cwd(), '.env.local'),
+  path.resolve(process.cwd(), '.env'),
+];
 
-import dotenv from "dotenv";
-
-const envFile = process.env.NODE_ENV ? `.env.${process.env.NODE_ENV}` : ".env";
-dotenv.config({ path: envFile });
+envPaths.forEach((envPath) => {
+  if (fs.existsSync(envPath)) {
+    dotenv.config({path: envPath});
+  }
+});

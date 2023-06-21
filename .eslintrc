@@ -1,19 +1,16 @@
 {
-  "root": true,
   "env": {
-    "node": true,
-    "jest": true
+    "browser": true,
+    "es2021": true
   },
+  "extends": ["google"],
+  "plugins": ["prettier"],
   "parserOptions": {
-    "ecmaVersion": 2020,
+    "ecmaVersion": "latest",
     "sourceType": "module"
   },
-  "plugins": ["prettier", "import", "jest"],
-  "extends": [
-    "airbnb-base",
-    "prettier",
-    "plugin:prettier/recommended",
-    "plugin:import/recommended",
-    "eslint:recommended"
-  ]
+  "rules": {
+    "max-len": ["error", {"code": 120}],
+    "indent": ["error", 2, {"MemberExpression": 1, "SwitchCase": 1}]
+  }
 }

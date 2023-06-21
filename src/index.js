@@ -1,19 +1,10 @@
 #!/usr/bin/env node
 
-/**
- * @file Application start up script which loads the environment, sets up an HTTP server and starts the application.
- */
+import './env';
+import http from 'http';
+import app from './app';
 
-import "./env";
-import http from "http";
-import app, {
-  beforeStarting,
-  afterStarting,
-  beforeStopping,
-  afterStopping,
-} from "./app";
-
-const server = http.createServer(app);
+const server = http.createServer(app.express);
 
 const normalizePort = (value) => {
   const port = parseInt(value, 10);
@@ -30,21 +21,19 @@ const normalizePort = (value) => {
 };
 
 const onError = (err) => {
-  if (err.syscall !== "listen") {
+  if (err.syscall !== 'listen') {
     throw err;
   }
 
   switch (err.code) {
-    case "EACCES":
+    case 'EACCES':
       // eslint-disable-next-line no-console
-      console.error("Binding requires elevated privileges", err);
+      console.error('Binding requires elevated privileges', err);
       process.exit(1);
-      break;
-    case "EADDRINUSE":
+    case 'EADDRINUSE':
       // eslint-disable-next-line no-console
-      console.error("Binding is already in use", err);
+      console.error('Binding is already in use', err);
       process.exit(1);
-      break;
     default:
       throw err;
   }
@@ -52,12 +41,12 @@ const onError = (err) => {
 
 const onListening = async () => {
   const addr = server.address();
-  const bind = typeof addr === "string" ? `pipe ${addr}` : `port ${addr.port}`;
-  await afterStarting(bind);
+  const bind = typeof addr === 'string' ? `pipe ${addr}` : `port ${addr.port}`;
+  await app.afterStarting(bind);
 };
 
 const onStopping = async () => {
-  await beforeStopping();
+  await app.beforeStopping();
   await new Promise((resolve, reject) => {
     server.close((err) => {
       if (err) {
@@ -67,14 +56,14 @@ const onStopping = async () => {
       }
     });
   });
-  await afterStopping();
+  await app.afterStopping();
 };
 
-server.on("error", onError);
-server.on("listening", onListening);
-process.on("SIGTERM", onStopping);
+server.on('error', onError);
+server.on('listening', onListening);
+process.on('SIGTERM', onStopping);
 
 const port = normalizePort(process.env.PORT || 3000);
 
-app.set("port", port);
-beforeStarting().then(() => server.listen(port));
+app.express.set('port', port);
+app.beforeStarting().then(() => server.listen(port));

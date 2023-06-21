@@ -1,32 +1,17 @@
-/**
- * @file Validates the loaded environment and ensures that all required environment variables are set.
- */
-
-import joi from "joi";
+import joi from 'joi';
 
 const envSchema = joi
   .object()
   .keys({
     LOGGER_LEVEL: joi
       .string()
-      .valid(
-        "emerg",
-        "alert",
-        "crit",
-        "error",
-        "warning",
-        "notice",
-        "info",
-        "debug"
-      )
-      .default("notice"),
+      .valid('emerg', 'alert', 'crit', 'error', 'warning', 'notice', 'info', 'debug')
+      .default('notice'),
     LOGGER_FILENAME: joi.string().optional(),
   })
   .unknown();
 
-const { value: env, error } = envSchema
-  .prefs({ errors: { label: "key" } })
-  .validate(process.env);
+const {value: env, error} = envSchema.prefs({errors: {label: 'key'}}).validate(process.env);
 
 if (error) {
   throw new Error(`Config validation error: ${error.message}`);

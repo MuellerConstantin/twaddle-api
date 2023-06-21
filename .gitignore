@@ -329,7 +329,5 @@ dist
 # End of https://www.toptal.com/developers/gitignore/api/visualstudiocode,intellij+all,eclipse,node,git,svn
 
 ### Environment ###
-.env*
-
-### Uploads ###
-uploads
+.env.local
+.env.*.local
