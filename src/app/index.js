@@ -3,6 +3,8 @@ import cors from 'cors';
 import helmet from 'helmet';
 import env from './config/env';
 import logger from './config/logger';
+import mongoose from './config/mongoose';
+import redis from './config/redis';
 import morgan from './middlewares/morgan';
 import * as error from './middlewares/error';
 
@@ -32,6 +34,9 @@ class ExpressApplication {
    */
   async beforeStarting() {
     logger.notice('Application is starting');
+
+    await mongoose.connect();
+    await redis.connect();
   }
 
   /**
