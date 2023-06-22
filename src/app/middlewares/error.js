@@ -83,5 +83,5 @@ export const errorHandler = () => (error, req, res, next) => {
   }
 
   res.status(apiError.status).json(apiError);
-  next();
+  return next();
 };

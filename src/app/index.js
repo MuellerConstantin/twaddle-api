@@ -7,6 +7,7 @@ import mongoose from './config/mongoose';
 import redis from './config/redis';
 import morgan from './middlewares/morgan';
 import * as error from './middlewares/error';
+import v1Routes from './routes/v1';
 
 /**
  * Wrapper class for the Express application.
@@ -23,6 +24,9 @@ class ExpressApplication {
     this._app.use(cors());
     this._app.use(helmet());
     this._app.use(morgan());
+
+    this._app.use('/api', v1Routes);
+
     this._app.use(error.notFoundHandler());
     this._app.use(error.errorHandler());
   }

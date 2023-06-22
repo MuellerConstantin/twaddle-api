@@ -11,6 +11,11 @@
   },
   "rules": {
     "max-len": ["error", {"code": 120}],
-    "indent": ["error", 2, {"MemberExpression": 1, "SwitchCase": 1}]
+    "indent": ["error", 2, {"MemberExpression": 1, "SwitchCase": 1}],
+    "space-before-function-paren": ["error", {
+      "anonymous": "always",
+      "named": "ignore",
+      "asyncArrow": "ignore"
+    }]
   }
 }

@@ -23,7 +23,7 @@ export const queryValidationHandler = (schema) => (req, res, next) => {
       };
     });
 
-    const apiError = new ApiError('Validation failed', 400, 'InvalidQueryParameterError', errorDetails);
+    const apiError = new ApiError('Validation failed', 400, errorDetails);
 
     next(apiError);
   } else {
@@ -52,7 +52,7 @@ export const paramsValidationHandler = (schema) => (req, res, next) => {
       };
     });
 
-    const apiError = new ApiError('Validation failed', 400, 'InvalidPathVariableError', errorDetails);
+    const apiError = new ApiError('Validation failed', 400, errorDetails);
 
     next(apiError);
   } else {
@@ -82,11 +82,38 @@ export const bodyValidationHandler = (schema) => (req, res, next) => {
       };
     });
 
-    const apiError = new ApiError('Validation failed', 422, 'ValidationError', errorDetails);
+    const apiError = new ApiError('Validation failed', 422, errorDetails);
 
     next(apiError);
   } else {
     req.body = value;
     next();
+  }
+};
+
+/**
+ * Allows to validate a data structure on service layer.
+ *
+ * @param {joi.Schema} schema Schema that the data structure must match
+ * @param {any} data Data structure to validate
+ * @return {object} Returns the validated and optionally transformed data structure
+ */
+export const validateData = (schema, data) => {
+  const {error, value} = schema.validate(data, {abortEarly: false});
+
+  if (error) {
+    const errorDetails = error.details.map((detail) => {
+      let message = detail.message.match(/^(?:".+" )?(.+)$/)[1];
+      message = message.charAt(0).toUpperCase() + message.slice(1);
+
+      return {
+        path: detail.path.join('.'),
+        message,
+      };
+    });
+
+    throw new ApiError('Validation failed', 422, errorDetails);
+  } else {
+    return value;
   }
 };
