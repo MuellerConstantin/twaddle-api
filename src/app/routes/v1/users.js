@@ -2,6 +2,7 @@ import express from 'express';
 import joi from 'joi';
 import {asyncHandler} from '../../middlewares/error';
 import {paramsValidationHandler, queryValidationHandler} from '../../middlewares/validation';
+import {authenticateAccessToken} from '../../middlewares/security';
 import * as UserService from '../../services/users';
 
 // eslint-disable-next-line new-cap
@@ -9,6 +10,7 @@ const router = express.Router();
 
 router.get(
   '/users/:id',
+  authenticateAccessToken(),
   paramsValidationHandler(joi.object().keys({id: joi.string().hex().required()})),
   asyncHandler(async (req, res) => {
     const {id} = req.params;
@@ -24,6 +26,7 @@ router.get(
 
 router.get(
   '/users',
+  authenticateAccessToken(),
   queryValidationHandler(
     joi.object({
       perPage: joi.number().positive().greater(0).default(25).optional(),
@@ -66,6 +69,7 @@ router.post(
 
 router.patch(
   '/users/:id',
+  authenticateAccessToken(),
   paramsValidationHandler(joi.object().keys({id: joi.string().hex().required()})),
   asyncHandler(async (req, res) => {
     const {id} = req.params;
@@ -81,6 +85,7 @@ router.patch(
 
 router.delete(
   '/users/:id',
+  authenticateAccessToken(),
   paramsValidationHandler(joi.object().keys({id: joi.string().hex().required()})),
   asyncHandler(async (req, res) => {
     const {id} = req.params;

@@ -10,6 +10,9 @@ const envSchema = joi
     LOGGER_FILENAME: joi.string().optional(),
     MONGO_URL: joi.string().required().uri(),
     REDIS_URL: joi.string().required().uri(),
+    AUTH_TOKEN_SECRET: joi.string().required(),
+    AUTH_TOKEN_EXPIRES: joi.number().min(1).default(300),
+    REFRESH_TOKEN_EXPIRES: joi.number().min(1).default(18000),
   })
   .unknown();
 
@@ -29,5 +32,13 @@ export default {
   },
   redis: {
     uri: env.REDIS_URL,
+  },
+  authToken: {
+    secret: env.AUTH_TOKEN_SECRET,
+    issuer: 'Twaddle API',
+    expires: env.AUTH_TOKEN_EXPIRES,
+  },
+  refreshToken: {
+    expires: env.REFRESH_TOKEN_EXPIRES,
   },
 };

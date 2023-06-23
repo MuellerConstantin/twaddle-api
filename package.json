@@ -40,6 +40,10 @@
     "joi": "^17.9.2",
     "mongoose": "^7.3.0",
     "morgan": "^1.10.0",
+    "passport": "^0.6.0",
+    "passport-custom": "^1.1.1",
+    "passport-jwt": "^4.0.1",
+    "passport-local": "^1.0.0",
     "redis": "^4.6.7",
     "winston": "^3.9.0"
   }

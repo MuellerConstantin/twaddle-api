@@ -6,6 +6,7 @@ import logger from './config/logger';
 import mongoose from './config/mongoose';
 import redis from './config/redis';
 import morgan from './middlewares/morgan';
+import passport from './middlewares/passport';
 import * as error from './middlewares/error';
 import v1Routes from './routes/v1';
 
@@ -24,6 +25,7 @@ class ExpressApplication {
     this._app.use(cors());
     this._app.use(helmet());
     this._app.use(morgan());
+    this._app.use(passport.initialize());
 
     this._app.use('/api', v1Routes);
 
