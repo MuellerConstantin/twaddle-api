@@ -29,6 +29,10 @@ class ExpressApplication {
 
     this._app.use('/api', v1Routes);
 
+    this._app.set('view engine', 'ejs');
+    this._app.set('views', 'resources/views');
+    this._app.use('/public', express.static('resources/public'));
+
     this._app.use(error.notFoundHandler());
     this._app.use(error.errorHandler());
   }

@@ -95,4 +95,38 @@ router.delete(
   }),
 );
 
+router.get(
+  '/user',
+  authenticateAccessToken(),
+  asyncHandler(async (req, res) => {
+    const user = await UserService.findUserById(req.user.id);
+
+    return res.status(200).json({
+      id: user.id,
+      email: user.email,
+      displayName: user.displayName,
+      verified: user.verified,
+    });
+  }),
+);
+
+router.get(
+  '/user/verify',
+  authenticateAccessToken(),
+  asyncHandler(async (req, res) => {
+    await UserService.sendVerificationMail(req.user.id);
+
+    return res.status(204).end();
+  }),
+);
+
+router.post(
+  '/user/verify',
+  asyncHandler(async (req, res) => {
+    await UserService.verifyUser(req.body.verificationToken);
+
+    return res.status(204).end();
+  }),
+);
+
 export default router;

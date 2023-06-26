@@ -1,6 +1,4 @@
 dist
 node_modules
-.babelrc
-.eslintrc
 README.md
 LICENSE.md

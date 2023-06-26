@@ -3,19 +3,13 @@
     "browser": true,
     "es2021": true
   },
-  "extends": ["google"],
+  "extends": ["google", "prettier"],
   "plugins": ["prettier"],
   "parserOptions": {
     "ecmaVersion": "latest",
     "sourceType": "module"
   },
   "rules": {
-    "max-len": ["error", {"code": 120}],
-    "indent": ["error", 2, {"MemberExpression": 1, "SwitchCase": 1}],
-    "space-before-function-paren": ["error", {
-      "anonymous": "always",
-      "named": "ignore",
-      "asyncArrow": "ignore"
-    }]
+    "max-len": ["error", {"code": 120}]
   }
 }

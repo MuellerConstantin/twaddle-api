@@ -1,4 +1,11 @@
+import path from 'path';
+import {randomBytes} from 'crypto';
 import joi from 'joi';
+import ejs from 'ejs';
+import bcrypt from 'bcryptjs';
+import env from '../config/env';
+import redis from '../config/redis';
+import {sendHtmlMail} from '../config/nodemailer';
 import {validateData} from '../middlewares/validation';
 import {ApiError} from '../middlewares/error';
 import User from '../models/user';
@@ -85,7 +92,16 @@ export async function createUser(data) {
     throw new ApiError('Email is already in use', 409);
   }
 
-  return await User.create(data);
+  const salt = bcrypt.genSaltSync(10);
+  const hash = bcrypt.hashSync(data.password, salt);
+
+  data.password = hash;
+
+  const user = await User.create(data);
+
+  sendVerificationMail(user.id);
+
+  return user;
 }
 
 /**
@@ -113,9 +129,19 @@ export async function updateUser(id, data) {
   const update = {$set: {}, $unset: {}};
 
   Object.keys(data).forEach((key) => {
-    update.$set[key] = data[key];
+    if (key === 'password') {
+      const salt = bcrypt.genSaltSync(10);
+      const hash = bcrypt.hashSync(data[key], salt);
 
-    if (key === null) {
+      update.$set[key] = hash;
+    } else if (key === 'email') {
+      update.$set[key] = data[key];
+      update.$set.verified = false;
+    } else {
+      update.$set[key] = data[key];
+    }
+
+    if (data[key] === null) {
       update.$unset[key] = 1;
     }
   });
@@ -142,4 +168,63 @@ export async function deleteUser(id) {
   if (!user) {
     throw new ApiError('Resource not found', 404);
   }
+}
+
+/**
+ * Sends a verification mail to the user.
+ *
+ * @param {string} userId The user's identifier
+ */
+export async function sendVerificationMail(userId) {
+  const user = await User.findById(userId);
+
+  if (!user) {
+    throw new ApiError('Resource not found', 404);
+  }
+
+  if (user.verified) {
+    throw new ApiError('User already verified', 400);
+  }
+
+  const verificationToken = randomBytes(6).toString('hex');
+
+  await redis.set(`verificationToken:${verificationToken}`, userId, {
+    EX: env.verificationToken.expires,
+  });
+
+  const html = await ejs.renderFile(path.join(__dirname, '../../../resources/mail/verification.ejs'), {
+    displayName: user.displayName,
+    verificationToken,
+  });
+
+  await sendHtmlMail(user.email, '"Twaddle Team" <noreply@twaddle.com>', 'Activate your account', html);
+}
+
+/**
+ * Verifies a user's email address and activates the account.
+ *
+ * @param {string} verificationToken The verification token received by email
+ */
+export async function verifyUser(verificationToken) {
+  const userId = await redis.get(`verificationToken:${verificationToken}`);
+
+  if (!userId) {
+    throw new ApiError('Resource not found', 404);
+  }
+
+  const user = await User.findByIdAndUpdate(
+    userId,
+    {
+      $set: {
+        verified: true,
+      },
+    },
+    {new: true},
+  );
+
+  if (!user) {
+    throw new ApiError('Resource not found', 404);
+  }
+
+  await redis.del(`verificationToken:${verificationToken}`);
 }

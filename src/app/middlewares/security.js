@@ -14,7 +14,7 @@ export const authenticateAccessToken = () => (req, res, next) => {
     }
 
     if (!user) {
-      return next(new ApiError('Invalid refresh token provided', 401));
+      return next(new ApiError('Invalid access token provided', 401));
     }
 
     req.user = user;
