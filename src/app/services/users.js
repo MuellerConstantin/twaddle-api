@@ -99,7 +99,7 @@ export async function createUser(data) {
 
   const user = await User.create(data);
 
-  sendVerificationMail(user.id);
+  sendUserVerificationMail(user.email);
 
   return user;
 }
@@ -173,10 +173,10 @@ export async function deleteUser(id) {
 /**
  * Sends a verification mail to the user.
  *
- * @param {string} userId The user's identifier
+ * @param {string} email The user's email address
  */
-export async function sendVerificationMail(userId) {
-  const user = await User.findById(userId);
+export async function sendUserVerificationMail(email) {
+  const user = await User.findOne({email});
 
   if (!user) {
     throw new ApiError('Resource not found', 404);
@@ -188,11 +188,11 @@ export async function sendVerificationMail(userId) {
 
   const verificationToken = randomBytes(6).toString('hex');
 
-  await redis.set(`verificationToken:${verificationToken}`, userId, {
+  await redis.set(`verificationToken:${verificationToken}`, user.id, {
     EX: env.verificationToken.expires,
   });
 
-  const html = await ejs.renderFile(path.join(__dirname, '../../../resources/mail/verification.ejs'), {
+  const html = await ejs.renderFile(path.join(__dirname, '../../../resources/mail/userVerification.ejs'), {
     displayName: user.displayName,
     verificationToken,
   });
@@ -227,4 +227,60 @@ export async function verifyUser(verificationToken) {
   }
 
   await redis.del(`verificationToken:${verificationToken}`);
+}
+
+/**
+ * Sends a password reset mail to the user.
+ *
+ * @param {string} email The user's email address
+ */
+export async function sendPasswordResetMail(email) {
+  const user = await User.findOne({email});
+
+  if (!user) {
+    throw new ApiError('Resource not found', 404);
+  }
+
+  const resetToken = randomBytes(6).toString('hex');
+
+  await redis.set(`resetToken:${resetToken}`, user.id, {
+    EX: env.resetToken.expires,
+  });
+
+  const html = await ejs.renderFile(path.join(__dirname, '../../../resources/mail/passwordReset.ejs'), {
+    displayName: user.displayName,
+    resetToken,
+  });
+
+  await sendHtmlMail(user.email, '"Twaddle Team" <noreply@twaddle.com>', 'Reset your password', html);
+}
+
+/**
+ * Resets a user's password using a reset token.
+ *
+ * @param {string} resetToken The reset token received by email
+ * @param {string} newPassword The new password
+ */
+export async function resetPassword(resetToken, newPassword) {
+  const userId = await redis.get(`resetToken:${resetToken}`);
+
+  if (!userId) {
+    throw new ApiError('Resource not found', 404);
+  }
+
+  const user = await User.findByIdAndUpdate(
+    userId,
+    {
+      $set: {
+        password: bcrypt.hashSync(newPassword, bcrypt.genSaltSync(10)),
+      },
+    },
+    {new: true},
+  );
+
+  if (!user) {
+    throw new ApiError('Resource not found', 404);
+  }
+
+  await redis.del(`resetToken:${resetToken}`);
 }

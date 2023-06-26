@@ -14,6 +14,7 @@ const envSchema = joi
     AUTH_TOKEN_EXPIRES: joi.number().min(1).default(300),
     REFRESH_TOKEN_EXPIRES: joi.number().min(1).default(18000),
     VERIFICATION_TOKEN_EXPIRES: joi.number().min(1).default(600),
+    RESET_TOKEN_EXPIRES: joi.number().min(1).default(600),
     MAIL_HOST: joi.string().required(),
     MAIL_PORT: joi.number().required(),
     MAIL_USER: joi.string().optional(),
@@ -49,6 +50,9 @@ export default {
   },
   verificationToken: {
     expires: env.VERIFICATION_TOKEN_EXPIRES,
+  },
+  resetToken: {
+    expires: env.RESET_TOKEN_EXPIRES,
   },
   mail: {
     host: env.MAIL_HOST,

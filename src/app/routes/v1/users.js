@@ -112,9 +112,8 @@ router.get(
 
 router.get(
   '/user/verify',
-  authenticateAccessToken(),
   asyncHandler(async (req, res) => {
-    await UserService.sendVerificationMail(req.user.id);
+    await UserService.sendUserVerificationMail(req.query.email);
 
     return res.status(204).end();
   }),
@@ -124,6 +123,24 @@ router.post(
   '/user/verify',
   asyncHandler(async (req, res) => {
     await UserService.verifyUser(req.body.verificationToken);
+
+    return res.status(204).end();
+  }),
+);
+
+router.get(
+  '/user/reset',
+  asyncHandler(async (req, res) => {
+    await UserService.sendPasswordResetMail(req.query.email);
+
+    return res.status(204).end();
+  }),
+);
+
+router.post(
+  '/user/reset',
+  asyncHandler(async (req, res) => {
+    await UserService.resetPassword(req.body.resetToken, req.body.password);
 
     return res.status(204).end();
   }),
