@@ -3,6 +3,7 @@ import joi from 'joi';
 const envSchema = joi
   .object()
   .keys({
+    FIRST_PARTY_CLIENT_BASE_URL: joi.string().uri().required(),
     LOGGER_LEVEL: joi
       .string()
       .valid('emerg', 'alert', 'crit', 'error', 'warning', 'notice', 'info', 'debug')
@@ -30,15 +31,18 @@ if (error) {
 }
 
 export default {
+  firstPartyClient: {
+    baseUrl: env.FIRST_PARTY_CLIENT_BASE_URL,
+  },
   logger: {
     level: env.LOGGER_LEVEL,
     filename: env.LOGGER_FILENAME,
   },
   mongo: {
-    uri: env.MONGO_URL,
+    url: env.MONGO_URL,
   },
   redis: {
-    uri: env.REDIS_URL,
+    url: env.REDIS_URL,
   },
   authToken: {
     secret: env.AUTH_TOKEN_SECRET,

@@ -24,6 +24,7 @@ router.post(
         id: req.user.id,
         email: req.user.email,
         displayName: req.user.displayName,
+        verified: req.user.verified,
       },
     });
   }),
@@ -46,6 +47,7 @@ router.post(
         id: req.user.id,
         email: req.user.email,
         displayName: req.user.displayName,
+        verified: req.user.verified,
       },
     });
   }),

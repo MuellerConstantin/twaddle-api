@@ -194,7 +194,7 @@ export async function sendUserVerificationMail(email) {
 
   const html = await ejs.renderFile(path.join(__dirname, '../../../resources/mail/userVerification.ejs'), {
     displayName: user.displayName,
-    verificationToken,
+    verificationUrl: `${env.firstPartyClient.baseUrl}/verify-user/${verificationToken}`,
   });
 
   await sendHtmlMail(user.email, '"Twaddle Team" <noreply@twaddle.com>', 'Activate your account', html);
@@ -249,7 +249,7 @@ export async function sendPasswordResetMail(email) {
 
   const html = await ejs.renderFile(path.join(__dirname, '../../../resources/mail/passwordReset.ejs'), {
     displayName: user.displayName,
-    resetToken,
+    resetUrl: `${env.firstPartyClient.baseUrl}/reset-password?token=${resetToken}`,
   });
 
   await sendHtmlMail(user.email, '"Twaddle Team" <noreply@twaddle.com>', 'Reset your password', html);
