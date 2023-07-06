@@ -20,12 +20,7 @@ router.post(
       accessExpiresIn: env.authToken.expires,
       refreshToken,
       refreshExpiresIn: env.refreshToken.expires,
-      principal: {
-        id: req.user.id,
-        email: req.user.email,
-        displayName: req.user.displayName,
-        verified: req.user.verified,
-      },
+      subject: req.user.id,
     });
   }),
 );
@@ -43,12 +38,7 @@ router.post(
       accessExpiresIn: env.authToken.expires,
       refreshToken,
       refreshExpiresIn: env.refreshToken.expires,
-      principal: {
-        id: req.user.id,
-        email: req.user.email,
-        displayName: req.user.displayName,
-        verified: req.user.verified,
-      },
+      subject: req.user.id,
     });
   }),
 );
