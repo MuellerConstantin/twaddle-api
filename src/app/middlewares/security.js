@@ -63,3 +63,22 @@ export const authenticateCredentials = () => (req, res, next) => {
     return next();
   })(req, res, next);
 };
+
+/**
+ * Authorization middleware that expects a predicate. If predicate resolves to true, the access
+ * is granted, otherwise the request is rejected.
+ *
+ * @param {Function} predicate Predicate that contains the authorization condition
+ * @return {*} Returns the constructed authorization middleware
+ */
+export const authorize = (predicate) => async (req, res, next) => {
+  const accessGranted = await predicate(req);
+
+  if (accessGranted) {
+    next();
+  } else {
+    next(
+      new ApiError("Access denied because of missing permissions", 403)
+    );
+  }
+};

@@ -68,12 +68,10 @@ router.post(
 );
 
 router.patch(
-  '/users/:id',
+  '/user/me',
   authenticateAccessToken(),
-  paramsValidationHandler(joi.object().keys({id: joi.string().hex().required()})),
   asyncHandler(async (req, res) => {
-    const {id} = req.params;
-    const user = await UserService.updateUser(id, req.body);
+    const user = await UserService.updateUser(req.user.id, req.body);
 
     return res.status(200).json({
       id: user.id,
@@ -84,19 +82,17 @@ router.patch(
 );
 
 router.delete(
-  '/users/:id',
+  '/user/me',
   authenticateAccessToken(),
-  paramsValidationHandler(joi.object().keys({id: joi.string().hex().required()})),
   asyncHandler(async (req, res) => {
-    const {id} = req.params;
-    await UserService.deleteUser(id);
+    await UserService.deleteUser(req.user.id);
 
     return res.status(204).send();
   }),
 );
 
 router.get(
-  '/user',
+  '/user/me',
   authenticateAccessToken(),
   asyncHandler(async (req, res) => {
     const user = await UserService.findUserById(req.user.id);
@@ -111,7 +107,12 @@ router.get(
 );
 
 router.get(
-  '/user/verify',
+  '/user/verify-user',
+  queryValidationHandler(
+    joi.object({
+      email: joi.string().email().required(),
+    }),
+  ),
   asyncHandler(async (req, res) => {
     await UserService.sendUserVerificationMail(req.query.email);
 
@@ -120,7 +121,7 @@ router.get(
 );
 
 router.post(
-  '/user/verify',
+  '/user/verify-user',
   asyncHandler(async (req, res) => {
     await UserService.verifyUser(req.body.verificationToken);
 
@@ -129,7 +130,12 @@ router.post(
 );
 
 router.get(
-  '/user/reset',
+  '/user/reset-password',
+  queryValidationHandler(
+    joi.object({
+      email: joi.string().email().required(),
+    }),
+  ),
   asyncHandler(async (req, res) => {
     await UserService.sendPasswordResetMail(req.query.email);
 
@@ -138,7 +144,7 @@ router.get(
 );
 
 router.post(
-  '/user/reset',
+  '/user/reset-password',
   asyncHandler(async (req, res) => {
     await UserService.resetPassword(req.body.resetToken, req.body.password);
 
