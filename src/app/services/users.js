@@ -76,6 +76,7 @@ export async function findUsers(pageable = {perPage: 25, page: 0}) {
 export async function createUser(data) {
   validateData(
     joi.object({
+      username: joi.string().min(4).max(50).regex(/^[a-zA-Z0-9_]*$/).required(),
       email: joi.string().email().required(),
       password: joi
         .string()
@@ -83,10 +84,16 @@ export async function createUser(data) {
         .max(50)
         .regex(/^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9]).*$/)
         .required(),
-      displayName: joi.string().min(4).max(150).required(),
+      displayName: joi.string().min(1).max(150).optional(),
+      location: joi.string().min(1).max(150).optional(),
+      status: joi.string().min(1).max(150).optional(),
     }),
     data,
   );
+
+  if (await User.exists({username: data.username})) {
+    throw new ApiError('Username is already in use', 409);
+  }
 
   if (await User.exists({email: data.email})) {
     throw new ApiError('Email is already in use', 409);
@@ -114,6 +121,7 @@ export async function createUser(data) {
 export async function updateUser(id, data) {
   validateData(
     joi.object({
+      username: joi.string().min(4).max(50).regex(/^[a-zA-Z0-9_]*$/).optional(),
       email: joi.string().email().optional(),
       password: joi
         .string()
@@ -121,7 +129,9 @@ export async function updateUser(id, data) {
         .max(50)
         .regex(/^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9]).*$/)
         .optional(),
-      displayName: joi.string().min(4).max(150).optional(),
+      displayName: joi.string().min(1).max(150).optional(),
+      location: joi.string().min(1).max(150).optional(),
+      status: joi.string().min(1).max(150).optional(),
     }),
     data,
   );

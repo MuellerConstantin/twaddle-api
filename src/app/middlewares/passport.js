@@ -11,12 +11,12 @@ passport.use(
   'credentials',
   new LocalStrategy(
     {
-      usernameField: 'email',
+      usernameField: 'username',
       passwordField: 'password',
       session: false,
     },
-    (email, password, done) => {
-      User.findOne({email})
+    (username, password, done) => {
+      User.findOne({username})
         .then((user) => {
           if (!user) {
             return done(null, false);

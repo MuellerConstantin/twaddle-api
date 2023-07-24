@@ -18,8 +18,10 @@ router.get(
 
     return res.status(200).json({
       id: user.id,
-      email: user.email,
+      username: user.username,
       displayName: user.displayName,
+      location: user.location,
+      status: user.status,
     });
   }),
 );
@@ -43,8 +45,10 @@ router.get(
     return res.status(200).json({
       content: users.map((user) => ({
         id: user.id,
-        email: user.email,
+        username: user.username,
         displayName: user.displayName,
+        location: user.location,
+        status: user.status,
       })),
       info,
     });
@@ -61,8 +65,12 @@ router.post(
       .location(`${req.originalUrl}/${encodeURIComponent(user.id)}`)
       .json({
         id: user.id,
+        username: user.username,
         email: user.email,
+        verified: user.verified,
         displayName: user.displayName,
+        location: user.location,
+        status: user.status,
       });
   }),
 );
@@ -75,8 +83,12 @@ router.patch(
 
     return res.status(200).json({
       id: user.id,
+      username: user.username,
       email: user.email,
+      verified: user.verified,
       displayName: user.displayName,
+      location: user.location,
+      status: user.status,
     });
   }),
 );
@@ -99,9 +111,12 @@ router.get(
 
     return res.status(200).json({
       id: user.id,
+      username: user.username,
       email: user.email,
-      displayName: user.displayName,
       verified: user.verified,
+      displayName: user.displayName,
+      location: user.location,
+      status: user.status,
     });
   }),
 );

@@ -3,16 +3,17 @@ import connection from '../config/mongoose';
 
 const UserSchema = new mongoose.Schema(
   {
+    username: {
+      type: String,
+      unique: true,
+      required: true,
+    },
     email: {
       type: String,
       unique: true,
       required: true,
     },
     password: {
-      type: String,
-      required: true,
-    },
-    displayName: {
       type: String,
       required: true,
     },
@@ -24,6 +25,15 @@ const UserSchema = new mongoose.Schema(
       type: Boolean,
       default: false,
     },
+    displayName: {
+      type: String,
+    },
+    location: {
+      type: String,
+    },
+    status: {
+      type: String,
+    }
   },
   {collection: 'users', timestamps: true},
 );
