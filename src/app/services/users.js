@@ -129,9 +129,9 @@ export async function updateUser(id, data) {
         .max(50)
         .regex(/^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9]).*$/)
         .optional(),
-      displayName: joi.string().min(1).max(150).optional(),
-      location: joi.string().min(1).max(150).optional(),
-      status: joi.string().min(1).max(150).optional(),
+      displayName: joi.string().min(1).max(150).allow(null).optional(),
+      location: joi.string().min(1).max(150).allow(null).optional(),
+      status: joi.string().min(1).max(150).allow(null).optional(),
     }),
     data,
   );
@@ -139,7 +139,9 @@ export async function updateUser(id, data) {
   const update = {$set: {}, $unset: {}};
 
   Object.keys(data).forEach((key) => {
-    if (key === 'password') {
+    if (data[key] === null) {
+      update.$unset[key] = 1;
+    } else if (key === 'password') {
       const salt = bcrypt.genSaltSync(10);
       const hash = bcrypt.hashSync(data[key], salt);
 
@@ -149,10 +151,6 @@ export async function updateUser(id, data) {
       update.$set.verified = false;
     } else {
       update.$set[key] = data[key];
-    }
-
-    if (data[key] === null) {
-      update.$unset[key] = 1;
     }
   });
 
