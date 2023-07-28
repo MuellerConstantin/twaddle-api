@@ -3,6 +3,7 @@ import joi from 'joi';
 import {asyncHandler} from '../../middlewares/error';
 import {paramsValidationHandler, queryValidationHandler} from '../../middlewares/validation';
 import {authenticateAccessToken} from '../../middlewares/security';
+import {imageUpload} from '../../middlewares/multer';
 import * as UserService from '../../services/users';
 
 // eslint-disable-next-line new-cap
@@ -14,7 +15,7 @@ router.get(
   paramsValidationHandler(joi.object().keys({id: joi.string().hex().required()})),
   asyncHandler(async (req, res) => {
     const {id} = req.params;
-    const user = await UserService.findUserById(id);
+    const user = await UserService.getUserById(id);
 
     return res.status(200).json({
       id: user.id,
@@ -23,6 +24,22 @@ router.get(
       location: user.location,
       status: user.status,
     });
+  }),
+);
+
+router.get(
+  '/users/:id/avatar',
+  authenticateAccessToken(),
+  paramsValidationHandler(joi.object().keys({id: joi.string().hex().required()})),
+  asyncHandler(async (req, res) => {
+    const {id} = req.params;
+
+    const avatar = await UserService.getUserAvatar(id);
+
+    res.header('Content-Type', avatar.Metadata['contentype'] || avatar.ContentType);
+    res.header('Content-Length', avatar.ContentLength);
+
+    return avatar.Body.pipe(res);
   }),
 );
 
@@ -37,7 +54,7 @@ router.get(
   ),
   asyncHandler(async (req, res) => {
     const {perPage, page} = req.query;
-    const [users, info] = await UserService.findUsers({
+    const [users, info] = await UserService.getUsers({
       perPage,
       page,
     });
@@ -93,6 +110,40 @@ router.patch(
   }),
 );
 
+router.post(
+  '/user/me/avatar',
+  authenticateAccessToken(),
+  imageUpload.single("file"),
+  asyncHandler(async (req, res) => {
+    await UserService.updateUserAvatar(req.user.id, req.file.key);
+
+    return res.status(204).send();
+  }),
+)
+
+router.delete(
+  '/user/me/avatar',
+  authenticateAccessToken(),
+  asyncHandler(async (req, res) => {
+    await UserService.updateUserAvatar(req.user.id, null);
+
+    return res.status(204).send();
+  }),
+);
+
+router.get(
+  '/user/me/avatar',
+  authenticateAccessToken(),
+  asyncHandler(async (req, res, next) => {
+    const avatar = await UserService.getUserAvatar(req.user.id);
+
+    res.header('Content-Type', avatar.Metadata['contentype'] || avatar.ContentType);
+    res.header('Content-Length', avatar.ContentLength);
+
+    return avatar.Body.pipe(res);
+  }),
+);
+
 router.delete(
   '/user/me',
   authenticateAccessToken(),
@@ -107,7 +158,7 @@ router.get(
   '/user/me',
   authenticateAccessToken(),
   asyncHandler(async (req, res) => {
-    const user = await UserService.findUserById(req.user.id);
+    const user = await UserService.getUserById(req.user.id);
 
     return res.status(200).json({
       id: user.id,

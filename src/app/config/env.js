@@ -21,6 +21,11 @@ const envSchema = joi
     MAIL_USER: joi.string().optional(),
     MAIL_PASS: joi.string().optional(),
     MAIL_SECURE: joi.boolean().default(false),
+    S3_URL: joi.string().required().uri(),
+    S3_ACCESS_KEY_ID: joi.string().required(),
+    S3_SECRET_ACCESS_KEY: joi.string().required(),
+    S3_REGION: joi.string().required(),
+    S3_BUCKET: joi.string().required(),
   })
   .unknown();
 
@@ -65,4 +70,11 @@ export default {
     pass: env.MAIL_PASS,
     secure: env.MAIL_SECURE,
   },
+  s3: {
+    url: env.S3_URL,
+    accessKeyId: env.S3_ACCESS_KEY_ID,
+    secretAccessKey: env.S3_SECRET_ACCESS_KEY,
+    bucket: env.S3_BUCKET,
+    region: env.S3_REGION,
+  }
 };

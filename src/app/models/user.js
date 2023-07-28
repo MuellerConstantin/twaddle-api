@@ -33,7 +33,10 @@ const UserSchema = new mongoose.Schema(
     },
     status: {
       type: String,
-    }
+    },
+    avatar: {
+      type: String,
+    },
   },
   {collection: 'users', timestamps: true},
 );

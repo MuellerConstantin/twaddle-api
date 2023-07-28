@@ -5,6 +5,7 @@ import ejs from 'ejs';
 import bcrypt from 'bcryptjs';
 import env from '../config/env';
 import redis from '../config/redis';
+import s3, {DeleteObjectCommand, GetObjectCommand} from '../config/s3';
 import {sendHtmlMail} from '../config/nodemailer';
 import {validateData} from '../middlewares/validation';
 import {ApiError} from '../middlewares/error';
@@ -16,7 +17,7 @@ import User from '../models/user';
  * @param {string} id Identifier of the user to retrieve
  * @return {Promise<object>} The retrieved user
  */
-export async function findUserById(id) {
+export async function getUserById(id) {
   const user = await User.findById(id);
 
   if (!user) {
@@ -32,7 +33,7 @@ export async function findUserById(id) {
  * @param {string} email Email of the user to retrieve
  * @return {Promise<object>} The retrieved user
  */
-export async function findUserByEmail(email) {
+export async function getUserByEmail(email) {
   const user = await User.findOne({email});
 
   if (!user) {
@@ -48,7 +49,7 @@ export async function findUserByEmail(email) {
  * @param {{perPage: number, page: number}=} pageable Page number
  * @return {Promise<[object[], object]>} Returns a tuple with the list of users and pagination info
  */
-export async function findUsers(pageable = {perPage: 25, page: 0}) {
+export async function getUsers(pageable = {perPage: 25, page: 0}) {
   const {perPage, page} = pageable;
 
   const users = await User.find()
@@ -109,6 +110,65 @@ export async function createUser(data) {
   sendUserVerificationMail(user.email);
 
   return user;
+}
+
+/**
+ * Updates a user's avatar.
+ *
+ * @param {string} id Identifier of user to update
+ * @param {string} avatar Key of avatar in object storage
+ */
+export async function updateUserAvatar(id, avatar) {
+  const user = await User.findById(id);
+
+  if (!user) {
+    throw new ApiError('Resource not found', 404);
+  }
+
+  if (avatar === null) {
+    if (user.avatar) {
+      await s3.send(new DeleteObjectCommand({Bucket: env.s3.bucket, Key: user.avatar}));
+    }
+
+    await User.findByIdAndUpdate(
+      id,
+      {
+        $unset: {
+          avatar: 1,
+        },
+      },
+      {new: true},
+    );
+  } else {
+    await User.findByIdAndUpdate(
+      id,
+      {
+        $set: {
+          avatar,
+        },
+      },
+      {new: true},
+    );
+  }
+}
+
+/**
+ * Get a user's avatar.
+ *
+ * @param {string} id Identifier of user to retrieve avatar
+ */
+export async function getUserAvatar(id) {
+  const user = await User.findById(id);
+
+  if (!user) {
+    throw new ApiError('Resource not found', 404);
+  }
+
+  if (!user.avatar) {
+    throw new ApiError('Resource not found', 404);
+  }
+
+  return await s3.send(new GetObjectCommand({Bucket: env.s3.bucket, Key: user.avatar}));
 }
 
 /**
