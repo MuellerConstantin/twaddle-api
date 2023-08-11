@@ -36,7 +36,7 @@ router.get(
 
     const avatar = await UserService.getUserAvatar(id);
 
-    res.header('Content-Type', avatar.Metadata['contentype'] || avatar.ContentType);
+    res.header('Content-Type', avatar.ContentType);
     res.header('Content-Length', avatar.ContentLength);
 
     return avatar.Body.pipe(res);
@@ -137,7 +137,7 @@ router.get(
   asyncHandler(async (req, res, next) => {
     const avatar = await UserService.getUserAvatar(req.user.id);
 
-    res.header('Content-Type', avatar.Metadata['contentype'] || avatar.ContentType);
+    res.header('Content-Type', avatar.ContentType);
     res.header('Content-Length', avatar.ContentLength);
 
     return avatar.Body.pipe(res);
