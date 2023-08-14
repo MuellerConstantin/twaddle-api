@@ -17,7 +17,7 @@ export const asyncHandler = (route) => async (req, res, next) => {
 };
 
 /**
- * Standardized API error Format for implementing uniform error messages.
+ * Standardized API error format for implementing uniform error messages.
  * This class should be used instead of the base class {@link Error}.
  */
 export class ApiError extends Error {
@@ -50,6 +50,51 @@ export class ApiError extends Error {
     };
   }
 }
+
+/**
+ * All status codes used by the WebSocket interface.
+ */
+export const SocketErrorCode = {
+  INTERNAL_SERVER_ERROR: "InternalServerError",
+  NOT_FOUND_ERROR: "NotFoundError",
+  INVALID_TICKET_ERROR: "InvalidTicketError"
+};
+
+Object.freeze(SocketErrorCode);
+
+/**
+ * Standardized socket error format for implementing uniform error messages.
+ * This class should be used instead of the base class {@link Error} for
+ * socket errors.
+ */
+export class SocketError extends Error {
+  /**
+   * Constructs an Socket error.
+   *
+   * @param {string=} message Human-readable error message
+   * @param {string=} code Internal error code, usually the error name
+   * @param {any=} details Optional details depending on the error
+   */
+  constructor(message, code, details) {
+    super(message || "Internal server error occurred");
+    this.code = code || SocketErrorCode.INTERNAL_SERVER_ERROR;
+    this.details = details;
+  }
+
+  /**
+   * Serializes the error to JSON.
+   *
+   * @return {object} Returns the error as JSON object
+   */
+  toJSON() {
+    return {
+      code: this.code,
+      message: this.message,
+      details: this.details,
+    };
+  }
+}
+
 
 /**
  * Default handler that's used for missing routes

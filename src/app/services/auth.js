@@ -33,3 +33,19 @@ export async function generateRefreshToken(subject) {
 
   return refreshToken;
 }
+
+/**
+ * Generates a new ticket.
+ *
+ * @param {string} subject Subject to generate token for
+ * @return {Promise<string>} Returns the generated ticket
+ */
+export const generateTicket = async (subject) => {
+  const ticket = randomBytes(12).toString("hex");
+
+  await redis.set(`ticket:${ticket}`, subject, {
+    EX: env.ticket.expires,
+  });
+
+  return ticket;
+};

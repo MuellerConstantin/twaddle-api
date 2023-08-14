@@ -85,4 +85,37 @@ passport.use(
   }),
 );
 
+passport.use(
+  "ticket",
+  new CustomStrategy((req, done) => {
+    try {
+      const ticket = new URL(
+        req.url,
+        `http://${req.headers.host}`
+      ).searchParams.get("ticket");
+
+      redis
+        .get(`ticket:${ticket}`)
+        .then(async (subject) => {
+          if (!subject) {
+            return done(null, false);
+          }
+
+          return User.findById(subject)
+            .then((user) => {
+              if (!user) {
+                return done(null, false);
+              }
+
+              return done(null, user);
+            })
+            .catch((err) => done(err));
+        })
+        .catch((err) => done(err));
+    } catch (err) {
+      done(err);
+    }
+  })
+);
+
 export default passport;

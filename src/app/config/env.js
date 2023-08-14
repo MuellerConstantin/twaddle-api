@@ -16,6 +16,7 @@ const envSchema = joi
     REFRESH_TOKEN_EXPIRES: joi.number().min(1).default(18000),
     VERIFICATION_TOKEN_EXPIRES: joi.number().min(1).default(600),
     RESET_TOKEN_EXPIRES: joi.number().min(1).default(600),
+    TICKET_EXPIRES: joi.number().min(1).default(120),
     MAIL_HOST: joi.string().required(),
     MAIL_PORT: joi.number().required(),
     MAIL_USER: joi.string().optional(),
@@ -62,6 +63,9 @@ export default {
   },
   resetToken: {
     expires: env.RESET_TOKEN_EXPIRES,
+  },
+  ticket: {
+    expires: env.TICKET_EXPIRES,
   },
   mail: {
     host: env.MAIL_HOST,

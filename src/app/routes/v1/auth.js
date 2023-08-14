@@ -1,6 +1,6 @@
 import express from 'express';
 import env from '../../config/env';
-import {authenticateCredentials, authenticateRefreshToken} from '../../middlewares/security';
+import {authenticateCredentials, authenticateRefreshToken, authenticateAccessToken} from '../../middlewares/security';
 import {asyncHandler} from '../../middlewares/error';
 import * as AuthService from '../../services/auth';
 
@@ -15,7 +15,6 @@ router.post(
     const refreshToken = await AuthService.generateRefreshToken(req.user.id);
 
     return res.status(201).json({
-      type: 'Bearer',
       accessToken,
       accessExpiresIn: env.authToken.expires,
       refreshToken,
@@ -33,7 +32,6 @@ router.post(
     const refreshToken = await AuthService.generateRefreshToken(req.user.id);
 
     return res.status(201).json({
-      type: 'Bearer',
       accessToken,
       accessExpiresIn: env.authToken.expires,
       refreshToken,
@@ -41,6 +39,20 @@ router.post(
       subject: req.user.id,
     });
   }),
+);
+
+router.post(
+  "/auth/tickets",
+  authenticateAccessToken(),
+  asyncHandler(async (req, res) => {
+    const ticket = await AuthService.generateTicket(req.user.id);
+
+    return res.status(201).json({
+      ticket,
+      subject: req.user.id,
+      expires: env.ticket.expires,
+    });
+  })
 );
 
 export default router;

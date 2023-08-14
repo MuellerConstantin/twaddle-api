@@ -1,4 +1,6 @@
 import express from 'express';
+import { Server as SocketServer } from "socket.io";
+import { createAdapter } from "@socket.io/redis-adapter";
 import cors from 'cors';
 import helmet from 'helmet';
 import env from './config/env';
@@ -8,7 +10,9 @@ import redis from './config/redis';
 import morgan from './middlewares/morgan';
 import passport from './middlewares/passport';
 import * as error from './middlewares/error';
+import { authenticateTicket } from "./middlewares/security";
 import v1Routes from './routes/v1';
+import v1Handler from './handlers/v1';
 
 /**
  * Wrapper class for the Express application.
@@ -41,12 +45,27 @@ class ExpressApplication {
    * Lifecycle callback that should be called before the application server ist starting.
    * Ideal for establishing database connections and other resources that should be
    * available at runtime.
+   * 
+   * @param {http.Server} server HTTP server instance used for serving the application
    */
-  async beforeStarting() {
+  async beforeStarting(server) {
     logger.notice('Application is starting');
 
     await mongoose.connect();
     await redis.connect();
+
+    const ioSubRedis = redis.duplicate();
+    const ioPubRedis = redis.duplicate();
+
+    await ioSubRedis.connect();
+    await ioPubRedis.connect();
+
+    const io = new SocketServer(server, { cors: true });
+    io.adapter(createAdapter(ioSubRedis, ioPubRedis));
+
+    const ioV1 = io.of("/ws/v1");
+    ioV1.use(authenticateTicket());
+    ioV1.on("connection", v1Handler);
   }
 
   /**

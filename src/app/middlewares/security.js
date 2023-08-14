@@ -1,5 +1,5 @@
 import passport from 'passport';
-import {ApiError} from './error';
+import {ApiError, SocketError, SocketErrorCode} from './error';
 
 /**
  * Authenticates by using the token strategy. In detail, it expects to find
@@ -62,6 +62,40 @@ export const authenticateCredentials = () => (req, res, next) => {
     req.user = user;
     return next();
   })(req, res, next);
+};
+
+/**
+ * Authenticate a websocket connection using tickets. Therefore, it expects
+ * a query parameter containing the ticket.
+ *
+ * Please note: This middleware is specially designed to work with a Websocket
+ * endpoint and <b>NOT</b> with a RESTful endpoint.
+ *
+ * @return {*} Returns the constructed middleware.
+ */
+export const authenticateTicket = () => async (socket, next) => {
+  passport.authenticate("ticket", { session: false }, (err, user) => {
+    if (err) {
+      const internalErr = new Error("Internal server error occurred");
+      internalErr.data = new SocketError().toJSON();
+
+      logger.error("Internal error occurred -", err);
+      return next(internalErr);
+    }
+
+    if (!user) {
+      const authErr = new Error("Invalid ticket provided");
+      authErr.data = new SocketError(
+        "Invalid ticket provided",
+        SocketErrorCode.INVALID_TICKET_ERROR
+      ).toJSON();
+
+      return next(authErr);
+    }
+
+    socket.user = user;
+    return next();
+  })(socket.request, {}, next);
 };
 
 /**
