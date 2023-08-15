@@ -44,6 +44,22 @@ export async function getUserByEmail(email) {
 }
 
 /**
+ * Retrieves a single user by its username.
+ *
+ * @param {string} username Username of the user to retrieve
+ * @return {Promise<object>} The retrieved user
+ */
+export async function getUserByUsername(username) {
+  const user = await User.findOne({username});
+
+  if (!user) {
+    throw new ApiError('Resource not found', 404);
+  }
+
+  return user;
+}
+
+/**
  * Retrieves all users in a paginated form.
  *
  * @param {{perPage: number, page: number}=} pageable Page number

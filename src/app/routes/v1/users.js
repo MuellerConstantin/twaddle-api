@@ -28,6 +28,24 @@ router.get(
 );
 
 router.get(
+  '/users/by-username/:username',
+  authenticateAccessToken(),
+  paramsValidationHandler(joi.object().keys({username: joi.string().required()})),
+  asyncHandler(async (req, res) => {
+    const {username} = req.params;
+    const user = await UserService.getUserByUsername(username);
+
+    return res.status(200).json({
+      id: user.id,
+      username: user.username,
+      displayName: user.displayName,
+      location: user.location,
+      status: user.status,
+    });
+  }),
+);
+
+router.get(
   '/users/:id/avatar',
   authenticateAccessToken(),
   paramsValidationHandler(joi.object().keys({id: joi.string().hex().required()})),
