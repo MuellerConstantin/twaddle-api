@@ -52,17 +52,6 @@ export class ApiError extends Error {
 }
 
 /**
- * All status codes used by the WebSocket interface.
- */
-export const SocketErrorCode = {
-  INTERNAL_SERVER_ERROR: "InternalServerError",
-  NOT_FOUND_ERROR: "NotFoundError",
-  INVALID_TICKET_ERROR: "InvalidTicketError"
-};
-
-Object.freeze(SocketErrorCode);
-
-/**
  * Standardized socket error format for implementing uniform error messages.
  * This class should be used instead of the base class {@link Error} for
  * socket errors.
@@ -72,12 +61,12 @@ export class SocketError extends Error {
    * Constructs an Socket error.
    *
    * @param {string=} message Human-readable error message
-   * @param {string=} code Internal error code, usually the error name
+   * @param {string=} status Internal error code, usually identical to the HTTP status code
    * @param {any=} details Optional details depending on the error
    */
-  constructor(message, code, details) {
-    super(message || "Internal server error occurred");
-    this.code = code || SocketErrorCode.INTERNAL_SERVER_ERROR;
+  constructor(message, status, details) {
+    super(message || 'Internal server error occurred');
+    this.status = status || 500;
     this.details = details;
   }
 
@@ -93,8 +82,17 @@ export class SocketError extends Error {
       details: this.details,
     };
   }
-}
 
+  /**
+   * Converts an API error to a socket error.
+   *
+   * @param {ApiError} apiError The API error to convert
+   * @return {SocketError} Returns the converted socket error
+   */
+  static fromApiError(apiError) {
+    return new SocketError(apiError.message, apiError.status, apiError.details);
+  }
+}
 
 /**
  * Default handler that's used for missing routes

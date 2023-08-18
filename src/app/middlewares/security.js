@@ -74,21 +74,18 @@ export const authenticateCredentials = () => (req, res, next) => {
  * @return {*} Returns the constructed middleware.
  */
 export const authenticateTicket = () => async (socket, next) => {
-  passport.authenticate("ticket", { session: false }, (err, user) => {
+  passport.authenticate('ticket', {session: false}, (err, user) => {
     if (err) {
-      const internalErr = new Error("Internal server error occurred");
+      const internalErr = new Error('Internal server error occurred');
       internalErr.data = new SocketError().toJSON();
 
-      logger.error("Internal error occurred -", err);
+      logger.error('Internal error occurred -', err);
       return next(internalErr);
     }
 
     if (!user) {
-      const authErr = new Error("Invalid ticket provided");
-      authErr.data = new SocketError(
-        "Invalid ticket provided",
-        SocketErrorCode.INVALID_TICKET_ERROR
-      ).toJSON();
+      const authErr = new Error('Invalid ticket provided');
+      authErr.data = new SocketError('Invalid ticket provided', SocketErrorCode.INVALID_TICKET_ERROR).toJSON();
 
       return next(authErr);
     }
@@ -106,13 +103,11 @@ export const authenticateTicket = () => async (socket, next) => {
  * @return {*} Returns the constructed authorization middleware
  */
 export const authorize = (predicate) => async (req, res, next) => {
-  const accessGranted = await predicate(req);
+  const accessGranted = await predicate(req, res);
 
   if (accessGranted) {
     next();
   } else {
-    next(
-      new ApiError("Access denied because of missing permissions", 403)
-    );
+    next(new ApiError('Access denied because of missing permissions', 403));
   }
 };

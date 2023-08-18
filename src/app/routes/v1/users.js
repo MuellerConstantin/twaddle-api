@@ -131,13 +131,13 @@ router.patch(
 router.post(
   '/user/me/avatar',
   authenticateAccessToken(),
-  imageUpload.single("file"),
+  imageUpload.single('file'),
   asyncHandler(async (req, res) => {
     await UserService.updateUserAvatar(req.user.id, req.file.key);
 
     return res.status(204).send();
   }),
-)
+);
 
 router.delete(
   '/user/me/avatar',
