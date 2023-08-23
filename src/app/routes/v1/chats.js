@@ -54,10 +54,9 @@ router.get(
 
     return res.status(200).json({
       content: messages.map((message) => ({
-        id: message.id,
         from: message.from,
         content: message.content,
-        timestamp: message.timestamp,
+        timestamp: message.createdAt,
       })),
       info,
     });
