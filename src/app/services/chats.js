@@ -46,7 +46,7 @@ export async function getMessagesOfChat(id, pageable = {perPage: 25, page: 0}) {
   const messages = await Chat.aggregate([
     {$match: {_id: new mongoose.Types.ObjectId(id)}},
     {$unwind: '$messages'},
-    {$sort: {'messages.timestamp': -1}},
+    {$sort: {'messages.createdAt': -1}},
     {$skip: perPage * page},
     {$limit: perPage},
     {$replaceRoot: {newRoot: '$messages'}},
