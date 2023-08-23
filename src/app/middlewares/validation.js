@@ -56,7 +56,7 @@ export const paramsValidationHandler = (schema) => (req, res, next) => {
 
     next(apiError);
   } else {
-    req.query = value;
+    req.params = value;
     next();
   }
 };

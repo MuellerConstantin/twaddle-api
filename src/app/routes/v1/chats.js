@@ -35,6 +35,36 @@ router.get(
 );
 
 router.get(
+  '/chats/:id/messages',
+  authenticateAccessToken(),
+  paramsValidationHandler(joi.object().keys({id: joi.string().hex().required()})),
+  queryValidationHandler(
+    joi.object({
+      perPage: joi.number().positive().greater(0).default(25).optional(),
+      page: joi.number().positive().allow(0).default(0).optional(),
+    }),
+  ),
+  authorize(async (req) => {
+    const chat = await ChatService.getChatById(req.params.id);
+    return chat.participants.some((participant) => participant.id === req.user.id);
+  }),
+  asyncHandler(async (req, res) => {
+    const {perPage, page} = req.query;
+    const [messages, info] = await ChatService.getMessagesOfChat(req.params.id, {perPage, page});
+
+    return res.status(200).json({
+      content: messages.map((message) => ({
+        id: message.id,
+        from: message.from,
+        content: message.content,
+        timestamp: message.timestamp,
+      })),
+      info,
+    });
+  }),
+);
+
+router.get(
   '/user/me/chats',
   authenticateAccessToken(),
   asyncHandler(async (req, res) => {
@@ -54,33 +84,6 @@ router.get(
           })),
       })),
     );
-  }),
-);
-
-router.get(
-  '/user/me/chats/:id/messages',
-  authenticateAccessToken(),
-  queryValidationHandler(
-    joi.object({
-      perPage: joi.number().positive().greater(0).default(25).optional(),
-      page: joi.number().positive().allow(0).default(0).optional(),
-    }),
-  ),
-  asyncHandler(async (req, res) => {
-    const {perPage, page} = req.query;
-    const [messages, info] = await ChatService.getMessagesOfChat(req.params.id, {perPage, page});
-    const chat = await ChatService.getChatById(req.params.id);
-
-    return res.status(200).json({
-      content: messages.map((message) => ({
-        id: message.id,
-        from: message.from,
-        to: chat.participants.filter((participant) => participant.id === message.from)[0].id,
-        content: message.content,
-        timestamp: message.timestamp,
-      })),
-      info,
-    });
   }),
 );
 
