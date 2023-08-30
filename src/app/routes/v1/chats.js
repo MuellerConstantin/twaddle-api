@@ -42,6 +42,7 @@ router.get(
     joi.object({
       perPage: joi.number().positive().greater(0).default(25).optional(),
       page: joi.number().positive().allow(0).default(0).optional(),
+      timestampOffset: joi.date().iso().optional(),
     }),
   ),
   authorize(async (req) => {
@@ -49,8 +50,8 @@ router.get(
     return chat.participants.some((participant) => participant.id === req.user.id);
   }),
   asyncHandler(async (req, res) => {
-    const {perPage, page} = req.query;
-    const [messages, info] = await ChatService.getMessagesOfChat(req.params.id, {perPage, page});
+    const {perPage, page, timestampOffset} = req.query;
+    const [messages, info] = await ChatService.getMessagesOfChat(req.params.id, {perPage, page, timestampOffset});
 
     return res.status(200).json({
       content: messages.map((message) => ({
