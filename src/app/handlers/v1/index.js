@@ -3,7 +3,7 @@ import {Socket} from 'socket.io';
 
 import logger from '../../config/logger';
 import {SocketError, ApiError} from '../../middlewares/error';
-import * as ChatService from '../../services/chats';
+import * as MessageService from '../../services/messages';
 
 /**
  * Root handler for handling incoming socket connections.
@@ -17,7 +17,7 @@ const handler = async (socket) => {
 
   socket.on('message', async ({content, to}) => {
     try {
-      const chat = await ChatService.addMessageToChat(to, {
+      const chat = await MessageService.addMessageToChat(to, {
         content,
         from: socket.user.id,
       });
