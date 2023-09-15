@@ -1,4 +1,4 @@
-# Twaddle
+# Twaddle API
 
 > Real time messenger and communication platform.
 
@@ -24,6 +24,9 @@
 Messenger with user management for mutual communication exchange in real time.
 This project does not serve to replace existing messengers from production,
 but rather to understand communication processes in the area of messaging.
+
+This is the platform's application server. Responsible for data storage and
+message exchange.
 
 ## Deployment
 
