@@ -20,7 +20,7 @@ connection.on('disconnected', () => logger.notice('Database connection closed'))
  * Connects to the MongoDB database.
  */
 connection.connect = async () => {
-  await connection.openUri(env.mongo.url);
+  await connection.openUri(env.mongo.uri);
 };
 
 export default connection;

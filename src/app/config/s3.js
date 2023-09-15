@@ -1,4 +1,4 @@
-import { S3Client } from '@aws-sdk/client-s3';
+import {S3Client} from '@aws-sdk/client-s3';
 import env from '../config/env';
 
 const s3 = new S3Client({
@@ -7,7 +7,7 @@ const s3 = new S3Client({
     accessKeyId: env.s3.accessKeyId,
     secretAccessKey: env.s3.secretAccessKey,
   },
-  endpoint: env.s3.url,
+  endpoint: env.s3.uri,
   forcePathStyle: true,
 });
 

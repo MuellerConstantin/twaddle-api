@@ -2,10 +2,20 @@
 
 > Real time messenger and communication platform.
 
+![Logo](docs/images/banner.png)
+
+![](https://img.shields.io/badge/Node.js-green?logo=nodedotjs)
+![](https://img.shields.io/badge/Express.js-lightgray?logo=express)
+![](https://img.shields.io/badge/MongoDB-lightgreen?logo=mongodb)
+![](https://img.shields.io/badge/Redis-red?logo=redis&logoColor=white)
+![](https://img.shields.io/badge/Socket.io-black?logo=socketdotio)
+![](https://img.shields.io/badge/S3-orange?logo=amazons3&logoColor=white)
+
 ## Table of Contents
 
 - [Introduction](#introduction)
 - [Getting started](#getting-started)
+- [Deployment](#deployment)
 - [License](#license)
   - [Forbidden](#forbidden)
 
@@ -14,6 +24,12 @@
 Messenger with user management for mutual communication exchange in real time.
 This project does not serve to replace existing messengers from production,
 but rather to understand communication processes in the area of messaging.
+
+## Deployment
+
+Deployment can be done via Docker or standalone. Information on this can be found under
+[deployment](docs/deployment.md). The configuration options of the application are also important for deployment
+and development. You can find it under [configuration](docs/configuration.md).
 
 ## License
 

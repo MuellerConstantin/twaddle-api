@@ -3,13 +3,13 @@ import env from './env';
 import logger from './logger';
 
 const transport = nodemailer.createTransport({
-  host: env.mail.host,
-  port: env.mail.port,
-  secure: env.mail.secure,
-  auth: env.mail.user
+  host: env.smtp.host,
+  port: env.smtp.port,
+  secure: env.smtp.secure,
+  auth: env.smtp.user
     ? {
-        user: env.mail.user,
-        pass: env.mail.pass,
+        user: env.smtp.user,
+        pass: env.smtp.password,
       }
     : undefined,
 });
