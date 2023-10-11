@@ -10,7 +10,7 @@ import * as MessageService from '../../services/messages';
 const router = express.Router();
 
 router.get(
-  '/chats/:id/messages',
+  '/chats/private/:id/messages',
   authenticateAccessToken(),
   paramsValidationHandler(joi.object().keys({id: joi.string().hex().required()})),
   queryValidationHandler(
@@ -21,12 +21,16 @@ router.get(
     }),
   ),
   authorize(async (req) => {
-    const chat = await ChatService.getChatById(req.params.id);
+    const chat = await ChatService.getPrivateChatById(req.params.id);
     return chat.participants.some((participant) => participant.id === req.user.id);
   }),
   asyncHandler(async (req, res) => {
     const {perPage, page, timestampOffset} = req.query;
-    const [messages, info] = await MessageService.getMessagesOfChat(req.params.id, {perPage, page, timestampOffset});
+    const [messages, info] = await MessageService.getMessagesOfPrivateChat(req.params.id, {
+      perPage,
+      page,
+      timestampOffset,
+    });
 
     return res.status(200).json({
       content: messages.map((message) => ({

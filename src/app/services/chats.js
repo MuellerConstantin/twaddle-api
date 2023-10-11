@@ -1,17 +1,17 @@
 import joi from 'joi';
 import {validateData} from '../middlewares/validation';
 import {ApiError} from '../middlewares/error';
-import Chat from '../models/chat';
+import {PrivateChatModel as PrivateChat} from '../models/chat';
 import User from '../models/user';
 
 /**
- * Retrieves a single chat by its identifier.
+ * Retrieves a single private chat by its identifier.
  *
  * @param {string} id Identifier of the chat to retrieve
  * @return {Promise<object>} The retrieved chat
  */
-export async function getChatById(id) {
-  const chat = await Chat.findById(id).populate('participants');
+export async function getPrivateChatById(id) {
+  const chat = await PrivateChat.findById(id).populate('participants');
 
   if (!chat) {
     throw new ApiError('Resource not found', 404);
@@ -21,40 +21,56 @@ export async function getChatById(id) {
 }
 
 /**
- * Retrieves the chats of a single user by its identifier.
+ * Retrieves the private chats of a single user by its identifier.
  *
  * @param {string} id Identifier of the user to retrieve chats for
  * @return {Promise<Array>} The retrieved chats
  */
-export async function getChatsOfUser(id) {
-  const chats = await Chat.find({participants: {$all: [id]}}).populate('participants');
+export async function getPrivateChatsOfUser(id) {
+  const chats = await PrivateChat.find({participants: {$all: [id]}}).populate('participants');
 
   return chats;
 }
 
 /**
- * Opens a new private chat between two users.
+ * Opens a new private chat between two users. If the chat already exists, it is returned instead.
  *
  * @param {object} data Data of the chat to create
+ * @param {string} createdBy The user who creates the chat
  * @return {Promise<object>} The created chat
  */
-export async function createChat(data) {
+export async function createPrivateChat(data, createdBy) {
   validateData(
     joi.object({
-      participants: joi.array().items(joi.string().hex().required()).length(2).required(),
+      participants: joi.array().items(joi.string().hex().required()).min(1).max(2).required(),
     }),
     data,
   );
 
-  if (await Chat.exists({participants: {$all: data.participants}})) {
-    throw new ApiError('Resource already exists', 409);
+  // Ensure the user is part of the conversation itself if already two participants are present
+  if (data.participants.length == 2 && !data.participants.includes(createdBy.id)) {
+    throw new ApiError('You must be a participant of the conversation', 409);
+  }
+
+  // Prevent users from starting a conversation with themselves
+  if (data.participants.length == 1 && data.participants.includes(createdBy.id)) {
+    throw new ApiError('You cannot start a conversation with yourself', 409);
+  }
+
+  // Adds the user to the conversation if it is not already present
+  if (!data.participants.includes(createdBy.id)) {
+    data.participants.push(createdBy.id);
+  }
+
+  if (await PrivateChat.exists({participants: {$all: data.participants}})) {
+    return PrivateChat.findOne({participants: {$all: data.participants}}).populate('participants');
   }
 
   if (!(await User.exists({_id: {$in: data.participants}}))) {
     throw new ApiError('Resource not found', 404);
   }
 
-  const chat = await Chat.create(data);
+  const chat = await PrivateChat.create(data);
 
-  return Chat.populate(chat, {path: 'participants'});
+  return PrivateChat.populate(chat, {path: 'participants'});
 }

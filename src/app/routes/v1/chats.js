@@ -9,15 +9,15 @@ import * as ChatService from '../../services/chats';
 const router = express.Router();
 
 router.get(
-  '/chats/:id',
+  '/chats/private/:id',
   authenticateAccessToken(),
   paramsValidationHandler(joi.object().keys({id: joi.string().hex().required()})),
   authorize(async (req) => {
-    const chat = await ChatService.getChatById(req.params.id);
+    const chat = await ChatService.getPrivateChatById(req.params.id);
     return chat.participants.some((participant) => participant.id === req.user.id);
   }),
   asyncHandler(async (req, res) => {
-    const chat = await ChatService.getChatById(req.params.id);
+    const chat = await ChatService.getPrivateChatById(req.params.id);
 
     return res.status(200).json({
       id: chat.id,
@@ -35,10 +35,10 @@ router.get(
 );
 
 router.get(
-  '/user/me/chats',
+  '/user/me/chats/private',
   authenticateAccessToken(),
   asyncHandler(async (req, res) => {
-    const chats = await ChatService.getChatsOfUser(req.user.id);
+    const chats = await ChatService.getPrivateChatsOfUser(req.user.id);
 
     return res.status(200).json(
       chats.map((chat) => ({
@@ -58,14 +58,10 @@ router.get(
 );
 
 router.post(
-  '/chats',
+  '/chats/private',
   authenticateAccessToken(),
   asyncHandler(async (req, res) => {
-    if (!req.body.participants?.includes(req.user.id)) {
-      req.body.participants?.push(req.user.id);
-    }
-
-    const chat = await ChatService.createChat(req.body);
+    const chat = await ChatService.createPrivateChat(req.body, req.user);
 
     return res.status(201).json({
       id: chat.id,

@@ -17,7 +17,7 @@ const handler = async (socket) => {
 
   socket.on('message', async ({content, to}) => {
     try {
-      const chat = await MessageService.addMessageToChat(to, {
+      const chat = await MessageService.addMessageToPrivateChat(to, {
         content,
         from: socket.user.id,
       });

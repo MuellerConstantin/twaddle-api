@@ -2,10 +2,10 @@ import mongoose from 'mongoose';
 import joi from 'joi';
 import {validateData} from '../middlewares/validation';
 import {ApiError} from '../middlewares/error';
-import Chat from '../models/chat';
+import {PrivateChatModel as PrivateChat} from '../models/chat';
 
 /**
- * Retrieves all messages of a single chat by its identifier in a paginated way.
+ * Retrieves all messages of a single private chat by its identifier in a paginated way.
  *
  * When the `timestampOffset` parameter is specified, only messages created after
  * the specified date will be returned. This is useful to implement a "load more"
@@ -16,13 +16,13 @@ import Chat from '../models/chat';
  * @param {Date=} timestampOffset Offset to load messages from a specific date onwards
  * @return {Promise<[object[], object]>} Returns a tuple with the list of users and pagination info
  */
-export async function getMessagesOfChat(id, pageable = {perPage: 25, page: 0, timestampOffset: null}) {
+export async function getMessagesOfPrivateChat(id, pageable = {perPage: 25, page: 0, timestampOffset: null}) {
   const {perPage, page, timestampOffset} = pageable;
 
   let messages;
 
   if (timestampOffset) {
-    messages = await Chat.aggregate([
+    messages = await PrivateChat.aggregate([
       {$match: {_id: new mongoose.Types.ObjectId(id)}},
       {$unwind: '$messages'},
       {$match: {'messages.createdAt': {$lt: timestampOffset}}},
@@ -32,7 +32,7 @@ export async function getMessagesOfChat(id, pageable = {perPage: 25, page: 0, ti
       {$replaceRoot: {newRoot: '$messages'}},
     ]);
   } else {
-    messages = await Chat.aggregate([
+    messages = await PrivateChat.aggregate([
       {$match: {_id: new mongoose.Types.ObjectId(id)}},
       {$unwind: '$messages'},
       {$sort: {'messages.createdAt': -1}},
@@ -44,7 +44,7 @@ export async function getMessagesOfChat(id, pageable = {perPage: 25, page: 0, ti
 
   const totalMessages =
     (
-      await Chat.aggregate([
+      await PrivateChat.aggregate([
         {$match: {_id: new mongoose.Types.ObjectId(id)}},
         {$unwind: '$messages'},
         {$count: 'total'},
@@ -62,13 +62,13 @@ export async function getMessagesOfChat(id, pageable = {perPage: 25, page: 0, ti
 }
 
 /**
- * Adds a new message to a chat.
+ * Adds a new message to a private chat.
  *
  * @param {string} id Identifier of the chat to add the message to
  * @param {object} message The message to add
  * @return {Promise<void>} A promise that resolves when the message has been added
  */
-export async function addMessageToChat(id, message) {
+export async function addMessageToPrivateChat(id, message) {
   validateData(
     joi.object({
       from: joi.string().hex().required(),
@@ -77,7 +77,7 @@ export async function addMessageToChat(id, message) {
     message,
   );
 
-  const chat = await Chat.findOneAndUpdate(
+  const chat = await PrivateChat.findOneAndUpdate(
     {_id: id, participants: {$in: [message.from]}},
     {$push: {messages: message}},
     {new: true},
