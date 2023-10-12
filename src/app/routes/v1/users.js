@@ -62,6 +62,20 @@ router.get(
 );
 
 router.get(
+  '/users/:id/status',
+  authenticateAccessToken(),
+  paramsValidationHandler(joi.object().keys({id: joi.string().hex().required()})),
+  asyncHandler(async (req, res) => {
+    const {id} = req.params;
+    const isOnline = await UserService.isOnline(id);
+
+    return res.status(200).json({
+      status: isOnline ? 'online' : 'offline',
+    });
+  }),
+);
+
+router.get(
   '/users',
   authenticateAccessToken(),
   queryValidationHandler(

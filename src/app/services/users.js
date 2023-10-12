@@ -378,3 +378,43 @@ export async function resetPassword(resetToken, newPassword) {
 
   await redis.del(`resetToken:${resetToken}`);
 }
+
+/**
+ * Check if a user is online, therefore has an active connection open.
+ *
+ * @param {string} id Identifier of user to check online status
+ * @return {Promise<boolean>} Returns true if online, otherwise false
+ */
+export async function isOnline(id) {
+  return !!(await redis.get(`user:${id}:online`));
+}
+
+/**
+ * Mark a user as online.
+ *
+ * @param {string} id Identifier of user to mark as online
+ * @return {Promise<string|null>} Confirms success by sending anything other than null
+ */
+export async function markOnline(id) {
+  return redis.set(`user:${id}:online`, 1, {NX: true, EX: 30});
+}
+
+/**
+ * Refresh the online status.
+ *
+ * @param {string} id Identifier of user to refresh online status
+ * @return {Promise<string|null>} Confirms success by sending anything other than null
+ */
+export async function confirmOnline(id) {
+  return redis.set(`user:${id}:online`, 1, {XX: true, EX: 30});
+}
+
+/**
+ * Mark a user as offline.
+ *
+ * @param {string} id Identifier of user to mark as offline
+ * @return {Promise<void>} Returns nothing on success
+ */
+export async function markOffline(id) {
+  await redis.del(`user:${id}:online`);
+}
