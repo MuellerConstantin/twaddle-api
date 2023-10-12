@@ -1,7 +1,7 @@
 import joi from 'joi';
 import {validateData} from '../middlewares/validation';
 import {ApiError} from '../middlewares/error';
-import {PrivateChatModel as PrivateChat} from '../models/chat';
+import {PrivateChatModel as PrivateChat, GroupChatModel as GroupChat} from '../models/chat';
 import User from '../models/user';
 
 /**
@@ -12,6 +12,22 @@ import User from '../models/user';
  */
 export async function getPrivateChatById(id) {
   const chat = await PrivateChat.findById(id).populate('participants');
+
+  if (!chat) {
+    throw new ApiError('Resource not found', 404);
+  }
+
+  return chat;
+}
+
+/**
+ * Retrieves a single group chat by its identifier.
+ *
+ * @param {string} id Identifier of the chat to retrieve
+ * @return {Promise<object>} The retrieved chat
+ */
+export async function getGroupChatById(id) {
+  const chat = await GroupChat.findById(id).populate('participants.user');
 
   if (!chat) {
     throw new ApiError('Resource not found', 404);
@@ -33,6 +49,18 @@ export async function getPrivateChatsOfUser(id) {
 }
 
 /**
+ * Retrieves the group chats of a single user by its identifier.
+ *
+ * @param {string} id Identifier of the user to retrieve chats for
+ * @return {Promise<Array>} The retrieved chats
+ */
+export async function getGroupChatsOfUser(id) {
+  const chats = await GroupChat.find({'participants.user': {$all: [id]}}).populate('participants.user');
+
+  return chats;
+}
+
+/**
  * Opens a new private chat between two users. If the chat already exists, it is returned instead.
  *
  * @param {object} data Data of the chat to create
@@ -40,7 +68,7 @@ export async function getPrivateChatsOfUser(id) {
  * @return {Promise<object>} The created chat
  */
 export async function createPrivateChat(data, createdBy) {
-  validateData(
+  data = validateData(
     joi.object({
       participants: joi.array().items(joi.string().hex().required()).min(1).max(2).required(),
     }),
@@ -73,4 +101,37 @@ export async function createPrivateChat(data, createdBy) {
   const chat = await PrivateChat.create(data);
 
   return PrivateChat.populate(chat, {path: 'participants'});
+}
+
+/**
+ * Opens a new group chat between two users.
+ *
+ * @param {object} data Data of the chat to create
+ * @param {string} createdBy The user who creates the chat
+ * @return {Promise<object>} The created chat
+ */
+export async function createGroupChat(data, createdBy) {
+  data = validateData(
+    joi.object({
+      name: joi.string().required(),
+      participants: joi.array().items(joi.string().hex()).default([]),
+    }),
+    data,
+  );
+
+  // Adds the user to the conversation if it is not already present
+  if (!data.participants.includes(createdBy.id)) {
+    data.participants.push(createdBy.id);
+  }
+
+  if (!(await User.exists({_id: {$in: data.participants}}))) {
+    throw new ApiError('Resource not found', 404);
+  }
+
+  const chat = await GroupChat.create({
+    ...data,
+    participants: data.participants.map((participant) => ({user: participant, isAdmin: participant === createdBy.id})),
+  });
+
+  return GroupChat.populate(chat, {path: 'participants.user'});
 }

@@ -91,9 +91,14 @@ export async function getUsers(pageable = {perPage: 25, page: 0}) {
  * @return {Promise<object>} Returns the created user
  */
 export async function createUser(data) {
-  validateData(
+  data = validateData(
     joi.object({
-      username: joi.string().min(4).max(50).regex(/^[a-zA-Z0-9_]*$/).required(),
+      username: joi
+        .string()
+        .min(4)
+        .max(50)
+        .regex(/^[a-zA-Z0-9_]*$/)
+        .required(),
       email: joi.string().email().required(),
       password: joi
         .string()
@@ -195,9 +200,14 @@ export async function getUserAvatar(id) {
  * @return {Promise<object>} Returns the updated user
  */
 export async function updateUser(id, data) {
-  validateData(
+  data = validateData(
     joi.object({
-      username: joi.string().min(4).max(50).regex(/^[a-zA-Z0-9_]*$/).optional(),
+      username: joi
+        .string()
+        .min(4)
+        .max(50)
+        .regex(/^[a-zA-Z0-9_]*$/)
+        .optional(),
       email: joi.string().email().optional(),
       password: joi
         .string()

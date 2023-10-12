@@ -21,15 +21,39 @@ router.get(
 
     return res.status(200).json({
       id: chat.id,
-      participants: chat.participants
-        .filter((participant) => participant.id !== req.user.id)
-        .map((participant) => ({
-          id: participant.id,
-          username: participant.username,
-          displayName: participant.displayName,
-          location: participant.location,
-          status: participant.status,
-        })),
+      participants: chat.participants.map((participant) => ({
+        id: participant.id,
+        username: participant.username,
+        displayName: participant.displayName,
+        location: participant.location,
+        status: participant.status,
+      })),
+    });
+  }),
+);
+
+router.get(
+  '/chats/group/:id',
+  authenticateAccessToken(),
+  paramsValidationHandler(joi.object().keys({id: joi.string().hex().required()})),
+  authorize(async (req) => {
+    const chat = await ChatService.getGroupChatById(req.params.id);
+    return chat.participants.some((participant) => participant.user.id === req.user.id);
+  }),
+  asyncHandler(async (req, res) => {
+    const chat = await ChatService.getPrivateChatById(req.params.id);
+
+    return res.status(200).json({
+      id: chat.id,
+      name: chat.name,
+      participants: chat.participants.map((participant) => ({
+        id: participant.user.id,
+        username: participant.user.username,
+        displayName: participant.user.displayName,
+        location: participant.user.location,
+        status: participant.user.status,
+        isAdmin: participant.isAdmin,
+      })),
     });
   }),
 );
@@ -43,15 +67,36 @@ router.get(
     return res.status(200).json(
       chats.map((chat) => ({
         id: chat.id,
-        participants: chat.participants
-          .filter((participant) => participant.id !== req.user.id)
-          .map((participant) => ({
-            id: participant.id,
-            username: participant.username,
-            displayName: participant.displayName,
-            location: participant.location,
-            status: participant.status,
-          })),
+        participants: chat.participants.map((participant) => ({
+          id: participant.id,
+          username: participant.username,
+          displayName: participant.displayName,
+          location: participant.location,
+          status: participant.status,
+        })),
+      })),
+    );
+  }),
+);
+
+router.get(
+  '/user/me/chats/group',
+  authenticateAccessToken(),
+  asyncHandler(async (req, res) => {
+    const chats = await ChatService.getGroupChatsOfUser(req.user.id);
+
+    return res.status(200).json(
+      chats.map((chat) => ({
+        id: chat.id,
+        name: chat.name,
+        participants: chat.participants.map((participant) => ({
+          id: participant.user.id,
+          username: participant.user.username,
+          displayName: participant.user.displayName,
+          location: participant.user.location,
+          status: participant.user.status,
+          isAdmin: participant.isAdmin,
+        })),
       })),
     );
   }),
@@ -65,15 +110,34 @@ router.post(
 
     return res.status(201).json({
       id: chat.id,
-      participants: chat.participants
-        .filter((participant) => participant.id !== req.user.id)
-        .map((participant) => ({
-          id: participant.id,
-          username: participant.username,
-          displayName: participant.displayName,
-          location: participant.location,
-          status: participant.status,
-        })),
+      participants: chat.participants.map((participant) => ({
+        id: participant.id,
+        username: participant.username,
+        displayName: participant.displayName,
+        location: participant.location,
+        status: participant.status,
+      })),
+    });
+  }),
+);
+
+router.post(
+  '/chats/group',
+  authenticateAccessToken(),
+  asyncHandler(async (req, res) => {
+    const chat = await ChatService.createGroupChat(req.body, req.user);
+
+    return res.status(201).json({
+      id: chat.id,
+      name: chat.name,
+      participants: chat.participants.map((participant) => ({
+        id: participant.user.id,
+        username: participant.user.username,
+        displayName: participant.user.displayName,
+        location: participant.user.location,
+        status: participant.user.status,
+        isAdmin: participant.isAdmin,
+      })),
     });
   }),
 );

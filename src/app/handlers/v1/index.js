@@ -15,7 +15,7 @@ const handler = async (socket) => {
 
   socket.join(socket.user.id);
 
-  socket.on('message', async ({content, to}) => {
+  socket.on('message/private', async ({content, to}) => {
     try {
       const chat = await MessageService.addMessageToPrivateChat(to, {
         content,
@@ -29,10 +29,39 @@ const handler = async (socket) => {
         timestamp: new Date(),
       };
 
-      socket.emit('message', message);
+      socket.emit('message/private', message);
       chat.participants.forEach((participant) => {
         if (participant.id !== socket.user.id) {
-          socket.to(participant.id).emit('message', message);
+          socket.to(participant.id).emit('message/private', message);
+        }
+      });
+    } catch (err) {
+      if (err instanceof ApiError) {
+        socket.emit('error', SocketError.fromApiError(err));
+      } else {
+        socket.emit('error', new SocketError('Internal server error occurred', 500));
+      }
+    }
+  });
+
+  socket.on('message/group', async ({content, to}) => {
+    try {
+      const chat = await MessageService.addMessageToGroupChat(to, {
+        content,
+        from: socket.user.id,
+      });
+
+      const message = {
+        content,
+        from: socket.user.id,
+        to,
+        timestamp: new Date(),
+      };
+
+      socket.emit('message/group', message);
+      chat.participants.forEach((participant) => {
+        if (participant.id !== socket.user.id) {
+          socket.to(participant.id).emit('message/group', message);
         }
       });
     } catch (err) {
