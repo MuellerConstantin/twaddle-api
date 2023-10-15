@@ -41,7 +41,7 @@ router.get(
     return chat.participants.some((participant) => participant.user.id === req.user.id);
   }),
   asyncHandler(async (req, res) => {
-    const chat = await ChatService.getPrivateChatById(req.params.id);
+    const chat = await ChatService.getGroupChatById(req.params.id);
 
     return res.status(200).json({
       id: chat.id,
