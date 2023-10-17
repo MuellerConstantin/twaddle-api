@@ -142,4 +142,19 @@ router.post(
   }),
 );
 
+router.post(
+  '/chats/group/:id/participants',
+  authenticateAccessToken(),
+  paramsValidationHandler(joi.object().keys({id: joi.string().hex().required()})),
+  authorize(async (req) => {
+    const chat = await ChatService.getGroupChatById(req.params.id);
+    return chat.participants.some((participant) => participant.user.id === req.user.id && participant.isAdmin);
+  }),
+  asyncHandler(async (req, res) => {
+    await ChatService.addParticipantToGroupChat(req.params.id, req.body);
+
+    return res.status(204).send();
+  }),
+);
+
 export default router;

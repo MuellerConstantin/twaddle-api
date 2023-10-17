@@ -135,3 +135,35 @@ export async function createGroupChat(data, createdBy) {
 
   return GroupChat.populate(chat, {path: 'participants.user'});
 }
+
+/**
+ * Adds a participant to a group chat.
+ *
+ * @param {string} chatId Identifier of the chat to add the participant to
+ * @param {object} data Data of the participant to add
+ */
+export async function addParticipantToGroupChat(chatId, data) {
+  data = validateData(
+    joi.object({
+      userId: joi.string().hex().required(),
+    }),
+    data,
+  );
+
+  const chat = await GroupChat.findById(chatId).populate('participants.user');
+
+  if (!chat) {
+    throw new ApiError('Chat not found', 404);
+  }
+
+  if (!User.exists({_id: data.userId})) {
+    throw new ApiError('User not found', 404);
+  }
+
+  if (chat.participants.some((participant) => participant.user.id === data.userId)) {
+    throw new ApiError('User is already a participant of the chat', 409);
+  }
+
+  chat.participants.push({user: data.userId, isAdmin: false});
+  await chat.save();
+}

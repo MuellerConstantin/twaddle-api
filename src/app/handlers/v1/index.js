@@ -73,8 +73,8 @@ const handler = async (socket) => {
 
       socket.emit('message/group', message);
       chat.participants.forEach((participant) => {
-        if (participant.id !== socket.user.id) {
-          socket.to(participant.id).emit('message/group', message);
+        if (participant.user.id !== socket.user.id) {
+          socket.to(participant.user.id).emit('message/group', message);
         }
       });
     } catch (err) {
