@@ -3,6 +3,7 @@ import joi from 'joi';
 import {asyncHandler} from '../../middlewares/error';
 import {authenticateAccessToken, authorize} from '../../middlewares/security';
 import {paramsValidationHandler} from '../../middlewares/validation';
+import {imageUpload} from '../../middlewares/multer';
 import * as ChatService from '../../services/chats';
 
 // eslint-disable-next-line new-cap
@@ -152,6 +153,58 @@ router.post(
   }),
   asyncHandler(async (req, res) => {
     await ChatService.addParticipantToGroupChat(req.params.id, req.body);
+
+    return res.status(204).send();
+  }),
+);
+
+router.post(
+  '/chats/group/:id/avatar',
+  authenticateAccessToken(),
+  paramsValidationHandler(joi.object().keys({id: joi.string().hex().required()})),
+  authorize(async (req) => {
+    const chat = await ChatService.getGroupChatById(req.params.id);
+    return chat.participants.some((participant) => participant.user.id === req.user.id && participant.isAdmin);
+  }),
+  imageUpload.single('file'),
+  asyncHandler(async (req, res) => {
+    await ChatService.updateGroupChatAvatar(req.params.id, req.file.key);
+
+    return res.status(204).send();
+  }),
+);
+
+router.get(
+  '/chats/group/:id/avatar',
+  authenticateAccessToken(),
+  paramsValidationHandler(joi.object().keys({id: joi.string().hex().required()})),
+  authorize(async (req) => {
+    const chat = await ChatService.getGroupChatById(req.params.id);
+    return chat.participants.some((participant) => participant.user.id === req.user.id);
+  }),
+  asyncHandler(async (req, res) => {
+    const {id} = req.params;
+
+    const avatar = await ChatService.getGroupChatAvatar(id);
+
+    res.header('Content-Type', avatar.ContentType);
+    res.header('Content-Length', avatar.ContentLength);
+
+    return avatar.Body.pipe(res);
+  }),
+);
+
+router.delete(
+  '/chats/group/:id/avatar',
+  authenticateAccessToken(),
+  paramsValidationHandler(joi.object().keys({id: joi.string().hex().required()})),
+  authorize(async (req) => {
+    const chat = await ChatService.getGroupChatById(req.params.id);
+    console.log('works');
+    return chat.participants.some((participant) => participant.user.id === req.user.id && participant.isAdmin);
+  }),
+  asyncHandler(async (req, res) => {
+    await ChatService.updateGroupChatAvatar(req.params.id, null);
 
     return res.status(204).send();
   }),

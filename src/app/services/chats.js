@@ -1,4 +1,6 @@
 import joi from 'joi';
+import env from '../config/env';
+import s3, {DeleteObjectCommand, GetObjectCommand} from '../config/s3';
 import {validateData} from '../middlewares/validation';
 import {ApiError} from '../middlewares/error';
 import {PrivateChatModel as PrivateChat, GroupChatModel as GroupChat} from '../models/chat';
@@ -166,4 +168,63 @@ export async function addParticipantToGroupChat(chatId, data) {
 
   chat.participants.push({user: data.userId, isAdmin: false});
   await chat.save();
+}
+
+/**
+ * Updates a group chat avatar.
+ *
+ * @param {string} id Identifier of group chat to update
+ * @param {string} avatar Key of avatar in object storage
+ */
+export async function updateGroupChatAvatar(id, avatar) {
+  const chat = await GroupChat.findById(id);
+
+  if (!chat) {
+    throw new ApiError('Resource not found', 404);
+  }
+
+  if (avatar === null) {
+    if (chat.avatar) {
+      await s3.send(new DeleteObjectCommand({Bucket: env.s3.bucket, Key: chat.avatar}));
+    }
+
+    await GroupChat.findByIdAndUpdate(
+      id,
+      {
+        $unset: {
+          avatar: 1,
+        },
+      },
+      {new: true},
+    );
+  } else {
+    await GroupChat.findByIdAndUpdate(
+      id,
+      {
+        $set: {
+          avatar,
+        },
+      },
+      {new: true},
+    );
+  }
+}
+
+/**
+ * Get a group chat's avatar.
+ *
+ * @param {string} id Identifier of group chat to retrieve avatar
+ */
+export async function getGroupChatAvatar(id) {
+  const chat = await GroupChat.findById(id);
+
+  if (!chat) {
+    throw new ApiError('Resource not found', 404);
+  }
+
+  if (!chat.avatar) {
+    throw new ApiError('Resource not found', 404);
+  }
+
+  return await s3.send(new GetObjectCommand({Bucket: env.s3.bucket, Key: chat.avatar}));
 }

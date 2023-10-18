@@ -34,6 +34,9 @@ const GroupChatSchema = new mongoose.Schema(
       ],
       required: true,
     },
+    avatar: {
+      type: String,
+    },
     messages: [MessageSchema],
   },
   {collection: 'group-chats', timestamps: true},
