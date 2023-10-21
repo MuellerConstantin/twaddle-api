@@ -143,6 +143,32 @@ router.post(
   }),
 );
 
+router.patch(
+  '/chats/group/:id',
+  authenticateAccessToken(),
+  paramsValidationHandler(joi.object().keys({id: joi.string().hex().required()})),
+  authorize(async (req) => {
+    const chat = await ChatService.getGroupChatById(req.params.id);
+    return chat.participants.some((participant) => participant.user.id === req.user.id && participant.isAdmin);
+  }),
+  asyncHandler(async (req, res) => {
+    const chat = await ChatService.updateGroupChatById(req.params.id, req.body);
+
+    return res.status(200).json({
+      id: chat.id,
+      name: chat.name,
+      participants: chat.participants.map((participant) => ({
+        id: participant.user.id,
+        username: participant.user.username,
+        displayName: participant.user.displayName,
+        location: participant.user.location,
+        status: participant.user.status,
+        isAdmin: participant.isAdmin,
+      })),
+    });
+  }),
+);
+
 router.post(
   '/chats/group/:id/participants',
   authenticateAccessToken(),

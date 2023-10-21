@@ -115,7 +115,7 @@ export async function createPrivateChat(data, createdBy) {
 export async function createGroupChat(data, createdBy) {
   data = validateData(
     joi.object({
-      name: joi.string().required(),
+      name: joi.string().max(75).required(),
       participants: joi.array().items(joi.string().hex()).default([]),
     }),
     data,
@@ -136,6 +136,42 @@ export async function createGroupChat(data, createdBy) {
   });
 
   return GroupChat.populate(chat, {path: 'participants.user'});
+}
+
+/**
+ * Updates a group chat by its identifier.
+ *
+ * @param {string} id Identifier of the chat to update
+ * @param {object} data Data of the chat to update
+ * @return {Promise<object>} The updated chat
+ */
+export async function updateGroupChatById(id, data) {
+  data = validateData(
+    joi.object({
+      name: joi.string().max(75).optional(),
+    }),
+    data,
+  );
+
+  const update = {$set: {}, $unset: {}};
+
+  Object.keys(data).forEach((key) => {
+    if (data[key] === null) {
+      update.$unset[key] = 1;
+    } else {
+      update.$set[key] = data[key];
+    }
+  });
+
+  const chat = GroupChat.findByIdAndUpdate(id, update, {
+    new: true,
+  });
+
+  if (!chat) {
+    throw new ApiError('Resource not found', 404);
+  }
+
+  return chat;
 }
 
 /**
