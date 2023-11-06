@@ -207,6 +207,80 @@ export async function addParticipantToGroupChat(chatId, data) {
 }
 
 /**
+ * Removes a participant from a group chat.
+ *
+ * @param {string} chatId Identifier of the chat to remove the participant from
+ * @param {string} userId Identifier of the participant to remove
+ */
+export async function removeParticipantFromGroupChat(chatId, userId) {
+  const chat = await GroupChat.findById(chatId).populate('participants.user');
+
+  if (!chat) {
+    throw new ApiError('Chat not found', 404);
+  }
+
+  if (!chat.participants.some((participant) => participant.user.id === userId)) {
+    throw new ApiError('User is not a participant of the chat', 404);
+  }
+
+  // When the last participant is removed, the chat is deleted
+  if (chat.participants.length === 1) {
+    await chat.delete();
+    return;
+  }
+
+  // When the last administrator is removed, the next best user becomes the administrator
+  if (chat.participants.filter((participant) => participant.isAdmin && participant.user.id !== userId).length === 0) {
+    chat.participants.find((participant) => participant.user.id !== userId).isAdmin = true;
+  }
+
+  chat.participants = chat.participants.filter((participant) => participant.user.id !== userId);
+  await chat.save();
+}
+
+/**
+ * Appoints a participant as admin of a group chat.
+ *
+ * @param {string} chatId The chat to appoint the participant as admin
+ * @param {string} userId The participant to appoint as admin
+ */
+export async function appointParticipantOfGroupChatAsAdmin(chatId, userId) {
+  const chat = await GroupChat.findById(chatId).populate('participants.user');
+
+  if (!chat) {
+    throw new ApiError('Chat not found', 404);
+  }
+
+  if (!chat.participants.some((participant) => participant.user.id === userId)) {
+    throw new ApiError('User is not a participant of the chat', 404);
+  }
+
+  chat.participants.find((participant) => participant.user.id === userId).isAdmin = true;
+  await chat.save();
+}
+
+/**
+ * Removes a participant as admin of a group chat.
+ *
+ * @param {string} chatId The chat from which to remove the participant as admin
+ * @param {string} userId The participant to remove as admin
+ */
+export async function removeParticipantOfGroupChatAsAdmin(chatId, userId) {
+  const chat = await GroupChat.findById(chatId).populate('participants.user');
+
+  if (!chat) {
+    throw new ApiError('Chat not found', 404);
+  }
+
+  if (!chat.participants.some((participant) => participant.user.id === userId)) {
+    throw new ApiError('User is not a participant of the chat', 404);
+  }
+
+  chat.participants.find((participant) => participant.user.id === userId).isAdmin = false;
+  await chat.save();
+}
+
+/**
  * Updates a group chat avatar.
  *
  * @param {string} id Identifier of group chat to update

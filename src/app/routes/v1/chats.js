@@ -184,6 +184,66 @@ router.post(
   }),
 );
 
+router.delete(
+  '/chats/group/:chatId/participants/:userId',
+  authenticateAccessToken(),
+  paramsValidationHandler(
+    joi.object().keys({
+      chatId: joi.string().hex().required(),
+      userId: joi.string().hex().required(),
+    }),
+  ),
+  authorize(async (req) => {
+    const chat = await ChatService.getGroupChatById(req.params.chatId);
+    return chat.participants.some((participant) => participant.user.id === req.user.id && participant.isAdmin);
+  }),
+  asyncHandler(async (req, res) => {
+    await ChatService.removeParticipantFromGroupChat(req.params.chatId, req.params.userId);
+
+    return res.status(204).send();
+  }),
+);
+
+router.post(
+  '/chats/group/:chatId/participants/:userId/admin',
+  authenticateAccessToken(),
+  paramsValidationHandler(
+    joi.object().keys({
+      chatId: joi.string().hex().required(),
+      userId: joi.string().hex().required(),
+    }),
+  ),
+  authorize(async (req) => {
+    const chat = await ChatService.getGroupChatById(req.params.chatId);
+    return chat.participants.some((participant) => participant.user.id === req.user.id && participant.isAdmin);
+  }),
+  asyncHandler(async (req, res) => {
+    await ChatService.appointParticipantOfGroupChatAsAdmin(req.params.chatId, req.params.userId);
+
+    return res.status(204).send();
+  }),
+);
+
+router.delete(
+  '/chats/group/:chatId/participants/:userId/admin',
+  authenticateAccessToken(),
+  paramsValidationHandler(
+    joi.object().keys({
+      chatId: joi.string().hex().required(),
+      userId: joi.string().hex().required(),
+    }),
+  ),
+  authorize(async (req) => {
+    const chat = await ChatService.getGroupChatById(req.params.chatId);
+    return chat.participants.some((participant) => participant.user.id === req.user.id && participant.isAdmin);
+  }),
+  asyncHandler(async (req, res) => {
+    await ChatService.removeParticipantOfGroupChatAsAdmin(req.params.chatId, req.params.userId);
+
+    return res.status(204).send();
+  }),
+);
+
 router.post(
   '/chats/group/:id/avatar',
   authenticateAccessToken(),
