@@ -1,7 +1,7 @@
 import mongoose from 'mongoose';
 import connection from '../config/mongoose';
 
-const UserSchema = new mongoose.Schema(
+export const UserSchema = new mongoose.Schema(
   {
     username: {
       type: String,

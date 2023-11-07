@@ -1,26 +1,11 @@
+import mongoose from 'mongoose';
 import joi from 'joi';
 import env from '../config/env';
 import s3, {DeleteObjectCommand, GetObjectCommand} from '../config/s3';
 import {validateData} from '../middlewares/validation';
 import {ApiError} from '../middlewares/error';
-import {PrivateChatModel as PrivateChat, GroupChatModel as GroupChat} from '../models/chat';
+import GroupChat from '../models/groupChat';
 import User from '../models/user';
-
-/**
- * Retrieves a single private chat by its identifier.
- *
- * @param {string} id Identifier of the chat to retrieve
- * @return {Promise<object>} The retrieved chat
- */
-export async function getPrivateChatById(id) {
-  const chat = await PrivateChat.findById(id).populate('participants');
-
-  if (!chat) {
-    throw new ApiError('Resource not found', 404);
-  }
-
-  return chat;
-}
 
 /**
  * Retrieves a single group chat by its identifier.
@@ -28,7 +13,7 @@ export async function getPrivateChatById(id) {
  * @param {string} id Identifier of the chat to retrieve
  * @return {Promise<object>} The retrieved chat
  */
-export async function getGroupChatById(id) {
+export async function getChatById(id) {
   const chat = await GroupChat.findById(id).populate('participants.user');
 
   if (!chat) {
@@ -39,70 +24,15 @@ export async function getGroupChatById(id) {
 }
 
 /**
- * Retrieves the private chats of a single user by its identifier.
- *
- * @param {string} id Identifier of the user to retrieve chats for
- * @return {Promise<Array>} The retrieved chats
- */
-export async function getPrivateChatsOfUser(id) {
-  const chats = await PrivateChat.find({participants: {$all: [id]}}).populate('participants');
-
-  return chats;
-}
-
-/**
  * Retrieves the group chats of a single user by its identifier.
  *
  * @param {string} id Identifier of the user to retrieve chats for
  * @return {Promise<Array>} The retrieved chats
  */
-export async function getGroupChatsOfUser(id) {
+export async function getChatsOfUser(id) {
   const chats = await GroupChat.find({'participants.user': {$all: [id]}}).populate('participants.user');
 
   return chats;
-}
-
-/**
- * Opens a new private chat between two users. If the chat already exists, it is returned instead.
- *
- * @param {object} data Data of the chat to create
- * @param {string} createdBy The user who creates the chat
- * @return {Promise<object>} The created chat
- */
-export async function createPrivateChat(data, createdBy) {
-  data = validateData(
-    joi.object({
-      participants: joi.array().items(joi.string().hex().required()).min(1).max(2).required(),
-    }),
-    data,
-  );
-
-  // Ensure the user is part of the conversation itself if already two participants are present
-  if (data.participants.length == 2 && !data.participants.includes(createdBy.id)) {
-    throw new ApiError('You must be a participant of the conversation', 409);
-  }
-
-  // Prevent users from starting a conversation with themselves
-  if (data.participants.length == 1 && data.participants.includes(createdBy.id)) {
-    throw new ApiError('You cannot start a conversation with yourself', 409);
-  }
-
-  // Adds the user to the conversation if it is not already present
-  if (!data.participants.includes(createdBy.id)) {
-    data.participants.push(createdBy.id);
-  }
-
-  if (await PrivateChat.exists({participants: {$all: data.participants}})) {
-    return PrivateChat.findOne({participants: {$all: data.participants}}).populate('participants');
-  }
-
-  if (!(await User.exists({_id: {$in: data.participants}}))) {
-    throw new ApiError('Resource not found', 404);
-  }
-
-  const chat = await PrivateChat.create(data);
-
-  return PrivateChat.populate(chat, {path: 'participants'});
 }
 
 /**
@@ -112,7 +42,7 @@ export async function createPrivateChat(data, createdBy) {
  * @param {string} createdBy The user who creates the chat
  * @return {Promise<object>} The created chat
  */
-export async function createGroupChat(data, createdBy) {
+export async function createChat(data, createdBy) {
   data = validateData(
     joi.object({
       name: joi.string().max(75).required(),
@@ -145,7 +75,7 @@ export async function createGroupChat(data, createdBy) {
  * @param {object} data Data of the chat to update
  * @return {Promise<object>} The updated chat
  */
-export async function updateGroupChatById(id, data) {
+export async function updateChatById(id, data) {
   data = validateData(
     joi.object({
       name: joi.string().max(75).optional(),
@@ -180,7 +110,7 @@ export async function updateGroupChatById(id, data) {
  * @param {string} chatId Identifier of the chat to add the participant to
  * @param {object} data Data of the participant to add
  */
-export async function addParticipantToGroupChat(chatId, data) {
+export async function addParticipantToChat(chatId, data) {
   data = validateData(
     joi.object({
       userId: joi.string().hex().required(),
@@ -212,7 +142,7 @@ export async function addParticipantToGroupChat(chatId, data) {
  * @param {string} chatId Identifier of the chat to remove the participant from
  * @param {string} userId Identifier of the participant to remove
  */
-export async function removeParticipantFromGroupChat(chatId, userId) {
+export async function removeParticipantFromChat(chatId, userId) {
   const chat = await GroupChat.findById(chatId).populate('participants.user');
 
   if (!chat) {
@@ -244,7 +174,7 @@ export async function removeParticipantFromGroupChat(chatId, userId) {
  * @param {string} chatId The chat to appoint the participant as admin
  * @param {string} userId The participant to appoint as admin
  */
-export async function appointParticipantOfGroupChatAsAdmin(chatId, userId) {
+export async function appointParticipantAsAdmin(chatId, userId) {
   const chat = await GroupChat.findById(chatId).populate('participants.user');
 
   if (!chat) {
@@ -265,7 +195,7 @@ export async function appointParticipantOfGroupChatAsAdmin(chatId, userId) {
  * @param {string} chatId The chat from which to remove the participant as admin
  * @param {string} userId The participant to remove as admin
  */
-export async function removeParticipantOfGroupChatAsAdmin(chatId, userId) {
+export async function removeParticipantAsAdmin(chatId, userId) {
   const chat = await GroupChat.findById(chatId).populate('participants.user');
 
   if (!chat) {
@@ -286,7 +216,7 @@ export async function removeParticipantOfGroupChatAsAdmin(chatId, userId) {
  * @param {string} id Identifier of group chat to update
  * @param {string} avatar Key of avatar in object storage
  */
-export async function updateGroupChatAvatar(id, avatar) {
+export async function updateChatAvatar(id, avatar) {
   const chat = await GroupChat.findById(id);
 
   if (!chat) {
@@ -325,7 +255,7 @@ export async function updateGroupChatAvatar(id, avatar) {
  *
  * @param {string} id Identifier of group chat to retrieve avatar
  */
-export async function getGroupChatAvatar(id) {
+export async function getChatAvatar(id) {
   const chat = await GroupChat.findById(id);
 
   if (!chat) {
@@ -337,4 +267,90 @@ export async function getGroupChatAvatar(id) {
   }
 
   return await s3.send(new GetObjectCommand({Bucket: env.s3.bucket, Key: chat.avatar}));
+}
+
+/**
+ * Retrieves all messages of a single group chat by its identifier in a paginated way.
+ *
+ * When the `timestampOffset` parameter is specified, only messages created after
+ * the specified date will be returned. This is useful to implement a "load more"
+ * functionality.
+ *
+ * @param {string} id Identifier of the chat to retrieve messages for
+ * @param {{perPage: number, page: number}=} pageable Page number
+ * @param {Date=} timestampOffset Offset to load messages from a specific date onwards
+ * @return {Promise<[object[], object]>} Returns a tuple with the list of users and pagination info
+ */
+export async function getMessagesOfChat(id, pageable = {perPage: 25, page: 0, timestampOffset: null}) {
+  const {perPage, page, timestampOffset} = pageable;
+
+  let messages;
+
+  if (timestampOffset) {
+    messages = await GroupChat.aggregate([
+      {$match: {_id: new mongoose.Types.ObjectId(id)}},
+      {$unwind: '$messages'},
+      {$match: {'messages.createdAt': {$lt: timestampOffset}}},
+      {$sort: {'messages.createdAt': -1}},
+      {$skip: perPage * page},
+      {$limit: perPage},
+      {$replaceRoot: {newRoot: '$messages'}},
+    ]);
+  } else {
+    messages = await GroupChat.aggregate([
+      {$match: {_id: new mongoose.Types.ObjectId(id)}},
+      {$unwind: '$messages'},
+      {$sort: {'messages.createdAt': -1}},
+      {$skip: perPage * page},
+      {$limit: perPage},
+      {$replaceRoot: {newRoot: '$messages'}},
+    ]);
+  }
+
+  const totalMessages =
+    (
+      await GroupChat.aggregate([
+        {$match: {_id: new mongoose.Types.ObjectId(id)}},
+        {$unwind: '$messages'},
+        {$count: 'total'},
+      ])
+    )[0]?.total ?? 0;
+
+  const info = {
+    page,
+    perPage,
+    totalPages: Math.ceil(totalMessages / perPage),
+    totalElements: totalMessages,
+  };
+
+  return [messages, info];
+}
+
+/**
+ * Adds a new message to a group chat.
+ *
+ * @param {string} id Identifier of the chat to add the message to
+ * @param {object} message The message to add
+ * @return {Promise<void>} A promise that resolves when the message has been added
+ */
+export async function addMessageToChat(id, message) {
+  message = validateData(
+    joi.object({
+      from: joi.string().hex().required(),
+      content: joi.string().required(),
+    }),
+    message,
+  );
+
+  const chat = await GroupChat.findOneAndUpdate(
+    {_id: id, 'participants.user': {$in: [message.from]}},
+    {$push: {messages: message}},
+    {new: true},
+  ).populate('participants.user');
+
+  if (!chat) {
+    throw new ApiError('Resource not found', 404);
+  }
+
+  return chat;
 }

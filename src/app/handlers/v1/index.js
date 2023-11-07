@@ -4,8 +4,8 @@ import {Socket} from 'socket.io';
 import logger from '../../config/logger';
 import {SocketError, ApiError} from '../../middlewares/error';
 import * as UserService from '../../services/users';
-import * as MessageService from '../../services/messages';
-import * as ChatService from '../../services/chats';
+import * as PrivateChatService from '../../services/privateChats';
+import * as GroupChatService from '../../services/groupChats';
 
 /**
  * Root handler for handling incoming socket connections.
@@ -18,7 +18,7 @@ const handler = async (socket) => {
   socket.join(socket.user.id);
   await UserService.markOnline(socket.user.id);
 
-  const privateChats = await ChatService.getPrivateChatsOfUser(socket.user.id);
+  const privateChats = await PrivateChatService.getChatsOfUser(socket.user.id);
 
   privateChats.forEach((chat) => {
     chat.participants.forEach((participant) => {
@@ -30,7 +30,7 @@ const handler = async (socket) => {
 
   socket.on('message/private', async ({content, to}) => {
     try {
-      const chat = await MessageService.addMessageToPrivateChat(to, {
+      const chat = await PrivateChatService.addMessageToChat(to, {
         content,
         from: socket.user.id,
       });
@@ -59,7 +59,7 @@ const handler = async (socket) => {
 
   socket.on('message/group', async ({content, to}) => {
     try {
-      const chat = await MessageService.addMessageToGroupChat(to, {
+      const chat = await GroupChatService.addMessageToChat(to, {
         content,
         from: socket.user.id,
       });
@@ -90,7 +90,7 @@ const handler = async (socket) => {
     await UserService.markOffline(socket.user.id);
     logger.debug(`WS ${socket.nsp.name} - ${socket.user.username} closed connection`);
 
-    const privateChats = await ChatService.getPrivateChatsOfUser(socket.user.id);
+    const privateChats = await PrivateChatService.getChatsOfUser(socket.user.id);
 
     privateChats.forEach((chat) => {
       chat.participants.forEach((participant) => {
