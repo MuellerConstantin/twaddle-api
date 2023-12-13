@@ -2,7 +2,10 @@
   "name": "@twaddle/api",
   "version": "1.0.0",
   "description": "Real time messenger and communication platform.",
-  "author": "0x1C1B",
+  "author": {
+    "name": "Constantin Müller",
+    "email": "info@mueller-constantin.de"
+  },
   "license": "MIT",
   "private": true,
   "scripts": {

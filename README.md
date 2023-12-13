@@ -14,7 +14,6 @@
 ## Table of Contents
 
 - [Introduction](#introduction)
-- [Getting started](#getting-started)
 - [Deployment](#deployment)
 - [License](#license)
   - [Forbidden](#forbidden)
@@ -36,7 +35,7 @@ and development. You can find it under [configuration](docs/configuration.md).
 
 ## License
 
-Copyright (c) 2023 0x1C1B
+Copyright (c) 2023 Constantin Müller
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal

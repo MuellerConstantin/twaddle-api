@@ -44,7 +44,6 @@ export class ApiError extends Error {
   toJSON() {
     return {
       status: this.status,
-      code: this.code,
       message: this.message,
       details: this.details,
     };
@@ -61,7 +60,7 @@ export class SocketError extends Error {
    * Constructs an Socket error.
    *
    * @param {string=} message Human-readable error message
-   * @param {string=} status Internal error code, usually identical to the HTTP status code
+   * @param {string=} status Internal error code, usually a euqivalent HTTP status code is used
    * @param {any=} details Optional details depending on the error
    */
   constructor(message, status, details) {
@@ -77,8 +76,8 @@ export class SocketError extends Error {
    */
   toJSON() {
     return {
-      code: this.code,
       message: this.message,
+      status: this.status,
       details: this.details,
     };
   }
