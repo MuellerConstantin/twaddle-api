@@ -161,6 +161,10 @@ export async function updateUserAvatar(id, avatar) {
       {new: true},
     );
   } else {
+    if (user.avatar) {
+      await s3.send(new DeleteObjectCommand({Bucket: env.s3.bucket, Key: user.avatar}));
+    }
+
     await User.findByIdAndUpdate(
       id,
       {
